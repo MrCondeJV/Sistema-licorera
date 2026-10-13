@@ -52,6 +52,17 @@
 
         <!-- Status Badges & Controls -->
         <div class="flex items-center space-x-2 sm:space-x-3">
+            @if(session('superadmin_impersonating'))
+                <!-- Impersonation indicator -->
+                <div class="flex items-center gap-2 px-3 py-1 bg-purple-950/90 border border-purple-500/50 rounded-xl text-xs text-purple-200 shadow-lg shadow-purple-950/40">
+                    <span class="w-2 h-2 rounded-full bg-purple-400 animate-ping"></span>
+                    <span class="font-bold hidden md:inline">Modo Superadmin (Empresa Activa)</span>
+                    <a href="{{ route('superadmin.leave') }}" class="px-2 py-0.5 rounded-lg bg-purple-800 hover:bg-purple-700 text-white font-bold text-[11px] transition-all">
+                        Salir al Panel
+                    </a>
+                </div>
+            @endif
+
             <!-- Connection Status -->
             <div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-semibold"
                  :class="isOnline ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-800/60' : 'bg-rose-950/80 text-rose-400 border border-rose-800/60 animate-pulse'">

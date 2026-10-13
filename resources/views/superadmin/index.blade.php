@@ -9,7 +9,15 @@
                 <span>Plataforma SaaS — Panel Superadministrador</span>
                 <span class="badge-neon bg-purple-950 text-purple-300 border border-purple-700 text-xs">SUPERADMIN</span>
             </h2>
-            <p class="text-xs text-slate-400 mt-0.5">Control global de licoreras registradas, planes de suscripción y estado del servicio</p>
+            <p class="text-xs text-slate-400 mt-0.5">Control global de licoreras registradas, planes de suscripción y acceso maestro a empresas</p>
+        </div>
+        <div>
+            <a href="{{ route('superadmin.tenants.create') }}" class="btn-touch bg-neon-green hover:bg-emerald-400 text-night-950 px-4 py-2 text-xs font-black shadow-lg shadow-neon-green/20 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                <span>Nueva Empresa / Licorera</span>
+            </a>
         </div>
     </div>
 
@@ -79,12 +87,34 @@
                             </td>
                             <td class="py-3 px-2 font-mono text-slate-400">{{ $t->created_at->format('d/m/Y') }}</td>
                             <td class="py-3 px-2 text-right">
-                                <form action="{{ route('superadmin.tenants.toggle', $t->id) }}" method="POST" class="inline">
-                                    @csrf
-                                    <button type="submit" class="px-3 py-1.5 rounded-xl text-xs font-bold border transition-all {{ $t->status === 'active' ? 'bg-rose-950/80 hover:bg-rose-900 border-rose-800 text-rose-300' : 'bg-emerald-950/80 hover:bg-emerald-900 border-emerald-800 text-emerald-300' }}">
-                                        {{ $t->status === 'active' ? 'Suspender Negocio' : 'Reactivar Negocio' }}
-                                    </button>
-                                </form>
+                                <div class="flex items-center justify-end gap-1.5">
+                                    <!-- Enter / Impersonate Button -->
+                                    <form action="{{ route('superadmin.tenants.enter', $t->id) }}" method="POST" class="inline">
+                                        @csrf
+                                        <button type="submit" class="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-neon-cyan/20 hover:bg-neon-cyan/30 text-neon-cyan border border-neon-cyan/40 transition-all flex items-center gap-1" title="Entrar y gestionar esta empresa">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                                            </svg>
+                                            <span>Acceder</span>
+                                        </button>
+                                    </form>
+
+                                    <!-- Edit Button -->
+                                    <a href="{{ route('superadmin.tenants.edit', $t->id) }}" class="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-night-800 hover:bg-night-750 text-slate-300 border border-night-700 transition-all flex items-center gap-1" title="Editar empresa">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                        </svg>
+                                        <span>Editar</span>
+                                    </a>
+
+                                    <!-- Toggle Status Button -->
+                                    <form action="{{ route('superadmin.tenants.toggle', $t->id) }}" method="POST" class="inline">
+                                        @csrf
+                                        <button type="submit" class="px-2.5 py-1.5 rounded-xl text-xs font-bold border transition-all {{ $t->status === 'active' ? 'bg-rose-950/80 hover:bg-rose-900 border-rose-800 text-rose-300' : 'bg-emerald-950/80 hover:bg-emerald-900 border-emerald-800 text-emerald-300' }}">
+                                            {{ $t->status === 'active' ? 'Suspender' : 'Reactivar' }}
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @empty
