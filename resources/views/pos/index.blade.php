@@ -1,22 +1,22 @@
 @extends('layouts.app', ['title' => 'Venta Rápida POS'])
 
 @section('content')
-<div class="h-full flex flex-col lg:flex-row gap-3 -m-3 sm:-m-4 p-3 sm:p-4 overflow-hidden relative"
+<div class="h-full flex flex-col lg:flex-row gap-4 -m-3 sm:-m-4 lg:-m-6 p-3 sm:p-4 lg:p-6 overflow-hidden relative"
      x-data="posApp()">
 
     <!-- LEFT / MAIN: Catalog & Products Area -->
-    <div class="flex-1 flex flex-col h-full overflow-hidden bg-night-900/60 border border-night-800/80 rounded-2xl p-2.5 sm:p-3">
+    <div class="flex-1 flex flex-col h-full overflow-hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-3 sm:p-4 shadow-sm">
         
         <!-- Cash Session Check Alert -->
         @if(!$openCashSession)
-            <div class="mb-3 p-3 bg-amber-950/80 border border-amber-500/40 rounded-xl text-amber-300 flex items-center justify-between text-xs sm:text-sm">
+            <div class="mb-3 p-3 bg-amber-50 border border-amber-200 dark:bg-amber-950/80 dark:border-amber-500/40 rounded-2xl text-amber-800 dark:text-amber-300 flex items-center justify-between text-xs sm:text-sm">
                 <div class="flex items-center gap-2">
-                    <svg class="w-5 h-5 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                     </svg>
                     <span><strong>Atención:</strong> No tienes turno de caja abierto. Debes abrir caja para registrar ventas.</span>
                 </div>
-                <a href="{{ route('cash.index') }}" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-night-950 font-bold rounded-lg text-xs shrink-0">
+                <a href="{{ route('cash.index') }}" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-white font-bold rounded-xl text-xs shrink-0 shadow-sm">
                     Abrir Caja &rarr;
                 </a>
             </div>
@@ -25,79 +25,79 @@
         <!-- Search Bar, Table Indicator & Mobile Cart Button -->
         <div class="flex items-center gap-2 mb-3">
             <div class="relative flex-1">
-                <input type="text" x-model="search" placeholder="Buscar por nombre, código o SKU..."
-                       class="w-full bg-night-850 border border-night-750 text-white rounded-xl pl-10 pr-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-neon-green">
+                <input type="text" x-model="search" placeholder="Buscar por nombre o categoría..."
+                       class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white rounded-2xl pl-10 pr-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
                 <svg class="w-4 h-4 sm:w-5 sm:h-5 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                 </svg>
             </div>
 
-            <!-- Mobile Cart Button (Visible on screens < lg) -->
+            <!-- Mobile Cart Drawer Trigger (Screens < lg) -->
             <button type="button" @click="mobileCartOpen = true"
-                    class="lg:hidden flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-neon-green text-night-950 font-black text-xs shadow-md shrink-0">
+                    class="lg:hidden flex items-center gap-2 px-3.5 py-2.5 rounded-2xl bg-emerald-600 text-white font-bold text-xs shadow-md shadow-emerald-600/30 shrink-0 active:scale-95">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
                 </svg>
-                <span class="font-mono font-bold" x-text="cart.reduce((sum, i) => sum + i.quantity, 0)"></span>
+                <span class="font-mono" x-text="cart.reduce((sum, i) => sum + i.quantity, 0)"></span>
             </button>
 
             <button type="button" @click="selectedCategory = 'all'"
-                    class="hidden sm:inline-flex px-3 py-2.5 rounded-xl border text-xs font-bold uppercase transition-all"
-                    :class="selectedCategory === 'all' ? 'bg-neon-green text-night-950 border-neon-green' : 'bg-night-850 text-slate-300 border-night-750'">
+                    class="hidden sm:inline-flex px-3.5 py-2.5 rounded-2xl border text-xs font-bold uppercase transition-all"
+                    :class="selectedCategory === 'all' ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'">
                 Todos
             </button>
         </div>
 
         <!-- Horizontal Scrollable Categories -->
-        <div class="flex items-center gap-2 overflow-x-auto pb-2 shrink-0 select-none no-scrollbar">
+        <div class="flex items-center gap-2 overflow-x-auto pb-2 shrink-0 select-none">
             <button type="button" @click="selectedCategory = 'all'"
                     class="sm:hidden px-3 py-1.5 rounded-xl border text-xs font-bold uppercase transition-all shrink-0"
-                    :class="selectedCategory === 'all' ? 'bg-neon-green text-night-950 border-neon-green' : 'bg-night-850 text-slate-300 border-night-750'">
+                    :class="selectedCategory === 'all' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'">
                 Todos
             </button>
             @foreach($categories as $cat)
                 <button type="button" @click="selectedCategory = '{{ $cat->id }}'"
                         class="px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl border text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0"
-                        :class="selectedCategory === '{{ $cat->id }}' ? 'bg-neon-cyan text-night-950 border-neon-cyan shadow-lg shadow-neon-cyan/20' : 'bg-night-850 text-slate-300 border-night-750 hover:bg-night-800'">
+                        :class="selectedCategory === '{{ $cat->id }}' ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-750'">
                     <span>{{ $cat->name }}</span>
                 </button>
             @endforeach
         </div>
 
         <!-- Products Grid with internal scroll -->
-        <div class="flex-1 overflow-y-auto pr-1 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-2 sm:gap-2.5 mt-2">
+        <div class="flex-1 overflow-y-auto pr-1 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-2.5 sm:gap-3 mt-2">
             <template x-for="product in filteredProducts" :key="product.id">
-                <div class="card-night p-2.5 sm:p-3 flex flex-col justify-between border-night-750/60 hover:border-night-600 transition-all relative group"
+                <div class="bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between hover:border-emerald-400 dark:hover:border-emerald-600 transition-all relative group shadow-sm"
                      :class="product.stock <= 0 ? 'opacity-50' : ''">
 
                     <div>
                         <!-- Header / Badges -->
                         <div class="flex items-start justify-between gap-1 mb-1.5">
                             <span class="text-[9px] sm:text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 truncate" x-text="product.category ? product.category.name : ''"></span>
-                            <span class="badge-neon text-[9px] sm:text-[10px] py-0.5 px-1.5"
-                                  :class="product.stock <= 0 ? 'bg-rose-950 text-rose-400 border border-rose-800' : (product.stock <= product.stock_min ? 'bg-amber-950 text-amber-400 border border-amber-800' : 'bg-emerald-950 text-emerald-400 border border-emerald-800')">
+                            <span class="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider"
+                                  :class="product.stock <= 0 ? 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-400 border border-rose-200 dark:border-rose-800' : (product.stock <= product.stock_min ? 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-400 border border-amber-200 dark:border-amber-800' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800')">
                                 <span x-text="product.stock <= 0 ? 'Agotado' : product.stock + ' disp.'"></span>
                             </span>
                         </div>
 
                         <!-- Product Name -->
-                        <h3 class="text-xs sm:text-sm font-bold text-white leading-tight line-clamp-2" x-text="product.name"></h3>
+                        <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white leading-tight line-clamp-2" x-text="product.name"></h3>
 
                         <!-- Rule description -->
                         <template x-if="product.is_liquor">
-                            <span class="inline-block mt-1 text-[9px] sm:text-[10px] text-amber-400/90 font-semibold">🍾 Botella completa</span>
+                            <span class="inline-block mt-1 text-[9px] sm:text-[10px] text-amber-600 dark:text-amber-400 font-semibold">🍾 Botella completa</span>
                         </template>
                     </div>
 
                     <!-- Presentations & Price Buttons -->
-                    <div class="mt-2.5 pt-2 border-t border-night-800/80">
+                    <div class="mt-2.5 pt-2 border-t border-slate-200 dark:border-slate-800">
                         <!-- Single Unit Price Button -->
                         <button type="button"
                                 @click="addToCart(product, null)"
                                 :disabled="product.stock <= 0"
-                                class="w-full btn-touch min-h-[42px] sm:min-h-[46px] py-1.5 sm:py-2 bg-night-800 hover:bg-neon-green hover:text-night-950 text-white font-bold text-xs sm:text-sm rounded-xl border border-night-700/80 transition-all flex items-center justify-between px-2.5 sm:px-3 active:scale-95">
+                                class="w-full btn-touch min-h-[42px] sm:min-h-[44px] py-1.5 sm:py-2 bg-white dark:bg-slate-800 hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-600 text-slate-800 dark:text-white font-bold text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-slate-700 transition-all flex items-center justify-between px-2.5 sm:px-3 active:scale-95 shadow-sm">
                             <span x-text="product.base_unit || 'Unidad'"></span>
-                            <span class="font-mono text-neon-green group-hover:text-night-950" x-text="formatMoney(product.price_sell)"></span>
+                            <span class="font-mono text-emerald-600 dark:text-emerald-400 group-hover:text-white" x-text="formatMoney(product.price_sell)"></span>
                         </button>
 
                         <!-- Extra Presentations for Beers (Six-Pack, Caja 24) -->
@@ -107,9 +107,9 @@
                                     <button type="button"
                                             @click="addToCart(product, pres)"
                                             :disabled="product.stock < pres.conversion_factor"
-                                            class="py-1 px-1.5 bg-night-850 hover:bg-neon-cyan hover:text-night-950 text-slate-200 font-semibold text-[10px] sm:text-[11px] rounded-lg border border-night-750 transition-all flex flex-col items-center justify-center">
+                                            class="py-1 px-1.5 bg-white dark:bg-slate-800 hover:bg-cyan-600 hover:text-white dark:hover:bg-cyan-600 text-slate-700 dark:text-slate-200 font-semibold text-[10px] sm:text-[11px] rounded-lg border border-slate-200 dark:border-slate-700 transition-all flex flex-col items-center justify-center">
                                         <span class="truncate max-w-full" x-text="pres.name"></span>
-                                        <span class="font-mono text-[9px] sm:text-[10px] text-neon-cyan" x-text="formatMoney(pres.sale_price)"></span>
+                                        <span class="font-mono text-[9px] sm:text-[10px] text-cyan-600 dark:text-cyan-400" x-text="formatMoney(pres.sale_price)"></span>
                                     </button>
                                 </template>
                             </div>
@@ -122,26 +122,26 @@
 
     <!-- Mobile Cart Drawer Backdrop -->
     <div x-show="mobileCartOpen" @click="mobileCartOpen = false"
-         class="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm transition-opacity"
+         class="fixed inset-0 bg-slate-900/60 z-40 lg:hidden backdrop-blur-sm transition-opacity"
          style="display: none;"></div>
 
-    <!-- RIGHT: Cart & Checkout Sidebar (Tactile responsive desktop / tablet & drawer for mobile) -->
-    <div class="fixed inset-y-0 right-0 z-50 w-full sm:w-96 bg-night-900 border-l border-night-800 p-3.5 shadow-2xl flex flex-col lg:static lg:w-96 lg:h-full lg:border lg:rounded-2xl shrink-0 transition-transform duration-300"
+    <!-- RIGHT: Cart & Checkout Sidebar (Desktop sticky & Mobile slide-over drawer) -->
+    <div class="fixed inset-y-0 right-0 z-50 w-full sm:w-96 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 p-4 shadow-2xl flex flex-col lg:static lg:w-96 lg:h-full lg:border lg:rounded-3xl lg:shadow-sm shrink-0 transition-transform duration-300"
          :class="mobileCartOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'">
         
         <!-- Cart Header: Table or Counter Mode -->
-        <div class="flex items-center justify-between pb-3 border-b border-night-800">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
             <div>
                 <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Destino de la Venta</span>
                 <div class="flex items-center gap-1.5 mt-0.5">
-                    <span class="w-2.5 h-2.5 rounded-full bg-neon-green"></span>
-                    <span class="text-sm font-black text-white" x-text="selectedTable ? 'Mesa ' + selectedTable.name : 'Venta de Mostrador'"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                    <span class="text-sm font-black text-slate-900 dark:text-white" x-text="selectedTable ? 'Mesa ' + selectedTable.name : 'Venta de Mostrador'"></span>
                 </div>
             </div>
 
             <div class="flex items-center gap-2">
                 <!-- Table Selector Modal Trigger -->
-                <button type="button" @click="showTableModal = true" class="px-2.5 py-1.5 bg-night-800 hover:bg-night-750 text-slate-300 rounded-xl text-xs font-semibold border border-night-750 flex items-center gap-1">
+                <button type="button" @click="showTableModal = true" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 flex items-center gap-1">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
                     </svg>
@@ -149,7 +149,7 @@
                 </button>
 
                 <!-- Mobile Close Cart Button -->
-                <button type="button" @click="mobileCartOpen = false" class="lg:hidden p-1.5 rounded-xl bg-night-800 text-slate-400 hover:text-white">
+                <button type="button" @click="mobileCartOpen = false" class="lg:hidden p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-800 dark:hover:text-white">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -160,36 +160,36 @@
         <!-- Cart Items List (Internal scroll) -->
         <div class="flex-1 overflow-y-auto py-2 space-y-2 pr-1">
             <template x-if="cart.length === 0">
-                <div class="h-full flex flex-col items-center justify-center text-center p-6 text-slate-500">
-                    <svg class="w-12 h-12 mb-2 text-night-750" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="h-full flex flex-col items-center justify-center text-center p-6 text-slate-400">
+                    <svg class="w-12 h-12 mb-2 text-slate-300 dark:text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
                     </svg>
-                    <p class="text-xs font-semibold">El carrito está vacío</p>
-                    <p class="text-[11px] text-slate-600 mt-1">Selecciona productos del catálogo para comenzar la orden</p>
+                    <p class="text-xs font-semibold text-slate-600 dark:text-slate-300">El carrito está vacío</p>
+                    <p class="text-[11px] text-slate-400 mt-1">Toca productos del catálogo para añadir a la orden</p>
                 </div>
             </template>
 
             <template x-for="(item, idx) in cart" :key="idx">
-                <div class="p-2.5 bg-night-850 border border-night-750 rounded-xl flex items-center justify-between gap-2">
+                <div class="p-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl flex items-center justify-between gap-2">
                     <div class="flex-1 min-w-0">
-                        <p class="text-xs font-bold text-white truncate" x-text="item.name"></p>
-                        <p class="text-[11px] text-slate-400">
-                            <span class="text-neon-cyan" x-text="item.presentation_name"></span> &bull; 
+                        <p class="text-xs font-bold text-slate-900 dark:text-white truncate" x-text="item.name"></p>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400">
+                            <span class="text-cyan-600 dark:text-cyan-400 font-semibold" x-text="item.presentation_name"></span> &bull; 
                             <span x-text="formatMoney(item.unit_price)"></span>
                         </p>
                     </div>
 
                     <!-- Stepper & Subtotal -->
                     <div class="flex items-center gap-2">
-                        <div class="flex items-center bg-night-900 border border-night-750 rounded-lg overflow-hidden">
-                            <button type="button" @click="decreaseQty(idx)" class="w-8 h-8 flex items-center justify-center text-slate-300 hover:bg-night-800 font-bold active:scale-95">-</button>
-                            <span class="w-8 text-center text-xs font-mono font-bold text-white" x-text="item.quantity"></span>
-                            <button type="button" @click="increaseQty(idx)" class="w-8 h-8 flex items-center justify-center text-slate-300 hover:bg-night-800 font-bold active:scale-95">+</button>
+                        <div class="flex items-center bg-white dark:bg-slate-850 border border-slate-300 dark:border-slate-700 rounded-xl overflow-hidden shadow-sm">
+                            <button type="button" @click="decreaseQty(idx)" class="w-7 h-7 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-bold active:scale-95">-</button>
+                            <span class="w-7 text-center text-xs font-mono font-bold text-slate-900 dark:text-white" x-text="item.quantity"></span>
+                            <button type="button" @click="increaseQty(idx)" class="w-7 h-7 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-bold active:scale-95">+</button>
                         </div>
 
-                        <span class="w-16 text-right text-xs font-mono font-bold text-neon-green" x-text="formatMoney(item.unit_price * item.quantity)"></span>
+                        <span class="w-16 text-right text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400" x-text="formatMoney(item.unit_price * item.quantity)"></span>
 
-                        <button type="button" @click="removeFromCart(idx)" class="text-slate-500 hover:text-rose-400 p-1">
+                        <button type="button" @click="removeFromCart(idx)" class="text-slate-400 hover:text-rose-500 p-1">
                             &times;
                         </button>
                     </div>
@@ -198,51 +198,51 @@
         </div>
 
         <!-- Totals & Big Checkout Button -->
-        <div class="pt-3 border-t border-night-800 space-y-2">
-            <div class="flex justify-between text-xs text-slate-400">
+        <div class="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-2">
+            <div class="flex justify-between text-xs text-slate-500 dark:text-slate-400">
                 <span>Subtotal</span>
-                <span class="font-mono text-slate-200" x-text="formatMoney(cartSubtotal)"></span>
+                <span class="font-mono text-slate-800 dark:text-slate-200 font-bold" x-text="formatMoney(cartSubtotal)"></span>
             </div>
 
-            <div class="flex justify-between items-baseline pt-1 border-t border-night-800/60">
-                <span class="text-sm font-bold text-white">TOTAL A COBRAR</span>
-                <span class="text-2xl font-black font-mono text-neon-green" x-text="formatMoney(cartTotal)"></span>
+            <div class="flex justify-between items-baseline pt-1 border-t border-slate-200 dark:border-slate-800">
+                <span class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">TOTAL A COBRAR</span>
+                <span class="text-2xl font-black font-mono text-emerald-600 dark:text-emerald-400" x-text="formatMoney(cartTotal)"></span>
             </div>
 
-            <!-- Cobrar Action Button (>= 60px touch target) -->
+            <!-- Cobrar Action Button -->
             <button type="button"
                     @click="openPaymentModal()"
                     :disabled="cart.length === 0 || isProcessing"
-                    class="w-full btn-touch bg-gradient-to-r from-neon-green to-emerald-400 hover:from-neon-green hover:to-emerald-300 active:scale-95 text-night-950 font-black text-lg shadow-xl shadow-neon-green/20 disabled:opacity-40 disabled:cursor-not-allowed transition-all">
+                    class="w-full btn-touch bg-emerald-600 hover:bg-emerald-500 active:scale-98 text-white font-black text-base rounded-2xl shadow-lg shadow-emerald-600/30 disabled:opacity-40 disabled:cursor-not-allowed transition-all">
                 <span x-show="!isProcessing" x-text="'COBRAR ' + formatMoney(cartTotal)"></span>
                 <span x-show="isProcessing">PROCESANDO...</span>
             </button>
 
             <button type="button" @click="clearCart()" :disabled="cart.length === 0"
-                    class="w-full py-2 text-xs font-semibold text-slate-400 hover:text-rose-400 transition-all text-center">
+                    class="w-full py-1.5 text-xs font-semibold text-slate-400 hover:text-rose-600 transition-all text-center">
                 Limpiar Carrito
             </button>
         </div>
     </div>
 
     <!-- Modal 1: Table Selector -->
-    <div x-show="showTableModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" style="display: none;">
-        <div class="bg-night-900 border border-night-800 rounded-3xl p-5 max-w-lg w-full shadow-2xl">
-            <div class="flex items-center justify-between pb-3 border-b border-night-800 mb-4">
-                <h3 class="text-base font-bold text-white">Seleccionar Mesa</h3>
-                <button type="button" @click="showTableModal = false" class="text-slate-400 hover:text-white">&times;</button>
+    <div x-show="showTableModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" style="display: none;">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 max-w-lg w-full shadow-2xl">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-4">
+                <h3 class="text-base font-bold text-slate-900 dark:text-white">Seleccionar Mesa</h3>
+                <button type="button" @click="showTableModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-white text-xl">&times;</button>
             </div>
 
             <div class="grid grid-cols-4 gap-2 mb-4">
                 <button type="button" @click="selectedTable = null; showTableModal = false"
-                        class="p-3 rounded-xl border border-night-750 text-center font-bold text-xs"
-                        :class="selectedTable === null ? 'bg-neon-green text-night-950' : 'bg-night-850 text-white'">
+                        class="p-3 rounded-xl border text-center font-bold text-xs"
+                        :class="selectedTable === null ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-white border-slate-200 dark:border-slate-700'">
                     Mostrador
                 </button>
                 @foreach($tables as $t)
                     <button type="button" @click="selectedTable = {{ json_encode($t) }}; showTableModal = false"
                             class="p-3 rounded-xl border text-center font-bold text-xs transition-all"
-                            :class="{{ $t->status === 'occupied' ? 'true' : 'false' }} ? 'bg-amber-950/80 border-amber-600/50 text-amber-300' : 'bg-emerald-950/80 border-emerald-600/50 text-emerald-300'">
+                            :class="{{ $t->status === 'occupied' ? 'true' : 'false' }} ? 'bg-amber-50 dark:bg-amber-950/80 border-amber-300 dark:border-amber-600/50 text-amber-800 dark:text-amber-300' : 'bg-emerald-50 dark:bg-emerald-950/80 border-emerald-300 dark:border-emerald-600/50 text-emerald-800 dark:text-emerald-300'">
                         {{ $t->name }}
                         <span class="block text-[10px] font-normal uppercase">{{ $t->status === 'occupied' ? 'Ocupada' : 'Libre' }}</span>
                     </button>
@@ -251,17 +251,17 @@
         </div>
     </div>
 
-    <!-- Modal 2: Payment / Checkout Modal (Mixed Payments, Change Calculator) -->
-    <div x-show="showPaymentModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" style="display: none;">
-        <div class="bg-night-900 border border-night-800 rounded-3xl p-6 max-w-xl w-full shadow-2xl max-h-[90vh] flex flex-col">
+    <!-- Modal 2: Payment / Checkout Modal -->
+    <div x-show="showPaymentModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" style="display: none;">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 max-w-xl w-full shadow-2xl max-h-[90vh] flex flex-col">
             
             <!-- Modal Header -->
-            <div class="flex items-center justify-between pb-3 border-b border-night-800">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
                 <div>
-                    <h3 class="text-lg font-black text-white">Completar Cobro</h3>
-                    <p class="text-xs text-slate-400">Total a pagar: <strong class="text-neon-green font-mono text-sm" x-text="formatMoney(cartTotal)"></strong></p>
+                    <h3 class="text-lg font-black text-slate-900 dark:text-white">Completar Cobro</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Total a pagar: <strong class="text-emerald-600 dark:text-emerald-400 font-mono text-sm" x-text="formatMoney(cartTotal)"></strong></p>
                 </div>
-                <button type="button" @click="showPaymentModal = false" class="text-slate-400 hover:text-white text-xl">&times;</button>
+                <button type="button" @click="showPaymentModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-white text-xl">&times;</button>
             </div>
 
             <!-- Payment Methods Tabs -->
@@ -269,7 +269,7 @@
                 @foreach($paymentMethods as $pm)
                     <button type="button" @click="selectedMethodId = {{ $pm->id }}; isCashMethod = {{ $pm->is_cash ? 'true' : 'false' }}"
                             class="px-3.5 py-2.5 rounded-xl border text-xs font-bold whitespace-nowrap transition-all"
-                            :class="selectedMethodId === {{ $pm->id }} ? 'bg-neon-green text-night-950 border-neon-green font-black shadow-lg shadow-neon-green/20' : 'bg-night-850 text-slate-300 border-night-750'">
+                            :class="selectedMethodId === {{ $pm->id }} ? 'bg-emerald-600 text-white border-emerald-600 font-black shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700'">
                         {{ $pm->name }}
                     </button>
                 @endforeach
@@ -279,23 +279,23 @@
             <template x-if="isCashMethod">
                 <div class="space-y-3 mb-4">
                     <div class="flex items-center gap-2">
-                        <button type="button" @click="setCashReceived(cartTotal)" class="flex-1 py-2 bg-night-800 border border-night-750 rounded-xl text-xs font-bold text-white hover:bg-night-750">
+                        <button type="button" @click="setCashReceived(cartTotal)" class="flex-1 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-800 dark:text-white hover:bg-slate-200">
                             Efectivo Exacto
                         </button>
-                        <button type="button" @click="setCashReceived(20000)" class="flex-1 py-2 bg-night-800 border border-night-750 rounded-xl text-xs font-bold text-white hover:bg-night-750">$ 20.000</button>
-                        <button type="button" @click="setCashReceived(50000)" class="flex-1 py-2 bg-night-800 border border-night-750 rounded-xl text-xs font-bold text-white hover:bg-night-750">$ 50.000</button>
-                        <button type="button" @click="setCashReceived(100000)" class="flex-1 py-2 bg-night-800 border border-night-750 rounded-xl text-xs font-bold text-white hover:bg-night-750">$ 100.000</button>
+                        <button type="button" @click="setCashReceived(20000)" class="flex-1 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-800 dark:text-white hover:bg-slate-200">$ 20.000</button>
+                        <button type="button" @click="setCashReceived(50000)" class="flex-1 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-800 dark:text-white hover:bg-slate-200">$ 50.000</button>
+                        <button type="button" @click="setCashReceived(100000)" class="flex-1 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-800 dark:text-white hover:bg-slate-200">$ 100.000</button>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Efectivo Recibido</label>
+                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Efectivo Recibido</label>
                             <input type="number" x-model.number="cashReceived"
-                                   class="w-full bg-night-850 border border-night-750 text-white font-mono text-lg font-bold rounded-xl px-3 py-2.5 focus:border-neon-green focus:outline-none">
+                                   class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-mono text-lg font-bold rounded-xl px-3 py-2.5 focus:border-emerald-500 focus:outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Cambio / Vueltas</label>
-                            <div class="w-full bg-night-950 border border-night-800 text-neon-green font-mono text-lg font-black rounded-xl px-3 py-2.5 flex items-center justify-between">
+                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Cambio / Vueltas</label>
+                            <div class="w-full bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 font-mono text-lg font-black rounded-xl px-3 py-2.5 flex items-center justify-between">
                                 <span x-text="formatMoney(cashChange)"></span>
                             </div>
                         </div>
@@ -306,20 +306,20 @@
             <!-- Electronic / Voucher Reference -->
             <template x-if="!isCashMethod">
                 <div class="mb-4">
-                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Referencia / Comprobante (Opcional)</label>
+                    <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Referencia / Comprobante (Opcional)</label>
                     <input type="text" x-model="paymentReference" placeholder="Ej: Aprobación #123456"
-                           class="w-full bg-night-850 border border-night-750 text-white rounded-xl px-3 py-2.5 text-sm focus:border-neon-green focus:outline-none">
+                           class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-3 py-2.5 text-sm focus:border-emerald-500 focus:outline-none">
                 </div>
             </template>
 
             <!-- Action Buttons -->
-            <div class="pt-4 border-t border-night-800 flex gap-3">
-                <button type="button" @click="showPaymentModal = false" class="btn-touch flex-1 bg-night-800 text-slate-300 hover:text-white font-bold text-sm">
+            <div class="pt-4 border-t border-slate-200 dark:border-slate-800 flex gap-3">
+                <button type="button" @click="showPaymentModal = false" class="btn-touch flex-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 font-bold text-sm">
                     Cancelar
                 </button>
                 <button type="button" @click="confirmPayment()"
                         :disabled="isProcessing || (isCashMethod && cashReceived < cartTotal)"
-                        class="btn-touch flex-[2] bg-gradient-to-r from-neon-green to-emerald-400 hover:from-neon-green hover:to-emerald-300 text-night-950 font-black text-base shadow-xl shadow-neon-green/30 disabled:opacity-40">
+                        class="btn-touch flex-[2] bg-emerald-600 hover:bg-emerald-500 active:scale-98 text-white font-black text-base shadow-lg shadow-emerald-600/30 disabled:opacity-40">
                     <span x-show="!isProcessing">CONFIRMAR VENTA</span>
                     <span x-show="isProcessing">REGISTRANDO...</span>
                 </button>

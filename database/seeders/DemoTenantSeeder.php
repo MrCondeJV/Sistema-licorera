@@ -23,12 +23,12 @@ class DemoTenantSeeder extends Seeder
     {
         // 1. Create Superadmin platform user
         $superAdmin = User::firstOrCreate(
-            ['email' => 'superadmin@lanoche.pos'],
+            ['email' => 'superadmin@licorerapos.com'],
             [
-                'name' => 'Superadministrador La Noche',
+                'name' => 'Super Administrador',
                 'phone' => '3001112233',
                 'pin_hash' => Hash::make('9999'),
-                'password' => Hash::make('SuperLaNoche2026*'),
+                'password' => Hash::make('Admin1234*'),
                 'is_superadmin' => true,
                 'is_active' => true,
             ]
@@ -37,14 +37,14 @@ class DemoTenantSeeder extends Seeder
         // 2. Register main demo liquor store via TenantService
         $tenantService = new TenantService();
         $result = $tenantService->registerBusiness([
-            'business_name' => 'Licorera La Noche - Sede Parque Lleras',
+            'business_name' => 'Licorera Central - Sede Principal',
             'admin_name' => 'Carlos Administrador',
-            'email' => 'admin@lanoche.pos',
+            'email' => 'admin@licorerapos.com',
             'phone' => '3104567890',
             'tax_id' => '901.458.789-3',
             'address' => 'Carrera 37A # 8A - 20, Medellín',
             'pin' => '1234',
-            'password' => 'Admin2026*',
+            'password' => 'Admin1234*',
         ]);
 
         $tenant = $result['tenant'];
@@ -58,9 +58,10 @@ class DemoTenantSeeder extends Seeder
         // 3. Create Cashier user (PIN: 2222)
         $cashierUser = User::create([
             'name' => 'Valentina Cajera',
-            'email' => 'cajero@lanoche.pos',
+            'email' => 'cajero@licorerapos.com',
             'phone' => '3123456781',
             'pin_hash' => Hash::make('2222'),
+            'password' => Hash::make('Cajero1234*'),
             'is_superadmin' => false,
             'is_active' => true,
         ]);
@@ -74,9 +75,10 @@ class DemoTenantSeeder extends Seeder
         // 4. Create Waiter user (PIN: 3333)
         $waiterUser = User::create([
             'name' => 'Mateo Mesero',
-            'email' => 'mesero@lanoche.pos',
+            'email' => 'mesero@licorerapos.com',
             'phone' => '3145678902',
             'pin_hash' => Hash::make('3333'),
+            'password' => Hash::make('Mesero1234*'),
             'is_superadmin' => false,
             'is_active' => true,
         ]);

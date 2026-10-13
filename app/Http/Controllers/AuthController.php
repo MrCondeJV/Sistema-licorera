@@ -35,6 +35,115 @@ class AuthController extends Controller
     }
 
     /**
+     * Authenticate via standard Email and Password credentials.
+     */
+    public function login(Request $request)
+    {
+        // If request is from PIN keypad, delegate to loginWithPin
+        if ($request->filled('pin') && !$request->filled('password')) {
+            return $this->loginWithPin($request);
+        }
+
+        $request->validate([
+            'email' => 'required|string',
+            'password' => 'required|string',
+        ], [
+            'email.required' => 'Por favor ingresa tu correo electrónico.',
+            'password.required' => 'Por favor ingresa tu contraseña.',
+        ]);
+
+        $ip = $request->ip();
+        $email = trim($request->input('email'));
+        $throttleKey = 'login_email:' . $ip . ':' . strtolower($email);
+
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            $seconds = RateLimiter::availableIn($throttleKey);
+            return back()->withInput($request->only('email', 'remember'))->withErrors([
+                'email' => "Demasiados intentos fallidos. Por seguridad, espera {$seconds} segundos.",
+            ]);
+        }
+
+        $user = User::where('email', $email)->first();
+
+        if (!$user || !Hash::check($request->input('password'), $user->password)) {
+            RateLimiter::hit($throttleKey, 900);
+
+            LoginAttempt::create([
+                'tenant_id' => null,
+                'identifier' => "EMAIL:{$email}",
+                'ip_address' => $ip,
+                'successful' => false,
+            ]);
+
+            return back()->withInput($request->only('email', 'remember'))->withErrors([
+                'email' => 'Las credenciales proporcionadas no son correctas.',
+            ]);
+        }
+
+        if (!$user->is_active) {
+            return back()->withInput($request->only('email'))->withErrors([
+                'email' => 'Tu cuenta de usuario se encuentra inactiva.',
+            ]);
+        }
+
+        RateLimiter::clear($throttleKey);
+        Auth::login($user, $request->boolean('remember'));
+
+        session([
+            'screen_locked' => false,
+            'last_activity_time' => time(),
+        ]);
+
+        // Platform Superadministrator
+        if ($user->is_superadmin) {
+            LoginAttempt::create([
+                'tenant_id' => null,
+                'user_id' => $user->id,
+                'identifier' => "SUPERADMIN:{$user->email}",
+                'ip_address' => $ip,
+                'successful' => true,
+            ]);
+
+            return redirect()->intended(route('superadmin.index'));
+        }
+
+        // Regular Tenant User (Admin, Cashier, Waiter)
+        $membership = $user->tenantUsers()->where('is_active', true)->with('tenant')->first();
+
+        if (!$membership || !$membership->tenant) {
+            Auth::logout();
+            return back()->withInput($request->only('email'))->withErrors([
+                'email' => 'No tienes un negocio activo asignado a tu usuario.',
+            ]);
+        }
+
+        $tenant = $membership->tenant;
+        if (!$tenant->isActive()) {
+            Auth::logout();
+            return back()->withInput($request->only('email'))->withErrors([
+                'email' => 'El negocio asignado se encuentra suspendido.',
+            ]);
+        }
+
+        session(['active_tenant_id' => $tenant->id]);
+        app(TenantContext::class)->setTenant($tenant);
+
+        LoginAttempt::create([
+            'tenant_id' => $tenant->id,
+            'user_id' => $user->id,
+            'identifier' => "USER:{$user->id}",
+            'ip_address' => $ip,
+            'successful' => true,
+        ]);
+
+        if (in_array($membership->role, ['cashier', 'waiter'])) {
+            return redirect()->intended(route('pos.index'));
+        }
+
+        return redirect()->intended(route('dashboard'));
+    }
+
+    /**
      * Authenticate via 4-digit PIN.
      */
     public function loginWithPin(Request $request)

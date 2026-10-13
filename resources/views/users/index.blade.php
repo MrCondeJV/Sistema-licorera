@@ -5,10 +5,10 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-            <h2 class="text-xl font-black text-white">Usuarios y Permisos de Empleados</h2>
-            <p class="text-xs text-slate-400 mt-0.5">Gestión de administradores, cajeros, meseros y PINs seguros</p>
+            <h2 class="text-xl font-black text-slate-900 dark:text-white">Usuarios y Permisos de Empleados</h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Gestión de administradores, cajeros, meseros y PINs seguros</p>
         </div>
-        <button type="button" @click="showNewUserModal = true" class="btn-touch py-2 px-4 bg-gradient-to-r from-neon-green to-emerald-400 text-night-950 text-xs font-black shadow-lg shadow-neon-green/20">
+        <button type="button" @click="showNewUserModal = true" class="btn-touch py-2 px-4 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black shadow-lg shadow-emerald-600/30 rounded-xl">
             + NUEVO EMPLEADO
         </button>
     </div>
@@ -18,7 +18,7 @@
         <div class="flex-1 overflow-y-auto">
             <div class="overflow-x-auto min-w-full">
                 <table class="w-full text-left text-xs min-w-[650px]">
-                <thead class="border-b border-night-800 text-slate-400 font-bold uppercase tracking-wider">
+                <thead class="border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">
                     <tr>
                         <th class="py-3 px-2">Nombre</th>
                         <th class="py-3 px-2">Correo / Teléfono</th>
@@ -27,34 +27,34 @@
                         <th class="py-3 px-2 text-right">Acciones</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-night-800">
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                     @foreach($memberships as $m)
                         <tr>
-                            <td class="py-3 px-2 font-bold text-white text-sm">{{ $m->user->name }}</td>
-                            <td class="py-3 px-2 text-slate-300">
+                            <td class="py-3 px-2 font-bold text-slate-900 dark:text-white text-sm">{{ $m->user->name }}</td>
+                            <td class="py-3 px-2 text-slate-600 dark:text-slate-300">
                                 <div>{{ $m->user->email ?? 'Sin correo' }}</div>
-                                <div class="text-[11px] text-slate-500 font-mono">{{ $m->user->phone ?? '' }}</div>
+                                <div class="text-[11px] text-slate-400 dark:text-slate-500 font-mono">{{ $m->user->phone ?? '' }}</div>
                             </td>
                             <td class="py-3 px-2">
-                                <span class="badge-neon {{ $m->role === 'admin' ? 'bg-purple-950 text-purple-300 border-purple-700' : ($m->role === 'cashier' ? 'bg-emerald-950 text-emerald-300 border-emerald-700' : 'bg-cyan-950 text-cyan-300 border-cyan-700') }} text-[10px]">
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold {{ $m->role === 'admin' ? 'bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-700' : ($m->role === 'cashier' ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700' : 'bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-700') }}">
                                     {{ strtoupper($m->role) }}
                                 </span>
                             </td>
                             <td class="py-3 px-2">
-                                <span class="badge-neon {{ $m->is_active ? 'bg-emerald-950 text-emerald-300 border-emerald-700' : 'bg-rose-950 text-rose-300 border-rose-700' }} text-[10px]">
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold {{ $m->is_active ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700' : 'bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-700' }}">
                                     {{ $m->is_active ? 'Activo' : 'Desactivado' }}
                                 </span>
                             </td>
                             <td class="py-3 px-2 text-right">
                                 <div class="flex items-center justify-end gap-2">
                                     <button type="button" @click="resetUserId = {{ $m->user->id }}; resetUserName = '{{ $m->user->name }}'; showResetModal = true"
-                                            class="px-2.5 py-1.5 bg-night-800 hover:bg-night-750 text-neon-cyan border border-night-750 rounded-lg text-xs font-bold">
+                                            class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-cyan-600 dark:text-cyan-400 border border-slate-200 dark:border-slate-750 rounded-lg text-xs font-bold transition-colors">
                                         Restablecer PIN
                                     </button>
 
                                     <form action="{{ route('users.toggle', $m->user->id) }}" method="POST">
                                         @csrf
-                                        <button type="submit" class="px-2.5 py-1.5 bg-night-800 hover:bg-night-750 text-slate-400 hover:text-white border border-night-750 rounded-lg text-xs font-bold">
+                                        <button type="submit" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white border border-slate-200 dark:border-slate-750 rounded-lg text-xs font-bold transition-colors">
                                             {{ $m->is_active ? 'Desactivar' : 'Activar' }}
                                         </button>
                                     </form>
@@ -69,28 +69,28 @@
     </div>
 
     <!-- Modal: New User -->
-    <div x-show="showNewUserModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" style="display: none;">
-        <div class="bg-night-900 border border-night-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl max-h-[90vh] overflow-y-auto">
-            <h3 class="text-base font-black text-white mb-1">Registrar Empleado</h3>
-            <p class="text-xs text-slate-400 mb-4">Se creará un acceso mediante PIN táctil</p>
+    <div x-show="showNewUserModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" style="display: none;">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl max-h-[90vh] overflow-y-auto">
+            <h3 class="text-base font-black text-slate-900 dark:text-white mb-1">Registrar Empleado</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Se creará un acceso mediante PIN táctil</p>
 
             <form action="{{ route('users.store') }}" method="POST">
                 @csrf
                 <div class="mb-3">
-                    <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Nombre Completo *</label>
+                    <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Nombre Completo *</label>
                     <input type="text" name="name" required placeholder="Ej: Diana Gómez" autofocus
-                           class="w-full bg-night-850 border border-night-750 text-white rounded-xl px-3 py-2 text-xs focus:border-neon-green focus:outline-none">
+                           class="input-night w-full text-xs">
                 </div>
 
                 <div class="mb-3">
-                    <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Correo Electrónico</label>
+                    <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Correo Electrónico</label>
                     <input type="email" name="email" placeholder="diana@licorera.pos"
-                           class="w-full bg-night-850 border border-night-750 text-white rounded-xl px-3 py-2 text-xs focus:border-neon-green focus:outline-none">
+                           class="input-night w-full text-xs">
                 </div>
 
                 <div class="mb-3">
-                    <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Rol Operativo *</label>
-                    <select name="role" required class="w-full bg-night-850 border border-night-750 text-white rounded-xl px-3 py-2 text-xs focus:border-neon-green focus:outline-none">
+                    <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Rol Operativo *</label>
+                    <select name="role" required class="input-night w-full text-xs">
                         <option value="cashier">Cajero (Ventas, Cobros y Caja)</option>
                         <option value="waiter">Mesero (Mesas y Cuentas)</option>
                         <option value="admin">Administrador (Control Total)</option>
@@ -98,36 +98,36 @@
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-xs font-bold uppercase text-slate-300 mb-1">PIN de Acceso (4 dígitos) *</label>
+                    <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">PIN de Acceso (4 dígitos) *</label>
                     <input type="password" name="pin" maxlength="4" pattern="\d{4}" inputmode="numeric" required placeholder="••••"
-                           class="w-full bg-night-850 border border-night-750 text-white font-mono text-center text-lg font-bold rounded-xl px-4 py-2 focus:border-neon-green focus:outline-none">
+                           class="input-night w-full font-mono text-center text-lg font-bold">
                 </div>
 
                 <div class="flex gap-2">
-                    <button type="button" @click="showNewUserModal = false" class="btn-touch flex-1 bg-night-800 text-slate-300 text-xs font-bold">Cancelar</button>
-                    <button type="submit" class="btn-touch flex-1 bg-neon-green text-night-950 text-xs font-black">CREAR</button>
+                    <button type="button" @click="showNewUserModal = false" class="btn-touch flex-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl">Cancelar</button>
+                    <button type="submit" class="btn-touch flex-1 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black shadow-lg shadow-emerald-600/30 rounded-xl">CREAR</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- Modal: Reset PIN -->
-    <div x-show="showResetModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" style="display: none;">
-        <div class="bg-night-900 border border-night-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl max-h-[90vh] overflow-y-auto">
-            <h3 class="text-base font-black text-white mb-1">Restablecer PIN</h3>
-            <p class="text-xs text-slate-400 mb-4" x-text="'Para: ' + resetUserName"></p>
+    <div x-show="showResetModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" style="display: none;">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl max-h-[90vh] overflow-y-auto">
+            <h3 class="text-base font-black text-slate-900 dark:text-white mb-1">Restablecer PIN</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-4" x-text="'Para: ' + resetUserName"></p>
 
             <form :action="'/users/' + resetUserId + '/reset-pin'" method="POST">
                 @csrf
                 <div class="mb-4">
-                    <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Nuevo PIN de 4 dígitos *</label>
+                    <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Nuevo PIN de 4 dígitos *</label>
                     <input type="password" name="new_pin" maxlength="4" pattern="\d{4}" inputmode="numeric" required placeholder="••••" autofocus
-                           class="w-full bg-night-850 border border-night-750 text-white font-mono text-center text-xl font-bold rounded-xl px-4 py-3 focus:border-neon-green focus:outline-none">
+                           class="input-night w-full font-mono text-center text-xl font-bold">
                 </div>
 
                 <div class="flex gap-2">
-                    <button type="button" @click="showResetModal = false" class="btn-touch flex-1 bg-night-800 text-slate-300 text-xs font-bold">Cancelar</button>
-                    <button type="submit" class="btn-touch flex-1 bg-neon-cyan text-night-950 text-xs font-black">CAMBIAR PIN</button>
+                    <button type="button" @click="showResetModal = false" class="btn-touch flex-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl">Cancelar</button>
+                    <button type="submit" class="btn-touch flex-1 bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-black shadow-lg shadow-cyan-600/30 rounded-xl">CAMBIAR PIN</button>
                 </div>
             </form>
         </div>

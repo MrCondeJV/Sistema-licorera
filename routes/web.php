@@ -25,7 +25,8 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'loginWithPin'])->name('login.pin');
+Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+Route::post('/login/pin', [AuthController::class, 'loginWithPin'])->name('login.pin');
 Route::get('/unlock', [AuthController::class, 'showUnlock'])->name('unlock');
 Route::post('/unlock', [AuthController::class, 'unlockWithPin'])->name('unlock.pin');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
