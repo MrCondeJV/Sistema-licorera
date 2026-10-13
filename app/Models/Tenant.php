@@ -1,0 +1,82 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
+
+class Tenant extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'uuid',
+        'name',
+        'slug',
+        'email',
+        'phone',
+        'tax_id',
+        'address',
+        'timezone',
+        'currency',
+        'status',
+        'plan_id',
+    ];
+
+    protected static function booted(): void
+    {
+        static::creating(function ($tenant) {
+            if (empty($tenant->uuid)) {
+                $tenant->uuid = (string) Str::uuid();
+            }
+            if (empty($tenant->slug)) {
+                $tenant->slug = Str::slug($tenant->name);
+            }
+        });
+    }
+
+    public function plan(): BelongsTo
+    {
+        return $this->belongsTo(Plan::class);
+    }
+
+    public function branches(): HasMany
+    {
+        return $this->hasMany(Branch::class);
+    }
+
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'tenant_user')
+            ->withPivot('role', 'is_active')
+            ->withTimestamps();
+    }
+
+    public function settings(): HasMany
+    {
+        return $this->hasMany(Setting::class);
+    }
+
+    public function getSetting(string $key, $default = null)
+    {
+        $setting = $this->settings()->where('key', $key)->first();
+        return $setting ? $setting->value : $default;
+    }
+
+    public function setSetting(string $key, $value): void
+    {
+        $this->settings()->updateOrCreate(
+            ['key' => $key],
+            ['value' => is_array($value) ? json_encode($value) : $value]
+        );
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status === 'active';
+    }
+}
