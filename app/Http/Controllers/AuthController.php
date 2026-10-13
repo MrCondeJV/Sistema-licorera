@@ -41,12 +41,47 @@ class AuthController extends Controller
     {
         $request->validate([
             'pin' => 'required|digits:4',
-            'tenant_id' => 'required|exists:tenants,id',
+            'tenant_id' => 'nullable|exists:tenants,id',
+        ], [
+            'pin.required' => 'Por favor ingresa tu PIN de 4 dígitos.',
+            'pin.digits' => 'El PIN debe ser exactamente de 4 números.',
+            'tenant_id.exists' => 'La licorera seleccionada no es válida.',
         ]);
 
         $pin = $request->input('pin');
-        $tenantId = (int) $request->input('tenant_id');
+        $tenantId = $request->input('tenant_id') ? (int) $request->input('tenant_id') : null;
         $ip = $request->ip();
+
+        // Check first if PIN belongs to a platform Superadministrator
+        $superAdmin = User::where('is_superadmin', true)->where('is_active', true)->get()
+            ->first(fn($sa) => Hash::check($pin, $sa->pin_hash));
+
+        if ($superAdmin) {
+            Auth::login($superAdmin);
+
+            session([
+                'screen_locked' => false,
+                'last_activity_time' => time(),
+            ]);
+
+            // If a specific tenant was chosen, associate context; otherwise go straight to SaaS dashboard
+            if ($tenantId) {
+                $tenant = Tenant::find($tenantId);
+                if ($tenant) {
+                    session(['active_tenant_id' => $tenant->id]);
+                    app(TenantContext::class)->setTenant($tenant);
+                }
+            }
+
+            return redirect()->intended(route('superadmin.index'));
+        }
+
+        // If not superadmin, a valid tenant is strictly required
+        if (!$tenantId) {
+            return back()->withErrors([
+                'pin' => 'Por favor selecciona la licorera a la que perteneces para ingresar.',
+            ]);
+        }
 
         // Rate limiter key based on IP and tenant
         $throttleKey = "login_pin:{$ip}:{$tenantId}";
@@ -68,7 +103,7 @@ class AuthController extends Controller
         $tenant = Tenant::findOrFail($tenantId);
 
         if (!$tenant->isActive()) {
-            return back()->withErrors(['pin' => 'Este negocio se encuentra suspendido.']);
+            return back()->withErrors(['pin' => 'Este negocio se encuentra suspendido. Comuníquese con el administrador.']);
         }
 
         // Find users with active membership in this tenant
@@ -83,17 +118,6 @@ class AuthController extends Controller
             if ($candidate && $candidate->is_active && Hash::check($pin, $candidate->pin_hash)) {
                 $authenticatedUser = $candidate;
                 break;
-            }
-        }
-
-        // Check if superadmin is logging in with master PIN
-        if (!$authenticatedUser) {
-            $superAdmins = User::where('is_superadmin', true)->where('is_active', true)->get();
-            foreach ($superAdmins as $sa) {
-                if (Hash::check($pin, $sa->pin_hash)) {
-                    $authenticatedUser = $sa;
-                    break;
-                }
             }
         }
 

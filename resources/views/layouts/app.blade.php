@@ -58,11 +58,11 @@
                     N
                 </div>
                 <div>
-                    <h1 class="text-base sm:text-lg font-black tracking-tight text-white leading-none flex items-center gap-1.5">
-                        LA NOCHE
-                        <span class="text-[10px] px-1.5 py-0.5 rounded bg-neon-green/10 text-neon-green border border-neon-green/20 font-mono font-bold uppercase tracking-wider">POS</span>
+                    <h1 class="text-base sm:text-lg font-black tracking-tight text-slate-900 dark:text-white leading-none flex items-center gap-1.5">
+                        LICORERA
+                        <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-neon-green border border-emerald-500/20 font-mono font-bold uppercase tracking-wider">POS</span>
                     </h1>
-                    <p class="text-xs text-slate-400 font-medium truncate max-w-[180px] sm:max-w-xs mt-0.5">
+                    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium truncate max-w-[180px] sm:max-w-xs mt-0.5">
                         {{ $currentTenant->name ?? 'Licorera' }}
                     </p>
                 </div>
