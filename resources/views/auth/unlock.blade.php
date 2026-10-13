@@ -1,12 +1,19 @@
 <!DOCTYPE html>
-<html lang="es" class="dark h-full">
+<html lang="es" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Desbloquear — LA NOCHE</title>
+    <script>
+        if (localStorage.getItem('pos_theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-night-950 text-slate-100 flex items-center justify-center min-h-full p-4 select-none">
+<body class="flex items-center justify-center min-h-full p-4 select-none">
     <div class="w-full max-w-sm bg-night-900 border border-night-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative"
          x-data="{
              pin: '',

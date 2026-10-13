@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es" class="dark h-full">
+<html lang="es" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="theme-color" content="#0b0f19">
+    <meta name="theme-color" content="#10b981">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>{{ $title ?? 'POS' }} — LA NOCHE</title>
@@ -12,13 +12,32 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <script>
+        // Default to light theme, allowing persistent toggle
+        if (localStorage.getItem('pos_theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-night-950 text-slate-100 flex flex-col h-full overflow-hidden select-none"
+<body class="flex flex-col h-full overflow-hidden select-none"
       x-data="{
           sidebarOpen: false,
           isOnline: navigator.onLine,
+          isDarkMode: document.documentElement.classList.contains('dark'),
           soundEnabled: localStorage.getItem('pos_sound') !== 'false',
+          toggleTheme() {
+              this.isDarkMode = !this.isDarkMode;
+              if (this.isDarkMode) {
+                  document.documentElement.classList.add('dark');
+                  localStorage.setItem('pos_theme', 'dark');
+              } else {
+                  document.documentElement.classList.remove('dark');
+                  localStorage.setItem('pos_theme', 'light');
+              }
+          },
           toggleSound() {
               this.soundEnabled = window.PosSound.toggle();
           }
@@ -69,6 +88,22 @@
                 <span class="w-2 h-2 rounded-full" :class="isOnline ? 'bg-emerald-400' : 'bg-rose-400'"></span>
                 <span class="hidden sm:inline" x-text="isOnline ? 'Online' : 'Offline'"></span>
             </div>
+
+            <!-- Theme Switcher (Light / Dark) -->
+            <button @click="toggleTheme()" class="p-2 rounded-xl bg-night-800 text-slate-300 hover:text-white transition-all min-w-[44px] min-h-[44px] flex items-center justify-center" :title="isDarkMode ? 'Cambiar a modo Claro' : 'Cambiar a modo Oscuro'">
+                <template x-if="isDarkMode">
+                    <!-- Sun icon for switching to light -->
+                    <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                    </svg>
+                </template>
+                <template x-if="!isDarkMode">
+                    <!-- Moon icon for switching to dark -->
+                    <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                    </svg>
+                </template>
+            </button>
 
             <!-- Audio Feedback Toggle -->
             <button @click="toggleSound()" class="p-2 rounded-xl bg-night-800 text-slate-300 hover:text-white transition-all min-w-[44px] min-h-[44px] flex items-center justify-center" :title="soundEnabled ? 'Sonido activado' : 'Sonido silenciado'">

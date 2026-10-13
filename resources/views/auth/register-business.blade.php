@@ -1,12 +1,19 @@
 <!DOCTYPE html>
-<html lang="es" class="dark h-full">
+<html lang="es" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar Licorera — LA NOCHE SaaS</title>
+    <script>
+        if (localStorage.getItem('pos_theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-night-950 text-slate-100 min-h-full py-10 px-4 flex flex-col items-center justify-center">
+<body class="min-h-full py-10 px-4 flex flex-col items-center justify-center">
     <div class="w-full max-w-xl bg-night-900 border border-night-800 rounded-3xl p-6 sm:p-10 shadow-2xl">
         <!-- Brand Header -->
         <div class="text-center mb-8">
