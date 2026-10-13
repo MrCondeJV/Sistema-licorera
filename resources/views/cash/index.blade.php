@@ -3,9 +3,9 @@
 @section('content')
 <div class="h-full flex flex-col space-y-4" x-data="{ showOpenModal: false, showCloseModal: false, showMovementModal: false, movementType: 'in' }">
     <!-- Header -->
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-            <h2 class="text-xl font-black text-white flex items-center gap-2">
+            <h2 class="text-xl font-black text-white flex flex-wrap items-center gap-2">
                 <span>Gestión y Arqueo de Caja</span>
                 @if($activeSession)
                     <span class="badge-neon bg-emerald-950 text-emerald-400 border border-emerald-700 text-xs">Caja Abierta</span>
@@ -16,7 +16,7 @@
             <p class="text-xs text-slate-400 mt-0.5">Control estricto de efectivo físico y segregación de medios electrónicos</p>
         </div>
 
-        <div class="flex gap-2">
+        <div class="flex flex-wrap gap-2">
             @if($activeSession)
                 <button type="button" @click="showMovementModal = true; movementType = 'in'" class="btn-touch py-2.5 px-3 bg-night-800 hover:bg-night-750 text-emerald-400 border border-night-750 text-xs font-bold">
                     + Entrada
@@ -85,36 +85,38 @@
         <div class="card-night p-4 flex-1 overflow-hidden flex flex-col">
             <h3 class="text-sm font-bold text-white mb-2">Movimientos del Turno Actual</h3>
             <div class="flex-1 overflow-y-auto pr-1">
-                <table class="w-full text-left text-xs">
-                    <thead class="border-b border-night-800 text-slate-400 font-bold uppercase tracking-wider">
-                        <tr>
-                            <th class="py-2">Hora</th>
-                            <th class="py-2">Tipo</th>
-                            <th class="py-2">Motivo</th>
-                            <th class="py-2 text-right">Monto</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-night-800">
-                        @forelse($activeSession->movements as $mov)
+                <div class="overflow-x-auto min-w-full">
+                    <table class="w-full text-left text-xs min-w-[500px]">
+                        <thead class="border-b border-night-800 text-slate-400 font-bold uppercase tracking-wider">
                             <tr>
-                                <td class="py-2.5 font-mono text-slate-400">{{ $mov->created_at->format('h:i A') }}</td>
-                                <td class="py-2.5">
-                                    <span class="badge-neon {{ $mov->movement_type === 'in' ? 'bg-emerald-950 text-emerald-300 border-emerald-700' : 'bg-rose-950 text-rose-300 border-rose-700' }} text-[10px]">
-                                        {{ $mov->movement_type === 'in' ? 'INGRESO' : 'RETIRO' }}
-                                    </span>
-                                </td>
-                                <td class="py-2.5 text-slate-200 font-medium">{{ $mov->reason }}</td>
-                                <td class="py-2.5 text-right font-mono font-bold {{ $mov->movement_type === 'in' ? 'text-emerald-400' : 'text-rose-400' }}">
-                                    {{ $mov->movement_type === 'in' ? '+' : '-' }}${{ number_format($mov->amount, 0, ',', '.') }}
-                                </td>
+                                <th class="py-2">Hora</th>
+                                <th class="py-2">Tipo</th>
+                                <th class="py-2">Motivo</th>
+                                <th class="py-2 text-right">Monto</th>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" class="py-4 text-center text-slate-500">No hay movimientos manuales en este turno.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody class="divide-y divide-night-800">
+                            @forelse($activeSession->movements as $mov)
+                                <tr>
+                                    <td class="py-2.5 font-mono text-slate-400">{{ $mov->created_at->format('h:i A') }}</td>
+                                    <td class="py-2.5">
+                                        <span class="badge-neon {{ $mov->movement_type === 'in' ? 'bg-emerald-950 text-emerald-300 border-emerald-700' : 'bg-rose-950 text-rose-300 border-rose-700' }} text-[10px]">
+                                            {{ $mov->movement_type === 'in' ? 'INGRESO' : 'RETIRO' }}
+                                        </span>
+                                    </td>
+                                    <td class="py-2.5 text-slate-200 font-medium">{{ $mov->reason }}</td>
+                                    <td class="py-2.5 text-right font-mono font-bold {{ $mov->movement_type === 'in' ? 'text-emerald-400' : 'text-rose-400' }}">
+                                        {{ $mov->movement_type === 'in' ? '+' : '-' }}${{ number_format($mov->amount, 0, ',', '.') }}
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="py-4 text-center text-slate-500">No hay movimientos manuales en este turno.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     @else
@@ -135,7 +137,7 @@
 
     <!-- Modal: Open Session -->
     <div x-show="showOpenModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" style="display: none;">
-        <div class="bg-night-900 border border-night-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl">
+        <div class="bg-night-900 border border-night-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl max-h-[90vh] overflow-y-auto">
             <h3 class="text-base font-black text-white mb-1">Apertura de Turno de Caja</h3>
             <p class="text-xs text-slate-400 mb-4">Ingresa el dinero base en efectivo disponible</p>
 
@@ -167,7 +169,7 @@
     <!-- Modal: Close Session & Blind Count Reconciliation -->
     @if($activeSession)
         <div x-show="showCloseModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" style="display: none;">
-            <div class="bg-night-900 border border-night-800 rounded-3xl p-6 max-w-md w-full shadow-2xl">
+            <div class="bg-night-900 border border-night-800 rounded-3xl p-6 max-w-md w-full shadow-2xl max-h-[90vh] overflow-y-auto">
                 <h3 class="text-base font-black text-white mb-1">Arqueo y Cierre de Turno</h3>
                 <p class="text-xs text-slate-400 mb-4">Introduce el efectivo contado físicamente en el cajón</p>
 
@@ -176,7 +178,7 @@
                     <div class="mb-4">
                         <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Efectivo Contado Físico ($ COP) *</label>
                         <input type="number" name="counted_cash" min="0" step="100" required autofocus
-                               class="w-full bg-night-850 border border-night-750 text-white font-mono font-black text-xl rounded-xl px-4 py-3 focus:border-neon-green focus:outline-none">
+                                class="w-full bg-night-850 border border-night-750 text-white font-mono font-black text-xl rounded-xl px-4 py-3 focus:border-neon-green focus:outline-none">
                     </div>
 
                     <div class="mb-4">
@@ -195,7 +197,7 @@
 
         <!-- Modal: Cash Movement In / Out -->
         <div x-show="showMovementModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" style="display: none;">
-            <div class="bg-night-900 border border-night-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl">
+            <div class="bg-night-900 border border-night-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl max-h-[90vh] overflow-y-auto">
                 <h3 class="text-base font-black text-white mb-1" x-text="movementType === 'in' ? 'Ingreso de Efectivo' : 'Retiro de Efectivo'"></h3>
                 <p class="text-xs text-slate-400 mb-4">Registra entradas o salidas manuales de dinero</p>
 

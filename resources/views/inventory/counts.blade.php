@@ -3,13 +3,13 @@
 @section('content')
 <div class="h-full flex flex-col space-y-4" x-data="{ showNewCountModal: false }">
     <!-- Header -->
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
             <h2 class="text-xl font-black text-white">Conteos Físicos de Inventario</h2>
             <p class="text-xs text-slate-400 mt-0.5">Comparación entre existencias teóricas y conteo real con ajuste auditado</p>
         </div>
 
-        <div class="flex gap-2">
+        <div class="flex flex-wrap gap-2">
             <a href="{{ route('inventory.index') }}" class="btn-touch py-2 px-3 bg-night-800 text-slate-300 text-xs font-bold">
                 &larr; Volver
             </a>
@@ -22,7 +22,8 @@
     <!-- Counts List -->
     <div class="card-night p-4 flex-1 overflow-hidden flex flex-col">
         <div class="flex-1 overflow-y-auto">
-            <table class="w-full text-left text-xs">
+            <div class="overflow-x-auto min-w-full">
+                <table class="w-full text-left text-xs min-w-[650px]">
                 <thead class="border-b border-night-800 text-slate-400 font-bold uppercase tracking-wider">
                     <tr>
                         <th class="py-3 px-2">ID</th>
@@ -64,7 +65,8 @@
                         </tr>
                     @endforelse
                 </tbody>
-            </table>
+                </table>
+            </div>
         </div>
 
         <div class="pt-3 border-t border-night-800">

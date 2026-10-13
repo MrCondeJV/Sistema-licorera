@@ -3,7 +3,7 @@
 @section('content')
 <div class="max-w-4xl mx-auto space-y-4">
     <!-- Header -->
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div class="flex items-center gap-3">
             <a href="{{ route('superadmin.index') }}" class="p-2.5 rounded-xl bg-night-800 hover:bg-night-750 text-slate-400 hover:text-white transition-all">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -11,7 +11,7 @@
                 </svg>
             </a>
             <div>
-                <h2 class="text-xl font-black text-white flex items-center gap-2">
+                <h2 class="text-xl font-black text-white flex flex-wrap items-center gap-2">
                     <span>Editar Empresa: {{ $tenant->name }}</span>
                     <span class="badge-neon bg-purple-950 text-purple-300 border border-purple-700 text-xs">SUPERADMIN</span>
                 </h2>

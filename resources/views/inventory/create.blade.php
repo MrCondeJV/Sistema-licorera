@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="max-w-3xl mx-auto py-2" x-data="{ isBeer: false, isLiquor: false }">
-    <div class="flex items-center justify-between mb-4">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
         <div>
             <h2 class="text-xl font-black text-white">Crear Nuevo Producto</h2>
             <p class="text-xs text-slate-400 mt-0.5">Configuración de inventario base y presentaciones de venta</p>

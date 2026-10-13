@@ -1,9 +1,9 @@
 @extends('layouts.app', ['title' => 'Inicio Dashboard'])
 
 @section('content')
-<div class="h-full flex flex-col space-y-4">
+<div class="space-y-4">
     <!-- Header -->
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
             <h2 class="text-xl sm:text-2xl font-black text-white">Panel Operativo — {{ $currentTenant->name ?? 'Licorera' }}</h2>
             <p class="text-xs text-slate-400 mt-0.5">Visión en tiempo real de ventas, inventario, mesas y caja</p>
@@ -17,7 +17,7 @@
     </div>
 
     <!-- Top KPI Metrics -->
-    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+    <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
         <div class="card-night p-4 border-neon-green/30 bg-neon-green/5">
             <span class="text-[10px] font-bold uppercase text-neon-green">Ventas de Hoy</span>
             <p class="text-xl sm:text-2xl font-black font-mono text-neon-green mt-1">${{ number_format($metrics['today_sales'], 0, ',', '.') }}</p>
@@ -58,12 +58,12 @@
     </div>
 
     <!-- Middle 2-Column Section: Top Products & Quick Tables Glance -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 flex-1 overflow-hidden">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <!-- Top Products Today -->
-        <div class="card-night p-4 flex flex-col overflow-hidden">
+        <div class="card-night p-4 flex flex-col min-h-[300px]">
             <h3 class="text-sm font-bold text-white mb-2">Top Productos Más Vendidos Hoy</h3>
-            <div class="flex-1 overflow-y-auto">
-                <table class="w-full text-left text-xs">
+            <div class="flex-1 overflow-x-auto min-w-full">
+                <table class="w-full text-left text-xs min-w-[320px]">
                     <thead class="border-b border-night-800 text-slate-400 font-bold uppercase">
                         <tr>
                             <th class="py-2">Producto</th>

@@ -63,7 +63,7 @@
         <div class="ticket">
             <!-- Header -->
             <div class="text-center">
-                <h1 style="font-size: 16px; font-weight: 900; margin-bottom: 4px;">{{ $sale->tenant->name ?? 'LA NOCHE' }}</h1>
+                <h1 style="font-size: 16px; font-weight: 900; margin-bottom: 4px;">{{ $sale->tenant->name ?? 'LICORERA POS' }}</h1>
                 <p>{{ $sale->tenant->tax_id ?? 'NIT: 901.458.789-3' }}</p>
                 <p>{{ $sale->tenant->address ?? 'Medellín, Colombia' }}</p>
                 <p>Tel: {{ $sale->tenant->phone ?? '310 456 7890' }}</p>

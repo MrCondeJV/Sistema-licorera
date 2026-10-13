@@ -3,7 +3,7 @@
 @section('content')
 <div class="h-full flex flex-col space-y-4">
     <!-- Header -->
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
             <h2 class="text-xl font-black text-white">Compras y Proveedores</h2>
             <p class="text-xs text-slate-400 mt-0.5">Entrada de mercancía y actualización automática de costo promedio ponderado</p>
@@ -16,7 +16,8 @@
     <!-- Purchases Table -->
     <div class="card-night p-4 flex-1 overflow-hidden flex flex-col">
         <div class="flex-1 overflow-y-auto">
-            <table class="w-full text-left text-xs">
+            <div class="overflow-x-auto min-w-full">
+                <table class="w-full text-left text-xs min-w-[650px]">
                 <thead class="border-b border-night-800 text-slate-400 font-bold uppercase tracking-wider">
                     <tr>
                         <th class="py-3 px-2">Compra #</th>
@@ -60,7 +61,8 @@
                         </tr>
                     @endforelse
                 </tbody>
-            </table>
+                </table>
+            </div>
         </div>
 
         <div class="pt-3 border-t border-night-800">

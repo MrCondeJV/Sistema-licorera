@@ -18,7 +18,7 @@
 </head>
 <body>
     <div class="header">
-        <div class="title">{{ $tenant->name ?? 'LA NOCHE' }}</div>
+        <div class="title">{{ $tenant->name ?? 'LICORERA POS' }}</div>
         <div class="subtitle">Reporte de Ventas y Rendimiento Comercial</div>
         <div style="font-size: 10px; margin-top: 5px;">Período: {{ $startDate->format('d/m/Y') }} al {{ $endDate->format('d/m/Y') }}</div>
     </div>

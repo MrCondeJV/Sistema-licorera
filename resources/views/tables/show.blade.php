@@ -2,17 +2,32 @@
 
 @section('content')
 <div class="h-full flex flex-col lg:flex-row gap-3 -m-3 sm:-m-4 p-3 sm:p-4 overflow-hidden"
-     x-data="{ showTransferModal: false, showCheckoutModal: false, selectedCategory: 'all', search: '' }">
+     x-data="{ activeTab: 'products', showTransferModal: false, showCheckoutModal: false, selectedCategory: 'all', search: '' }">
+
+    <!-- Mobile Switcher Tabs (Only visible on screens < lg) -->
+    <div class="lg:hidden flex bg-night-850 p-1 rounded-2xl border border-night-750 shrink-0">
+        <button type="button" @click="activeTab = 'products'"
+                class="flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5"
+                :class="activeTab === 'products' ? 'bg-neon-green text-night-950 shadow-md font-black' : 'text-slate-400 hover:text-white'">
+            <span>🛍️ Productos</span>
+        </button>
+        <button type="button" @click="activeTab = 'bill'"
+                class="flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5"
+                :class="activeTab === 'bill' ? 'bg-neon-cyan text-night-950 shadow-md font-black' : 'text-slate-400 hover:text-white'">
+            <span>📋 Cuenta (${{ number_format($account?->total ?? 0, 0, ',', '.') }})</span>
+        </button>
+    </div>
 
     <!-- LEFT: Add Products to this Open Account -->
-    <div class="flex-1 flex flex-col h-full overflow-hidden bg-night-900/60 border border-night-800 rounded-2xl p-3">
+    <div class="flex-1 flex-col h-full overflow-hidden bg-night-900/60 border border-night-800 rounded-2xl p-3"
+         :class="activeTab === 'products' ? 'flex' : 'hidden lg:flex'">
         <div class="flex items-center justify-between mb-2">
             <h3 class="text-sm font-black text-white uppercase tracking-wider">Agregar Productos a la Mesa</h3>
-            <span class="text-xs text-neon-cyan font-bold">Precios congelados al momento de agregar</span>
+            <span class="text-xs text-neon-cyan font-bold">Precios congelados</span>
         </div>
 
         <!-- Categories -->
-        <div class="flex items-center gap-2 overflow-x-auto pb-2 shrink-0 select-none">
+        <div class="flex items-center gap-2 overflow-x-auto pb-2 shrink-0 select-none no-scrollbar">
             <button type="button" @click="selectedCategory = 'all'"
                     class="px-3 py-1.5 rounded-xl border text-xs font-bold whitespace-nowrap"
                     :class="selectedCategory === 'all' ? 'bg-neon-green text-night-950 border-neon-green' : 'bg-night-850 text-slate-300 border-night-750'">
@@ -74,7 +89,8 @@
     </div>
 
     <!-- RIGHT: Active Tab Consumption Detail & Actions -->
-    <div class="w-full lg:w-96 flex flex-col h-full bg-night-900 border border-night-800 rounded-2xl p-4 shadow-2xl shrink-0">
+    <div class="w-full lg:w-96 flex-col h-full bg-night-900 border border-night-800 rounded-2xl p-4 shadow-2xl shrink-0"
+         :class="activeTab === 'bill' ? 'flex' : 'hidden lg:flex'">
         <!-- Account Header -->
         <div class="pb-3 border-b border-night-800 flex items-start justify-between">
             <div>
@@ -154,7 +170,7 @@
 
     <!-- Modal: Transfer Account to another Table -->
     <div x-show="showTransferModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" style="display: none;">
-        <div class="bg-night-900 border border-night-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl">
+        <div class="bg-night-900 border border-night-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl max-h-[90vh] overflow-y-auto">
             <h3 class="text-base font-black text-white mb-1">Trasladar Mesa {{ $table->name }}</h3>
             <p class="text-xs text-slate-400 mb-4">Selecciona la mesa libre a la cual se moverá todo el consumo</p>
 

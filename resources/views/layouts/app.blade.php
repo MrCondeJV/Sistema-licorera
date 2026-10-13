@@ -7,7 +7,7 @@
     <meta name="theme-color" content="#10b981">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>{{ $title ?? 'POS' }} — LA NOCHE</title>
+    <title>{{ $title ?? 'POS' }} — LICORERA POS</title>
     <link rel="manifest" href="/manifest.json">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -54,8 +54,10 @@
                 </svg>
             </button>
             <div class="flex items-center space-x-2">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-neon-green to-neon-cyan flex items-center justify-center shadow-lg shadow-neon-green/20 font-black text-night-950 text-xl tracking-tighter">
-                    N
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-neon-green to-neon-cyan flex items-center justify-center shadow-lg shadow-neon-green/20 text-night-950">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
                 </div>
                 <div>
                     <h1 class="text-base sm:text-lg font-black tracking-tight text-slate-900 dark:text-white leading-none flex items-center gap-1.5">

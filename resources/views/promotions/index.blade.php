@@ -3,7 +3,7 @@
 @section('content')
 <div class="h-full flex flex-col space-y-4" x-data="{ showNewPromoModal: false, promoType: 'happy_hour' }">
     <!-- Header -->
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
             <h2 class="text-xl font-black text-white">Promociones y Happy Hour</h2>
             <p class="text-xs text-slate-400 mt-0.5">Precios especiales por horario, cantidad y días de la semana</p>
@@ -64,7 +64,7 @@
 
     <!-- Modal: New Promo -->
     <div x-show="showNewPromoModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" style="display: none;">
-        <div class="bg-night-900 border border-night-800 rounded-3xl p-6 max-w-md w-full shadow-2xl">
+        <div class="bg-night-900 border border-night-800 rounded-3xl p-6 max-w-md w-full shadow-2xl max-h-[90vh] overflow-y-auto">
             <h3 class="text-base font-black text-white mb-1">Nueva Promoción / Happy Hour</h3>
             <p class="text-xs text-slate-400 mb-4">Los descuentos son calculados y congelados en el servidor</p>
 

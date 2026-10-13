@@ -3,7 +3,7 @@
 @section('content')
 <div class="h-full flex flex-col space-y-4" x-data="{ showNewExpenseModal: false }">
     <!-- Header -->
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
             <h2 class="text-xl font-black text-white">Gastos Operativos</h2>
             <p class="text-xs text-slate-400 mt-0.5">Control de egresos para cálculo real de utilidad operativa</p>
@@ -16,7 +16,8 @@
     <!-- Expenses Table -->
     <div class="card-night p-4 flex-1 overflow-hidden flex flex-col">
         <div class="flex-1 overflow-y-auto">
-            <table class="w-full text-left text-xs">
+            <div class="overflow-x-auto min-w-full">
+                <table class="w-full text-left text-xs min-w-[700px]">
                 <thead class="border-b border-night-800 text-slate-400 font-bold uppercase tracking-wider">
                     <tr>
                         <th class="py-3 px-2">Fecha</th>
@@ -49,7 +50,8 @@
                         </tr>
                     @endforelse
                 </tbody>
-            </table>
+                </table>
+            </div>
         </div>
 
         <div class="pt-3 border-t border-night-800">
@@ -59,7 +61,7 @@
 
     <!-- Modal: New Expense -->
     <div x-show="showNewExpenseModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" style="display: none;">
-        <div class="bg-night-900 border border-night-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl">
+        <div class="bg-night-900 border border-night-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl max-h-[90vh] overflow-y-auto">
             <h3 class="text-base font-black text-white mb-1">Registrar Gasto Operativo</h3>
             <p class="text-xs text-slate-400 mb-4">Si seleccionas pago en efectivo, se descontará de la caja abierta</p>
 

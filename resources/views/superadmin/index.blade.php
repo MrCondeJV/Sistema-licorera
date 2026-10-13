@@ -3,9 +3,9 @@
 @section('content')
 <div class="h-full flex flex-col space-y-4">
     <!-- Header -->
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-            <h2 class="text-xl font-black text-white flex items-center gap-2">
+            <h2 class="text-xl font-black text-white flex flex-wrap items-center gap-2">
                 <span>Plataforma SaaS — Panel Superadministrador</span>
                 <span class="badge-neon bg-purple-950 text-purple-300 border border-purple-700 text-xs">SUPERADMIN</span>
             </h2>
@@ -49,7 +49,8 @@
     <div class="card-night p-4 flex-1 overflow-hidden flex flex-col">
         <h3 class="text-sm font-bold text-white mb-2">Licoreras en la Plataforma</h3>
         <div class="flex-1 overflow-y-auto">
-            <table class="w-full text-left text-xs">
+            <div class="overflow-x-auto min-w-full">
+                <table class="w-full text-left text-xs min-w-[760px]">
                 <thead class="border-b border-night-800 text-slate-400 font-bold uppercase tracking-wider">
                     <tr>
                         <th class="py-3 px-2">Negocio / Tenant</th>
@@ -123,7 +124,8 @@
                         </tr>
                     @endforelse
                 </tbody>
-            </table>
+                </table>
+            </div>
         </div>
 
         <div class="pt-3 border-t border-night-800">

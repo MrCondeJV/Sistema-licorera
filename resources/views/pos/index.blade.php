@@ -1,11 +1,11 @@
 @extends('layouts.app', ['title' => 'Venta Rápida POS'])
 
 @section('content')
-<div class="h-full flex flex-col lg:flex-row gap-3 -m-3 sm:-m-4 p-3 sm:p-4 overflow-hidden"
+<div class="h-full flex flex-col lg:flex-row gap-3 -m-3 sm:-m-4 p-3 sm:p-4 overflow-hidden relative"
      x-data="posApp()">
 
     <!-- LEFT / MAIN: Catalog & Products Area -->
-    <div class="flex-1 flex flex-col h-full overflow-hidden bg-night-900/60 border border-night-800/80 rounded-2xl p-3">
+    <div class="flex-1 flex flex-col h-full overflow-hidden bg-night-900/60 border border-night-800/80 rounded-2xl p-2.5 sm:p-3">
         
         <!-- Cash Session Check Alert -->
         @if(!$openCashSession)
@@ -22,27 +22,42 @@
             </div>
         @endif
 
-        <!-- Search Bar & Filters -->
+        <!-- Search Bar, Table Indicator & Mobile Cart Button -->
         <div class="flex items-center gap-2 mb-3">
             <div class="relative flex-1">
                 <input type="text" x-model="search" placeholder="Buscar por nombre, código o SKU..."
-                       class="w-full bg-night-850 border border-night-750 text-white rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-neon-green">
-                <svg class="w-5 h-5 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                       class="w-full bg-night-850 border border-night-750 text-white rounded-xl pl-10 pr-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-neon-green">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                 </svg>
             </div>
+
+            <!-- Mobile Cart Button (Visible on screens < lg) -->
+            <button type="button" @click="mobileCartOpen = true"
+                    class="lg:hidden flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-neon-green text-night-950 font-black text-xs shadow-md shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+                <span class="font-mono font-bold" x-text="cart.reduce((sum, i) => sum + i.quantity, 0)"></span>
+            </button>
+
             <button type="button" @click="selectedCategory = 'all'"
-                    class="px-3 py-2.5 rounded-xl border text-xs font-bold uppercase transition-all"
+                    class="hidden sm:inline-flex px-3 py-2.5 rounded-xl border text-xs font-bold uppercase transition-all"
                     :class="selectedCategory === 'all' ? 'bg-neon-green text-night-950 border-neon-green' : 'bg-night-850 text-slate-300 border-night-750'">
                 Todos
             </button>
         </div>
 
         <!-- Horizontal Scrollable Categories -->
-        <div class="flex items-center gap-2 overflow-x-auto pb-2 shrink-0 select-none">
+        <div class="flex items-center gap-2 overflow-x-auto pb-2 shrink-0 select-none no-scrollbar">
+            <button type="button" @click="selectedCategory = 'all'"
+                    class="sm:hidden px-3 py-1.5 rounded-xl border text-xs font-bold uppercase transition-all shrink-0"
+                    :class="selectedCategory === 'all' ? 'bg-neon-green text-night-950 border-neon-green' : 'bg-night-850 text-slate-300 border-night-750'">
+                Todos
+            </button>
             @foreach($categories as $cat)
                 <button type="button" @click="selectedCategory = '{{ $cat->id }}'"
-                        class="px-3.5 py-2 rounded-xl border text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5"
+                        class="px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl border text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0"
                         :class="selectedCategory === '{{ $cat->id }}' ? 'bg-neon-cyan text-night-950 border-neon-cyan shadow-lg shadow-neon-cyan/20' : 'bg-night-850 text-slate-300 border-night-750 hover:bg-night-800'">
                     <span>{{ $cat->name }}</span>
                 </button>
@@ -50,51 +65,51 @@
         </div>
 
         <!-- Products Grid with internal scroll -->
-        <div class="flex-1 overflow-y-auto pr-1 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2.5 mt-2">
+        <div class="flex-1 overflow-y-auto pr-1 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-2 sm:gap-2.5 mt-2">
             <template x-for="product in filteredProducts" :key="product.id">
-                <div class="card-night p-3 flex flex-col justify-between border-night-750/60 hover:border-night-600 transition-all relative group"
+                <div class="card-night p-2.5 sm:p-3 flex flex-col justify-between border-night-750/60 hover:border-night-600 transition-all relative group"
                      :class="product.stock <= 0 ? 'opacity-50' : ''">
 
                     <div>
                         <!-- Header / Badges -->
                         <div class="flex items-start justify-between gap-1 mb-1.5">
-                            <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 truncate" x-text="product.category ? product.category.name : ''"></span>
-                            <span class="badge-neon text-[10px]"
+                            <span class="text-[9px] sm:text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 truncate" x-text="product.category ? product.category.name : ''"></span>
+                            <span class="badge-neon text-[9px] sm:text-[10px] py-0.5 px-1.5"
                                   :class="product.stock <= 0 ? 'bg-rose-950 text-rose-400 border border-rose-800' : (product.stock <= product.stock_min ? 'bg-amber-950 text-amber-400 border border-amber-800' : 'bg-emerald-950 text-emerald-400 border border-emerald-800')">
                                 <span x-text="product.stock <= 0 ? 'Agotado' : product.stock + ' disp.'"></span>
                             </span>
                         </div>
 
                         <!-- Product Name -->
-                        <h3 class="text-sm font-bold text-white leading-tight line-clamp-2" x-text="product.name"></h3>
+                        <h3 class="text-xs sm:text-sm font-bold text-white leading-tight line-clamp-2" x-text="product.name"></h3>
 
                         <!-- Rule description -->
                         <template x-if="product.is_liquor">
-                            <span class="inline-block mt-1 text-[10px] text-amber-400/90 font-semibold">🍾 Botella completa</span>
+                            <span class="inline-block mt-1 text-[9px] sm:text-[10px] text-amber-400/90 font-semibold">🍾 Botella completa</span>
                         </template>
                     </div>
 
                     <!-- Presentations & Price Buttons -->
-                    <div class="mt-3 pt-2 border-t border-night-800/80">
+                    <div class="mt-2.5 pt-2 border-t border-night-800/80">
                         <!-- Single Unit Price Button -->
                         <button type="button"
                                 @click="addToCart(product, null)"
                                 :disabled="product.stock <= 0"
-                                class="w-full btn-touch min-h-[46px] py-2 bg-night-800 hover:bg-neon-green hover:text-night-950 text-white font-bold text-xs sm:text-sm rounded-xl border border-night-700/80 transition-all flex items-center justify-between px-3 active:scale-95">
+                                class="w-full btn-touch min-h-[42px] sm:min-h-[46px] py-1.5 sm:py-2 bg-night-800 hover:bg-neon-green hover:text-night-950 text-white font-bold text-xs sm:text-sm rounded-xl border border-night-700/80 transition-all flex items-center justify-between px-2.5 sm:px-3 active:scale-95">
                             <span x-text="product.base_unit || 'Unidad'"></span>
                             <span class="font-mono text-neon-green group-hover:text-night-950" x-text="formatMoney(product.price_sell)"></span>
                         </button>
 
                         <!-- Extra Presentations for Beers (Six-Pack, Caja 24) -->
                         <template x-if="product.presentations && product.presentations.length > 0">
-                            <div class="grid grid-cols-2 gap-1.5 mt-1.5">
+                            <div class="grid grid-cols-2 gap-1 mt-1.5">
                                 <template x-for="pres in product.presentations" :key="pres.id">
                                     <button type="button"
                                             @click="addToCart(product, pres)"
                                             :disabled="product.stock < pres.conversion_factor"
-                                            class="py-1.5 px-2 bg-night-850 hover:bg-neon-cyan hover:text-night-950 text-slate-200 font-semibold text-[11px] rounded-lg border border-night-750 transition-all flex flex-col items-center justify-center">
+                                            class="py-1 px-1.5 bg-night-850 hover:bg-neon-cyan hover:text-night-950 text-slate-200 font-semibold text-[10px] sm:text-[11px] rounded-lg border border-night-750 transition-all flex flex-col items-center justify-center">
                                         <span class="truncate max-w-full" x-text="pres.name"></span>
-                                        <span class="font-mono text-[10px] text-neon-cyan" x-text="formatMoney(pres.sale_price)"></span>
+                                        <span class="font-mono text-[9px] sm:text-[10px] text-neon-cyan" x-text="formatMoney(pres.sale_price)"></span>
                                     </button>
                                 </template>
                             </div>
@@ -105,8 +120,14 @@
         </div>
     </div>
 
-    <!-- RIGHT: Cart & Checkout Sidebar (Tactile 60px buttons, order summary) -->
-    <div class="w-full lg:w-96 flex flex-col h-full bg-night-900 border border-night-800 rounded-2xl p-3.5 shadow-2xl shrink-0">
+    <!-- Mobile Cart Drawer Backdrop -->
+    <div x-show="mobileCartOpen" @click="mobileCartOpen = false"
+         class="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm transition-opacity"
+         style="display: none;"></div>
+
+    <!-- RIGHT: Cart & Checkout Sidebar (Tactile responsive desktop / tablet & drawer for mobile) -->
+    <div class="fixed inset-y-0 right-0 z-50 w-full sm:w-96 bg-night-900 border-l border-night-800 p-3.5 shadow-2xl flex flex-col lg:static lg:w-96 lg:h-full lg:border lg:rounded-2xl shrink-0 transition-transform duration-300"
+         :class="mobileCartOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'">
         
         <!-- Cart Header: Table or Counter Mode -->
         <div class="flex items-center justify-between pb-3 border-b border-night-800">
@@ -118,13 +139,22 @@
                 </div>
             </div>
 
-            <!-- Table Selector Modal Trigger -->
-            <button type="button" @click="showTableModal = true" class="px-2.5 py-1.5 bg-night-800 hover:bg-night-750 text-slate-300 rounded-xl text-xs font-semibold border border-night-750 flex items-center gap-1">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
-                </svg>
-                <span x-text="selectedTable ? 'Cambiar' : 'Asignar Mesa'"></span>
-            </button>
+            <div class="flex items-center gap-2">
+                <!-- Table Selector Modal Trigger -->
+                <button type="button" @click="showTableModal = true" class="px-2.5 py-1.5 bg-night-800 hover:bg-night-750 text-slate-300 rounded-xl text-xs font-semibold border border-night-750 flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                    </svg>
+                    <span x-text="selectedTable ? 'Cambiar' : 'Asignar Mesa'"></span>
+                </button>
+
+                <!-- Mobile Close Cart Button -->
+                <button type="button" @click="mobileCartOpen = false" class="lg:hidden p-1.5 rounded-xl bg-night-800 text-slate-400 hover:text-white">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
         </div>
 
         <!-- Cart Items List (Internal scroll) -->
@@ -310,6 +340,7 @@ function posApp() {
         selectedCategory: 'all',
         cart: [],
         selectedTable: null,
+        mobileCartOpen: false,
         showTableModal: false,
         showPaymentModal: false,
         isProcessing: false,

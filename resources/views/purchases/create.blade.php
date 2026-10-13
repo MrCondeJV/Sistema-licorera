@@ -25,7 +25,7 @@
          }
      }">
 
-    <div class="flex items-center justify-between mb-4">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
         <div>
             <h2 class="text-xl font-black text-white">Registrar Entrada / Compra</h2>
             <p class="text-xs text-slate-400 mt-0.5">Ingreso de mercancía por proveedor</p>
@@ -106,7 +106,7 @@
             </template>
         </div>
 
-        <div class="pt-4 border-t border-night-800 flex items-center justify-between">
+        <div class="pt-4 border-t border-night-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <label class="flex items-center gap-2 cursor-pointer">
                 <input type="checkbox" name="receive_immediately" value="1" checked class="w-4 h-4 rounded text-neon-green">
                 <span class="text-xs font-bold text-white">Confirmar recepción e ingresar a stock inmediatamente</span>

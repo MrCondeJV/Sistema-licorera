@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Iniciar Sesión — LA NOCHE</title>
+    <title>Iniciar Sesión — LICORERA POS</title>
     <script>
         if (localStorage.getItem('pos_theme') === 'dark') {
             document.documentElement.classList.add('dark');

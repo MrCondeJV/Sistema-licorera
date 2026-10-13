@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="max-w-3xl mx-auto py-2">
-    <div class="flex items-center justify-between mb-4">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
         <div>
             <h2 class="text-xl font-black text-white">Editar Producto</h2>
             <p class="text-xs text-slate-400 mt-0.5">{{ $product->name }} (SKU: {{ $product->sku }})</p>
@@ -45,7 +45,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-3 gap-4 pt-2 border-t border-night-800">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-night-800">
             <div>
                 <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Costo ($)</label>
                 <input type="number" name="price_buy" value="{{ old('price_buy', $product->price_buy) }}" min="0" step="100" required
@@ -63,7 +63,7 @@
             </div>
         </div>
 
-        <div class="flex items-center gap-4 pt-3 border-t border-night-800">
+        <div class="flex flex-wrap items-center gap-4 pt-3 border-t border-night-800">
             <label class="flex items-center gap-2 cursor-pointer">
                 <input type="checkbox" name="is_active" value="1" {{ $product->is_active ? 'checked' : '' }} class="w-4 h-4 rounded text-neon-green">
                 <span class="text-xs font-bold text-white">Producto Activo en Catálogo</span>

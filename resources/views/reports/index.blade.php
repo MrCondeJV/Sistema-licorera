@@ -88,7 +88,8 @@
     <div class="card-night p-4 flex-1 overflow-hidden flex flex-col">
         <h3 class="text-sm font-bold text-white mb-2">Detalle de Ventas Concretadas</h3>
         <div class="flex-1 overflow-y-auto">
-            <table class="w-full text-left text-xs">
+            <div class="overflow-x-auto min-w-full">
+                <table class="w-full text-left text-xs min-w-[850px]">
                 <thead class="border-b border-night-800 text-slate-400 font-bold uppercase tracking-wider">
                     <tr>
                         <th class="py-3 px-2">Venta #</th>
@@ -137,7 +138,8 @@
                         </tr>
                     @endforelse
                 </tbody>
-            </table>
+                </table>
+            </div>
         </div>
     </div>
 </div>

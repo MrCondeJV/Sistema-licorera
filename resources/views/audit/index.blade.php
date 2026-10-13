@@ -32,7 +32,8 @@
     <!-- Table -->
     <div class="card-night p-4 flex-1 overflow-hidden flex flex-col">
         <div class="flex-1 overflow-y-auto">
-            <table class="w-full text-left text-xs">
+            <div class="overflow-x-auto min-w-full">
+                <table class="w-full text-left text-xs min-w-[700px]">
                 <thead class="border-b border-night-800 text-slate-400 font-bold uppercase tracking-wider">
                     <tr>
                         <th class="py-3 px-2">Fecha y Hora</th>
@@ -65,7 +66,8 @@
                         </tr>
                     @endforelse
                 </tbody>
-            </table>
+                </table>
+            </div>
         </div>
 
         <div class="pt-3 border-t border-night-800">

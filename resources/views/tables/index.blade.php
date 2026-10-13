@@ -3,9 +3,9 @@
 @section('content')
 <div class="h-full flex flex-col" x-data="{ showOpenModal: false, selectedTableId: null, selectedTableName: '' }">
     <!-- Header -->
-    <div class="flex items-center justify-between mb-4">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
         <div>
-            <h2 class="text-xl font-black text-white flex items-center gap-2">
+            <h2 class="text-xl font-black text-white flex flex-wrap items-center gap-2">
                 <span>Mesas y Cuentas Abiertas</span>
                 <span class="text-xs px-2.5 py-1 rounded-full bg-night-800 text-slate-300 border border-night-750 font-mono">
                     {{ $tables->where('status', 'occupied')->count() }} ocupadas / {{ $tables->count() }} totales
@@ -14,7 +14,7 @@
             <p class="text-xs text-slate-400 mt-0.5">Control táctil de consumo dentro del establecimiento</p>
         </div>
 
-        <div class="flex items-center gap-3 text-xs font-semibold">
+        <div class="flex flex-wrap items-center gap-3 text-xs font-semibold">
             <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-500"></span><span>Libre</span></div>
             <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-500"></span><span>Ocupada</span></div>
             <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-rose-500"></span><span>Por Cobrar</span></div>
@@ -76,7 +76,7 @@
 
     <!-- Modal: Open Account on Table -->
     <div x-show="showOpenModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" style="display: none;">
-        <div class="bg-night-900 border border-night-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl">
+        <div class="bg-night-900 border border-night-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl max-h-[90vh] overflow-y-auto">
             <h3 class="text-base font-black text-white mb-1">Abrir Cuenta en <span class="text-neon-green" x-text="selectedTableName"></span></h3>
             <p class="text-xs text-slate-400 mb-4">Asigna un nombre o alias opcional para identificar a los clientes</p>
 

@@ -3,7 +3,7 @@
 @section('content')
 <div class="h-full flex flex-col space-y-4" x-data="{ showNewUserModal: false, showResetModal: false, resetUserId: null, resetUserName: '' }">
     <!-- Header -->
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
             <h2 class="text-xl font-black text-white">Usuarios y Permisos de Empleados</h2>
             <p class="text-xs text-slate-400 mt-0.5">Gestión de administradores, cajeros, meseros y PINs seguros</p>
@@ -16,7 +16,8 @@
     <!-- Table -->
     <div class="card-night p-4 flex-1 overflow-hidden flex flex-col">
         <div class="flex-1 overflow-y-auto">
-            <table class="w-full text-left text-xs">
+            <div class="overflow-x-auto min-w-full">
+                <table class="w-full text-left text-xs min-w-[650px]">
                 <thead class="border-b border-night-800 text-slate-400 font-bold uppercase tracking-wider">
                     <tr>
                         <th class="py-3 px-2">Nombre</th>
@@ -62,13 +63,14 @@
                         </tr>
                     @endforeach
                 </tbody>
-            </table>
+                </table>
+            </div>
         </div>
     </div>
 
     <!-- Modal: New User -->
     <div x-show="showNewUserModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" style="display: none;">
-        <div class="bg-night-900 border border-night-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl">
+        <div class="bg-night-900 border border-night-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl max-h-[90vh] overflow-y-auto">
             <h3 class="text-base font-black text-white mb-1">Registrar Empleado</h3>
             <p class="text-xs text-slate-400 mb-4">Se creará un acceso mediante PIN táctil</p>
 
@@ -82,7 +84,7 @@
 
                 <div class="mb-3">
                     <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Correo Electrónico</label>
-                    <input type="email" name="email" placeholder="diana@lanoche.pos"
+                    <input type="email" name="email" placeholder="diana@licorera.pos"
                            class="w-full bg-night-850 border border-night-750 text-white rounded-xl px-3 py-2 text-xs focus:border-neon-green focus:outline-none">
                 </div>
 
@@ -111,7 +113,7 @@
 
     <!-- Modal: Reset PIN -->
     <div x-show="showResetModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" style="display: none;">
-        <div class="bg-night-900 border border-night-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl">
+        <div class="bg-night-900 border border-night-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl max-h-[90vh] overflow-y-auto">
             <h3 class="text-base font-black text-white mb-1">Restablecer PIN</h3>
             <p class="text-xs text-slate-400 mb-4" x-text="'Para: ' + resetUserName"></p>
 

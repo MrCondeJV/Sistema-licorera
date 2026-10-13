@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrar Licorera — LA NOCHE SaaS</title>
+    <title>Registrar Licorera — LICORERA POS SaaS</title>
     <script>
         if (localStorage.getItem('pos_theme') === 'dark') {
             document.documentElement.classList.add('dark');
@@ -17,8 +17,10 @@
     <div class="w-full max-w-xl bg-night-900 border border-night-800 rounded-3xl p-6 sm:p-10 shadow-2xl">
         <!-- Brand Header -->
         <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-neon-green to-neon-cyan shadow-xl shadow-neon-green/20 mb-3 text-night-950 font-black text-3xl">
-                N
+            <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-neon-green to-neon-cyan shadow-xl shadow-neon-green/20 mb-3 text-night-950">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
             </div>
             <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-white">Alta de Nueva Licorera</h1>
             <p class="text-sm text-slate-400 mt-1">Configuración automática de tu punto de venta en segundos</p>
