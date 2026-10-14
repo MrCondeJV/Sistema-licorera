@@ -24,6 +24,15 @@ class OfflineSyncController extends Controller
             'payload' => 'required|array',
         ]);
 
+        $user = auth()->user() ?? $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No autenticado.',
+            ], 401);
+        }
+
         $session = CashSession::getActiveSession($user->id);
 
         if (!$session) {

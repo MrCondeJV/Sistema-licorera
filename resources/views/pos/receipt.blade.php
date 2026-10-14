@@ -160,5 +160,16 @@
             </div>
         </div>
     </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('autoprint') === '1') {
+                setTimeout(() => {
+                    window.print();
+                }, 350);
+            }
+        });
+    </script>
 </body>
 </html>

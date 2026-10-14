@@ -831,6 +831,9 @@ function posApp() {
                     }
                 }
 
+                // Calculate cash change before resetting
+                const changeAmount = this.isCashMethod ? this.cashChange : 0;
+
                 // Clear cart and close modal
                 this.cart = [];
                 this.selectedCustomer = null;
@@ -847,12 +850,17 @@ function posApp() {
                     });
                 }
 
-                // Open thermal receipt modal/window
-                if (data.receipt_url) {
-                    window.open(data.receipt_url, '_blank', 'width=400,height=600');
+                // Show alert with Entendido and optional Imprimir Ticket
+                if (window.AppAlert && window.AppAlert.saleSuccess) {
+                    await window.AppAlert.saleSuccess({
+                        title: '¡Venta Completada!',
+                        message: data.message,
+                        receiptUrl: data.receipt_url,
+                        changeAmount: changeAmount
+                    });
+                } else if (window.AppAlert) {
+                    window.AppAlert.success('¡Venta Completada!', data.message);
                 }
-
-                window.AppAlert.success('¡Venta Completada!', data.message);
             } catch (err) {
                 window.PosSound.beep('error');
                 window.AppAlert.error('Error en cobro', err.message);

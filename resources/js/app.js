@@ -127,6 +127,76 @@ window.AppAlert = {
         });
     },
 
+    async saleSuccess({
+        title = '¡Venta Completada!',
+        message = '',
+        html = null,
+        receiptUrl = null,
+        changeAmount = 0
+    } = {}) {
+        if (window.PosSound) window.PosSound.beep('success');
+        const colors = this.getThemeColors();
+
+        let contentHtml = html;
+        if (!contentHtml) {
+            let changeHtml = '';
+            if (changeAmount > 0) {
+                const formattedChange = '$ ' + Math.round(changeAmount).toLocaleString('es-CO');
+                changeHtml = `
+                    <div style="margin-top: 14px; padding: 12px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 14px; font-weight: 700; font-size: 1.05rem; color: #059669; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.85;">Cambio / Devuelta:</span>
+                        <span style="font-size: 1.25rem;">${formattedChange}</span>
+                    </div>
+                `;
+            }
+            contentHtml = `
+                <div style="font-size: 0.95rem; line-height: 1.5;">
+                    <p style="margin: 0; opacity: 0.9;">${message}</p>
+                    ${changeHtml}
+                </div>
+            `;
+        }
+
+        let hasOpened = false;
+        const openReceipt = () => {
+            if (!hasOpened && receiptUrl) {
+                hasOpened = true;
+                const printUrl = receiptUrl + (receiptUrl.includes('?') ? '&' : '?') + 'autoprint=1';
+                window.open(printUrl, '_blank', 'width=450,height=650');
+            }
+        };
+
+        const result = await Swal.fire({
+            icon: 'success',
+            title: title,
+            html: contentHtml,
+            showDenyButton: Boolean(receiptUrl),
+            showCancelButton: false,
+            confirmButtonText: 'Entendido',
+            denyButtonText: '🖨️ Imprimir Ticket',
+            confirmButtonColor: '#059669', // emerald-600
+            denyButtonColor: '#2563eb',    // blue-600
+            background: colors.background,
+            color: colors.color,
+            backdrop: colors.backdrop,
+            customClass: {
+                popup: 'rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl',
+                confirmButton: 'rounded-xl font-bold px-6 py-2.5 text-sm shadow-md cursor-pointer',
+                denyButton: 'rounded-xl font-bold px-6 py-2.5 text-sm shadow-md cursor-pointer'
+            },
+            preDeny: () => {
+                openReceipt();
+                return true;
+            }
+        });
+
+        if (result.isDenied) {
+            openReceipt();
+        }
+
+        return result;
+    },
+
     error(title, text = '') {
         if (window.PosSound) window.PosSound.beep('error');
         const colors = this.getThemeColors();
