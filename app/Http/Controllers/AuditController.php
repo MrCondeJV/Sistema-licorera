@@ -14,22 +14,45 @@ class AuditController extends Controller
     {
         $tenantId = app(TenantContext::class)->getTenantId()
             ?? session('active_tenant_id')
-            ?? auth()->user()?->tenantUsers()->first()?->tenant_id;
+            ?? auth()->user()?->tenantUsers()->where('is_active', true)->first()?->tenant_id;
 
-        // Fetch all tenant users for the filter dropdown
+        if (!$tenantId && !auth()->user()->is_superadmin) {
+            abort(403, 'No tienes un negocio activo asignado.');
+        }
+
+        // Fetch ONLY users of this specific tenant
         $tenantUsers = User::whereHas('tenantUsers', function ($q) use ($tenantId) {
             $q->where('tenant_id', $tenantId);
         })->with(['tenantUsers' => function ($q) use ($tenantId) {
             $q->where('tenant_id', $tenantId);
         }])->orderBy('name')->get();
 
-        $query = AuditLog::with(['user.tenantUsers' => function ($q) use ($tenantId) {
-            $q->where('tenant_id', $tenantId);
-        }])->latest('created_at');
+        $query = AuditLog::where('tenant_id', $tenantId)
+            ->with(['user.tenantUsers' => function ($q) use ($tenantId) {
+                $q->where('tenant_id', $tenantId);
+            }])
+            ->latest('created_at');
+
+        // STRICT PRIVACY ISOLATION:
+        // Regular administrators MUST NOT see superadmin events or actions performed by superadmin
+        if (!auth()->user()->is_superadmin) {
+            $query->where('action', 'not like', 'superadmin_%')
+                  ->where(function ($q) {
+                      $q->whereNull('user_id')
+                        ->orWhereHas('user', function ($uq) {
+                            $uq->where('is_superadmin', false);
+                        });
+                  });
+        }
 
         // Filter: User / Employee
         if ($request->filled('user_id')) {
-            $query->where('user_id', $request->input('user_id'));
+            $targetUserId = $request->input('user_id');
+            if (auth()->user()->is_superadmin || $tenantUsers->contains('id', $targetUserId)) {
+                $query->where('user_id', $targetUserId);
+            } else {
+                $query->whereRaw('1 = 0');
+            }
         }
 
         // Filter: Module / Category

@@ -255,4 +255,113 @@ class AuditTrailTest extends TestCase
         $response = $this->get(route('audit.index'));
         $response->assertStatus(403);
     }
+
+    public function test_tenant_admin_cannot_see_other_tenant_audits(): void
+    {
+        [$tenantA, $adminA] = $this->setupTenantAndUsers();
+
+        // Create Tenant B with its own log
+        $tenantB = Tenant::create(['name' => 'Licorera Poblado', 'slug' => 'licorera-poblado', 'status' => 'active']);
+        $adminB = User::create([
+            'name' => 'Admin Poblado',
+            'email' => 'admin@poblado.com',
+            'password' => Hash::make('Admin1234*'),
+            'pin_hash' => Hash::make('5555'),
+            'is_superadmin' => false,
+            'is_active' => true,
+        ]);
+        TenantUser::create([
+            'tenant_id' => $tenantB->id,
+            'user_id' => $adminB->id,
+            'role' => 'admin',
+            'is_active' => true,
+        ]);
+
+        AuditLog::create([
+            'tenant_id' => $tenantB->id,
+            'user_id' => $adminB->id,
+            'action' => 'product_created',
+            'new_values' => ['name' => 'Vodka Absolut 1000ml'],
+            'reason' => 'Producto exclusivo de Licorera Poblado',
+            'created_at' => now(),
+        ]);
+
+        AuditLog::create([
+            'tenant_id' => $tenantA->id,
+            'user_id' => $adminA->id,
+            'action' => 'product_created',
+            'new_values' => ['name' => 'Whisky Chivas 750ml'],
+            'reason' => 'Producto exclusivo de Licorera La 70',
+            'created_at' => now(),
+        ]);
+
+        // Login as Admin A
+        $this->actingAs($adminA);
+        session(['active_tenant_id' => $tenantA->id]);
+
+        $response = $this->get(route('audit.index'));
+        $response->assertStatus(200);
+        $response->assertSee('Whisky Chivas 750ml');
+        $response->assertDontSee('Vodka Absolut 1000ml');
+        $response->assertDontSee('Licorera Poblado');
+    }
+
+    public function test_tenant_admin_cannot_see_superadmin_audits(): void
+    {
+        [$tenantA, $adminA] = $this->setupTenantAndUsers();
+
+        $superadmin = User::create([
+            'name' => 'Super Administrador Global',
+            'email' => 'superadmin@global.com',
+            'password' => Hash::make('Superadmin1234*'),
+            'pin_hash' => Hash::make('9999'),
+            'is_superadmin' => true,
+            'is_active' => true,
+        ]);
+
+        // Log superadmin action
+        AuditLog::create([
+            'tenant_id' => $tenantA->id,
+            'user_id' => $superadmin->id,
+            'action' => 'superadmin_impersonation',
+            'reason' => 'Superadministrador ingresó al panel de la empresa',
+            'created_at' => now(),
+        ]);
+
+        // Login as Admin A
+        $this->actingAs($adminA);
+        session(['active_tenant_id' => $tenantA->id]);
+
+        $response = $this->get(route('audit.index'));
+        $response->assertStatus(200);
+        $response->assertDontSee('superadmin_impersonation');
+        $response->assertDontSee('Superadministrador ingresó al panel');
+        $response->assertDontSee('Super Administrador Global');
+    }
+
+    public function test_superadmin_can_access_superadmin_audit_and_regular_admin_is_forbidden(): void
+    {
+        [$tenantA, $adminA] = $this->setupTenantAndUsers();
+
+        $superadmin = User::create([
+            'name' => 'Super Administrador Global',
+            'email' => 'superadmin2@global.com',
+            'password' => Hash::make('Superadmin1234*'),
+            'pin_hash' => Hash::make('9999'),
+            'is_superadmin' => true,
+            'is_active' => true,
+        ]);
+
+        // Regular admin cannot access /superadmin/audit
+        $this->actingAs($adminA);
+        session(['active_tenant_id' => $tenantA->id]);
+        $responseForbidden = $this->get(route('superadmin.audit'));
+        $responseForbidden->assertStatus(403);
+
+        // Superadmin CAN access /superadmin/audit
+        $this->actingAs($superadmin);
+        $responseAllowed = $this->get(route('superadmin.audit'));
+        $responseAllowed->assertStatus(200);
+        $responseAllowed->assertSee('Auditoría Global de Plataforma SaaS');
+    }
 }

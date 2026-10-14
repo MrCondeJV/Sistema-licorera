@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AuditLog;
 use App\Models\Plan;
 use App\Models\Sale;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Services\AuditService;
 use App\Services\TenantService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class SuperadminController extends Controller
@@ -171,5 +173,70 @@ class SuperadminController extends Controller
         $tenant->save();
 
         return back()->with('success', "Plan del negocio '{$tenant->name}' actualizado.");
+    }
+
+    public function audit(Request $request)
+    {
+        $tenants = Tenant::orderBy('name')->get();
+
+        $query = AuditLog::withoutGlobalScopes()->with(['user', 'tenant'])->latest('created_at');
+
+        // Filter: Specific Tenant
+        if ($request->filled('tenant_id')) {
+            if ($request->input('tenant_id') === 'platform') {
+                $query->where(function ($q) {
+                    $q->whereNull('tenant_id')->orWhere('action', 'like', 'superadmin_%');
+                });
+            } else {
+                $query->where('tenant_id', $request->input('tenant_id'));
+            }
+        }
+
+        // Filter: Only Superadmin Actions
+        if ($request->boolean('only_superadmin')) {
+            $query->where(function ($q) {
+                $q->where('action', 'like', 'superadmin_%')
+                  ->orWhereHas('user', fn($u) => $u->where('is_superadmin', true));
+            });
+        }
+
+        // Filter: Action
+        if ($request->filled('action')) {
+            $query->where('action', $request->input('action'));
+        }
+
+        // Filter: Search
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('reason', 'like', "%{$search}%")
+                  ->orWhere('action', 'like', "%{$search}%")
+                  ->orWhere('ip_address', 'like', "%{$search}%")
+                  ->orWhereHas('user', function ($uq) use ($search) {
+                      $uq->where('name', 'like', "%{$search}%")
+                         ->orWhere('email', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('tenant', function ($tq) use ($search) {
+                      $tq->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Filter: Date
+        if ($request->filled('date_from')) {
+            $query->where('created_at', '>=', Carbon::parse($request->input('date_from'))->startOfDay());
+        }
+        if ($request->filled('date_to')) {
+            $query->where('created_at', '<=', Carbon::parse($request->input('date_to'))->endOfDay());
+        }
+
+        $logs = $query->paginate(30)->withQueryString();
+
+        return view('superadmin.audit', [
+            'logs' => $logs,
+            'tenants' => $tenants,
+            'totalLogs' => AuditLog::withoutGlobalScopes()->count(),
+            'superadminLogsCount' => AuditLog::withoutGlobalScopes()->where('action', 'like', 'superadmin_%')->count(),
+        ]);
     }
 }
