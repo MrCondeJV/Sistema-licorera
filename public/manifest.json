@@ -1,7 +1,7 @@
 {
-  "name": "LA NOCHE — Sistema POS para Licoreras",
-  "short_name": "LA NOCHE",
-  "description": "Sistema POS integral y comercial para licoreras físicas",
+  "name": "LICORERA POS — Sistema de Ventas e Inventario",
+  "short_name": "LICORERA POS",
+  "description": "Sistema POS integral y comercial para licoreras",
   "start_url": "/pos",
   "display": "standalone",
   "background_color": "#070a10",
