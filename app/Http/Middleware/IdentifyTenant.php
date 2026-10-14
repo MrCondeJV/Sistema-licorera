@@ -86,10 +86,15 @@ class IdentifyTenant
             }
             $context->setBranch($branch);
 
+            $accessibleTenants = $user->is_superadmin
+                ? Tenant::where('status', 'active')->orderBy('name')->get()
+                : $user->tenants()->where('status', 'active')->orderBy('name')->get();
+
             // Share current tenant & user role with all Blade views
             view()->share('currentTenant', $tenant);
             view()->share('currentBranch', $branch);
             view()->share('currentUserRole', $user->getRoleInTenant($tenant->id));
+            view()->share('accessibleTenants', $accessibleTenants);
         }
 
         return $next($request);

@@ -221,9 +221,23 @@
                 </button>
                 <div>
                     <h1 class="text-sm font-black text-slate-900 dark:text-white leading-none">LICORERA POS</h1>
-                    <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-[170px] mt-0.5 font-medium">
-                        {{ $currentTenant->name ?? 'Licorera' }}
-                    </p>
+                    @if(isset($accessibleTenants) && count($accessibleTenants) > 1)
+                        <form method="POST" class="mt-0.5">
+                            @csrf
+                            <select onchange="if(this.value){ this.form.action='{{ url('/tenant/switch') }}/' + this.value; this.form.submit(); }"
+                                    class="text-[11px] font-bold py-0.5 px-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white max-w-[150px] truncate focus:outline-none">
+                                @foreach($accessibleTenants as $t)
+                                    <option value="{{ $t->id }}" {{ ($currentTenant->id ?? 0) == $t->id ? 'selected' : '' }}>
+                                        {{ $t->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </form>
+                    @else
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-[170px] mt-0.5 font-medium">
+                            {{ $currentTenant->name ?? 'Licorera' }}
+                        </p>
+                    @endif
                 </div>
             </div>
 
@@ -244,9 +258,26 @@
 
         <!-- Desktop Topbar (>= lg) -->
         <header class="hidden lg:flex items-center justify-between h-16 px-6 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shrink-0">
-            <div>
-                <h2 class="text-base font-bold text-slate-900 dark:text-white">{{ $title ?? 'Terminal POS' }}</h2>
-                <p class="text-xs text-slate-400">Sucursal: <span class="font-semibold text-slate-600 dark:text-slate-300">{{ $currentBranch->name ?? 'Principal' }}</span></p>
+            <div class="flex items-center gap-4">
+                <div>
+                    <h2 class="text-base font-bold text-slate-900 dark:text-white">{{ $title ?? 'Terminal POS' }}</h2>
+                    <p class="text-xs text-slate-400">Sucursal: <span class="font-semibold text-slate-600 dark:text-slate-300">{{ $currentBranch->name ?? 'Principal' }}</span></p>
+                </div>
+
+                @if(isset($accessibleTenants) && count($accessibleTenants) > 1)
+                    <form method="POST" class="flex items-center gap-2 pl-4 border-l border-slate-200 dark:border-slate-800">
+                        @csrf
+                        <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Empresa Activa:</span>
+                        <select onchange="if(this.value){ this.form.action='{{ url('/tenant/switch') }}/' + this.value; this.form.submit(); }"
+                                class="text-xs font-bold py-1.5 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm cursor-pointer">
+                            @foreach($accessibleTenants as $t)
+                                <option value="{{ $t->id }}" {{ ($currentTenant->id ?? 0) == $t->id ? 'selected' : '' }}>
+                                    🏢 {{ $t->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </form>
+                @endif
             </div>
 
             <div class="flex items-center space-x-3">

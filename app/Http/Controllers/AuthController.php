@@ -225,6 +225,6 @@ class AuthController extends Controller
             'active_branch_id' => null,
         ]);
 
-        return redirect()->route('dashboard')->with('success', "Cambiado a {$tenant->name}");
+        return back()->with('success', "Cambiado a {$tenant->name}");
     }
 }
