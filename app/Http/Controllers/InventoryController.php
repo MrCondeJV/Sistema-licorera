@@ -62,7 +62,15 @@ class InventoryController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $isLiquor = $request->boolean('is_liquor');
+        $isBeer = $request->boolean('is_beer');
+
+        // Liquor Rule: strictly bottle only
+        if ($isLiquor && !empty($request->input('presentations'))) {
+            return back()->withInput()->with('error', 'Los licores no admiten presentaciones de fraccionamiento. Solo se venden por botella completa.');
+        }
+
+        $rules = [
             'category_id' => 'required|exists:categories,id',
             'sku' => 'required|string|max:50',
             'barcode' => 'nullable|string|max:50',
@@ -80,18 +88,40 @@ class InventoryController extends Controller
             'image' => 'nullable|image|max:5120',
             'is_favorite' => 'nullable|boolean',
             'presentations' => 'nullable|array',
-            'presentations.*.name' => 'required_with:presentations|string',
-            'presentations.*.conversion_factor' => 'required_with:presentations|integer|min:1',
-            'presentations.*.sale_price' => 'required_with:presentations|numeric|min:0',
-        ]);
+        ];
 
-        $isLiquor = $request->boolean('is_liquor');
-        $isBeer = $request->boolean('is_beer');
-
-        // Liquor Rule: strictly bottle only
-        if ($isLiquor && !empty($request->input('presentations'))) {
-            return back()->withInput()->with('error', 'Los licores no admiten presentaciones de fraccionamiento. Solo botella completa.');
+        if ($isBeer && $request->has('presentations')) {
+            $rules['presentations.*.sale_price'] = 'nullable|numeric|min:0';
+            $rules['presentations.*.conversion_factor'] = 'nullable|integer|min:1';
+            $rules['presentations.*.name'] = 'nullable|string';
         }
+
+        $messages = [
+            'name.required' => 'El Nombre del Producto es obligatorio.',
+            'category_id.required' => 'Debes seleccionar una Categoría para el producto.',
+            'category_id.exists' => 'La categoría seleccionada no existe.',
+            'sku.required' => 'El código SKU / Referencia es obligatorio.',
+            'base_unit.required' => 'Debes seleccionar la Unidad Base (Unidad, Botella o Lata).',
+            'base_unit.in' => 'La unidad base debe ser: unidad, botella o lata.',
+            'price_buy.required' => 'El Costo Unitario es obligatorio.',
+            'price_buy.numeric' => 'El costo unitario debe ser un número.',
+            'price_buy.min' => 'El costo unitario no puede ser negativo.',
+            'price_sell.required' => 'El Precio de Venta al público es obligatorio.',
+            'price_sell.numeric' => 'El precio de venta debe ser un número.',
+            'price_sell.min' => 'El precio de venta no puede ser negativo.',
+            'stock.required' => 'El Stock Inicial es obligatorio.',
+            'stock.numeric' => 'El stock inicial debe ser un número.',
+            'stock.min' => 'El stock inicial no puede ser negativo.',
+            'stock_min.required' => 'El Stock Mínimo de alerta es obligatorio.',
+            'stock_min.numeric' => 'El stock mínimo debe ser un número.',
+            'stock_min.min' => 'El stock mínimo no puede ser negativo.',
+            'image.image' => 'El archivo adjunto debe ser una imagen válida (JPG, PNG o WEBP).',
+            'image.max' => 'La imagen seleccionada supera el límite máximo de 5MB.',
+            'presentations.*.sale_price.numeric' => 'El precio de la presentación debe ser un número válido.',
+            'presentations.*.sale_price.min' => 'El precio de la presentación no puede ser negativo.',
+        ];
+
+        $validated = $request->validate($rules, $messages);
 
         $imagePath = null;
         if ($request->hasFile('image')) {
@@ -178,6 +208,22 @@ class InventoryController extends Controller
             'image' => 'nullable|image|max:5120',
             'is_favorite' => 'nullable|boolean',
             'is_active' => 'nullable|boolean',
+        ], [
+            'name.required' => 'El Nombre del Producto es obligatorio.',
+            'category_id.required' => 'Debes seleccionar una Categoría para el producto.',
+            'category_id.exists' => 'La categoría seleccionada no existe.',
+            'sku.required' => 'El código SKU / Referencia es obligatorio.',
+            'price_buy.required' => 'El Costo Unitario es obligatorio.',
+            'price_buy.numeric' => 'El costo unitario debe ser un número.',
+            'price_buy.min' => 'El costo unitario no puede ser negativo.',
+            'price_sell.required' => 'El Precio de Venta es obligatorio.',
+            'price_sell.numeric' => 'El precio de venta debe ser un número.',
+            'price_sell.min' => 'El precio de venta no puede ser negativo.',
+            'stock_min.required' => 'El Stock Mínimo de alerta es obligatorio.',
+            'stock_min.numeric' => 'El stock mínimo debe ser un número.',
+            'stock_min.min' => 'El stock mínimo no puede ser negativo.',
+            'image.image' => 'El archivo adjunto debe ser una imagen válida (JPG, PNG o WEBP).',
+            'image.max' => 'La imagen seleccionada supera el límite máximo de 5MB.',
         ]);
 
         $data = [

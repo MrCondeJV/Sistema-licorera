@@ -1,17 +1,6 @@
-const CACHE_NAME = 'lanoche-pos-v1';
-const ASSETS_TO_CACHE = [
-  '/',
-  '/pos',
-  '/manifest.json',
-  '/build/manifest.json',
-];
+const CACHE_NAME = 'licorera-pos-v3';
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE).catch((err) => console.log('Cache addAll caught', err));
-    })
-  );
   self.skipWaiting();
 });
 
@@ -31,21 +20,27 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Let non-GET and API / sync requests go straight to network
-  if (event.request.method !== 'GET' || event.request.url.includes('/sync/') || event.request.url.includes('/checkout')) {
+  // Always let non-GET and mutations pass straight to server
+  if (event.request.method !== 'GET') {
     return;
   }
 
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      return (
-        cachedResponse ||
-        fetch(event.request).catch(() => {
-          if (event.request.headers.get('accept')?.includes('text/html')) {
-            return caches.match('/pos');
-          }
+  // HTML page navigations: ALWAYS fetch from network to guarantee fresh products and tenant data
+  if (event.request.mode === 'navigate' || event.request.headers.get('accept')?.includes('text/html')) {
+    event.respondWith(
+      fetch(event.request)
+        .catch(() => {
+          return caches.match('/pos') || caches.match('/');
         })
-      );
-    })
+    );
+    return;
+  }
+
+  // Static assets (CSS, JS, Fonts): Network first with fallback to cache
+  event.respondWith(
+    fetch(event.request)
+      .catch(() => {
+        return caches.match(event.request);
+      })
   );
 });

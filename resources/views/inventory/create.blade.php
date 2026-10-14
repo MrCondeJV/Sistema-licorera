@@ -18,68 +18,113 @@
         <!-- General Info -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Nombre del Producto *</label>
+                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">
+                    Nombre del Producto <span class="text-rose-500 font-bold">* Obligatorio</span>
+                </label>
                 <input type="text" name="name" value="{{ old('name') }}" required placeholder="Ej: Cerveza Águila 330ml"
-                       class="input-night w-full text-sm">
+                       class="input-night w-full text-sm @error('name') border-rose-500 ring-2 ring-rose-500/20 @enderror">
+                @error('name')
+                    <p class="text-rose-500 text-xs mt-1 font-semibold">{{ $message }}</p>
+                @enderror
             </div>
             <div>
-                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Categoría *</label>
-                <select name="category_id" required class="input-night w-full text-sm">
+                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">
+                    Categoría <span class="text-rose-500 font-bold">* Obligatorio</span>
+                </label>
+                <select name="category_id" required class="input-night w-full text-sm @error('category_id') border-rose-500 ring-2 ring-rose-500/20 @enderror">
+                    <option value="">-- Seleccionar Categoría --</option>
                     @foreach($categories as $cat)
                         <option value="{{ $cat->id }}" {{ old('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
                     @endforeach
                 </select>
+                @error('category_id')
+                    <p class="text-rose-500 text-xs mt-1 font-semibold">{{ $message }}</p>
+                @enderror
             </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">SKU / Referencia *</label>
+                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">
+                    SKU / Referencia <span class="text-rose-500 font-bold">* Obligatorio</span>
+                </label>
                 <input type="text" name="sku" value="{{ old('sku', 'PROD-' . strtoupper(Str::random(6))) }}" required
+                       class="input-night w-full text-sm font-mono @error('sku') border-rose-500 ring-2 ring-rose-500/20 @enderror">
+                @error('sku')
+                    <p class="text-rose-500 text-xs mt-1 font-semibold">{{ $message }}</p>
+                @enderror
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">
+                    Código de Barras <span class="text-slate-400 font-normal">(Opcional)</span>
+                </label>
+                <input type="text" name="barcode" value="{{ old('barcode') }}" placeholder="Ej: 770123456789"
                        class="input-night w-full text-sm font-mono">
             </div>
             <div>
-                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Código de Barras</label>
-                <input type="text" name="barcode" value="{{ old('barcode') }}" placeholder="770..."
-                       class="input-night w-full text-sm font-mono">
-            </div>
-            <div>
-                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Unidad Base *</label>
-                <select name="base_unit" required class="input-night w-full text-sm">
-                    <option value="unidad">Unidad</option>
-                    <option value="botella">Botella</option>
-                    <option value="lata">Lata</option>
+                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">
+                    Unidad Base <span class="text-rose-500 font-bold">* Obligatorio</span>
+                </label>
+                <select name="base_unit" required class="input-night w-full text-sm @error('base_unit') border-rose-500 ring-2 ring-rose-500/20 @enderror">
+                    <option value="unidad" {{ old('base_unit') == 'unidad' ? 'selected' : '' }}>Unidad</option>
+                    <option value="botella" {{ old('base_unit') == 'botella' ? 'selected' : '' }}>Botella</option>
+                    <option value="lata" {{ old('base_unit') == 'lata' ? 'selected' : '' }}>Lata</option>
                 </select>
+                @error('base_unit')
+                    <p class="text-rose-500 text-xs mt-1 font-semibold">{{ $message }}</p>
+                @enderror
             </div>
         </div>
 
         <!-- Financial & Stock -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2 border-t border-slate-200 dark:border-slate-800">
             <div>
-                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Costo Unitario ($) *</label>
-                <input type="number" name="price_buy" value="{{ old('price_buy', 0) }}" min="0" step="100" required
-                       class="input-night w-full font-mono text-sm">
+                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">
+                    Costo Unitario ($) <span class="text-rose-500 font-bold">*</span>
+                </label>
+                <input type="number" name="price_buy" value="{{ old('price_buy', 0) }}" min="0" step="50" required
+                       class="input-night w-full font-mono text-sm @error('price_buy') border-rose-500 ring-2 ring-rose-500/20 @enderror">
+                @error('price_buy')
+                    <p class="text-rose-500 text-xs mt-1 font-semibold">{{ $message }}</p>
+                @enderror
             </div>
             <div>
-                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Precio Venta ($) *</label>
-                <input type="number" name="price_sell" value="{{ old('price_sell', 0) }}" min="0" step="100" required
-                       class="input-night w-full text-emerald-600 dark:text-emerald-400 font-mono font-bold text-sm">
+                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">
+                    Precio Venta ($) <span class="text-rose-500 font-bold">*</span>
+                </label>
+                <input type="number" name="price_sell" value="{{ old('price_sell', 0) }}" min="0" step="50" required
+                       class="input-night w-full text-emerald-600 dark:text-emerald-400 font-mono font-bold text-sm @error('price_sell') border-rose-500 ring-2 ring-rose-500/20 @enderror">
+                @error('price_sell')
+                    <p class="text-rose-500 text-xs mt-1 font-semibold">{{ $message }}</p>
+                @enderror
             </div>
             <div>
-                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Stock Inicial *</label>
+                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">
+                    Stock Inicial <span class="text-rose-500 font-bold">*</span>
+                </label>
                 <input type="number" name="stock" value="{{ old('stock', 0) }}" min="0" step="1" required
-                       class="input-night w-full font-mono text-sm">
+                       class="input-night w-full font-mono text-sm @error('stock') border-rose-500 ring-2 ring-rose-500/20 @enderror">
+                @error('stock')
+                    <p class="text-rose-500 text-xs mt-1 font-semibold">{{ $message }}</p>
+                @enderror
             </div>
             <div>
-                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Stock Mínimo *</label>
+                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">
+                    Stock Mínimo <span class="text-rose-500 font-bold">*</span>
+                </label>
                 <input type="number" name="stock_min" value="{{ old('stock_min', 5) }}" min="0" step="1" required
-                       class="input-night w-full font-mono text-sm">
+                       class="input-night w-full font-mono text-sm @error('stock_min') border-rose-500 ring-2 ring-rose-500/20 @enderror">
+                @error('stock_min')
+                    <p class="text-rose-500 text-xs mt-1 font-semibold">{{ $message }}</p>
+                @enderror
             </div>
         </div>
 
         <!-- Image Upload Field with Preview -->
         <div class="pt-3 border-t border-slate-200 dark:border-slate-800" x-data="{ imagePreview: null }">
-            <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1.5">Foto del Producto (Opcional)</label>
+            <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1.5">
+                Foto del Producto <span class="text-slate-400 font-normal">(Opcional)</span>
+            </label>
             <div class="flex items-center gap-4">
                 <div class="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
                     <template x-if="imagePreview">
@@ -100,7 +145,7 @@
 
         <!-- Commercial Liquor / Beer Rules Checkboxes -->
         <div class="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-3">
-            <h4 class="text-xs font-bold uppercase tracking-wider text-cyan-600 dark:text-cyan-400">Reglas Comerciales de Licorera</h4>
+            <h4 class="text-xs font-bold uppercase tracking-wider text-cyan-600 dark:text-cyan-400">Reglas Comerciales de Licorera (Opcional)</h4>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <label class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800 rounded-xl cursor-pointer hover:border-emerald-500 transition-colors">
                     <input type="checkbox" name="is_beer" value="1" x-model="isBeer" class="w-4 h-4 rounded text-emerald-600 focus:ring-0">
@@ -122,16 +167,19 @@
 
         <!-- Beer Presentations Configuration (If isBeer is checked) -->
         <div x-show="isBeer" x-cloak class="p-4 bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-3">
-            <h4 class="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Presentaciones Autorizadas de Cerveza</h4>
+            <div>
+                <h4 class="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Presentaciones de Cerveza (Opcional)</h4>
+                <p class="text-[11px] text-slate-400">Ingresa el precio de venta si deseas habilitar la venta por Six-Pack o Caja. Si no vendes paquetes, deja el campo vacío.</p>
+            </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <!-- Six pack -->
                 <div class="p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl space-y-2 shadow-sm">
                     <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Six-Pack (6 Unidades)</span>
-                    <input type="hidden" name="presentations[0][name]" value="Six-Pack (6 Uds)">
-                    <input type="hidden" name="presentations[0][conversion_factor]" value="6">
+                    <input type="hidden" name="presentations[0][name]" value="Six-Pack (6 Uds)" :disabled="!isBeer">
+                    <input type="hidden" name="presentations[0][conversion_factor]" value="6" :disabled="!isBeer">
                     <div>
-                        <label class="text-[10px] text-slate-500 dark:text-slate-400 block uppercase">Precio de Venta ($)</label>
-                        <input type="number" name="presentations[0][sale_price]" placeholder="Ej: 24000"
+                        <label class="text-[10px] text-slate-500 dark:text-slate-400 block uppercase font-medium">Precio de Venta Six-Pack ($)</label>
+                        <input type="number" name="presentations[0][sale_price]" :disabled="!isBeer" placeholder="Ej: 24000 (Opcional)"
                                class="input-night w-full text-emerald-600 dark:text-emerald-400 font-mono text-xs">
                     </div>
                 </div>
@@ -139,11 +187,11 @@
                 <!-- Crate / Caja 24 -->
                 <div class="p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl space-y-2 shadow-sm">
                     <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Caja / Canasta (24 Unidades)</span>
-                    <input type="hidden" name="presentations[1][name]" value="Caja (24 Uds)">
-                    <input type="hidden" name="presentations[1][conversion_factor]" value="24">
+                    <input type="hidden" name="presentations[1][name]" value="Caja (24 Uds)" :disabled="!isBeer">
+                    <input type="hidden" name="presentations[1][conversion_factor]" value="24" :disabled="!isBeer">
                     <div>
-                        <label class="text-[10px] text-slate-500 dark:text-slate-400 block uppercase">Precio de Venta ($)</label>
-                        <input type="number" name="presentations[1][sale_price]" placeholder="Ej: 90000"
+                        <label class="text-[10px] text-slate-500 dark:text-slate-400 block uppercase font-medium">Precio de Venta Caja ($)</label>
+                        <input type="number" name="presentations[1][sale_price]" :disabled="!isBeer" placeholder="Ej: 90000 (Opcional)"
                                class="input-night w-full text-emerald-600 dark:text-emerald-400 font-mono text-xs">
                     </div>
                 </div>

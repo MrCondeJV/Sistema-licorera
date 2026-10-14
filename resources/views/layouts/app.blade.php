@@ -315,14 +315,28 @@
             @endif
 
             @if(session('error') || $errors->any())
-                <div class="mb-4 p-3.5 bg-rose-50 border border-rose-200 dark:bg-rose-950/80 dark:border-rose-500/30 rounded-2xl text-rose-800 dark:text-rose-300 flex items-center justify-between text-sm shadow-sm">
-                    <div class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                        </svg>
-                        <span class="font-medium">{{ session('error') ?? $errors->first() }}</span>
+                <div class="mb-4 p-4 bg-rose-50 border border-rose-200 dark:bg-rose-950/80 dark:border-rose-500/30 rounded-2xl text-rose-800 dark:text-rose-300 text-sm shadow-sm">
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            <div>
+                                @if(session('error'))
+                                    <p class="font-bold text-sm">{{ session('error') }}</p>
+                                @endif
+                                @if($errors->any())
+                                    <p class="font-bold text-sm mb-1.5">No se pudo completar la operación. Por favor revisa los siguientes campos:</p>
+                                    <ul class="list-disc list-inside space-y-1 text-xs text-rose-700 dark:text-rose-300 font-medium">
+                                        @foreach($errors->all() as $err)
+                                            <li>{{ $err }}</li>
+                                        @endforeach
+                                    </ul>
+                                @endif
+                            </div>
+                        </div>
+                        <button type="button" @click="$el.closest('div.mb-4').remove()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white text-lg font-bold">&times;</button>
                     </div>
-                    <button type="button" @click="$el.parentElement.remove()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white">&times;</button>
                 </div>
             @endif
 
@@ -494,11 +508,24 @@
         </div>
     </div>
 
-    <!-- PWA Service Worker Registration & Global Flash Alerts -->
+    <!-- PWA Service Worker Registration & Cache Invalidation -->
     <script>
+        // Immediately purge any stale Service Worker cache keys from browser storage
+        if ('caches' in window) {
+            caches.keys().then(names => {
+                for (let name of names) {
+                    if (name.includes('lanoche') || name.includes('pos-v1') || name.includes('pos-v2')) {
+                        caches.delete(name);
+                    }
+                }
+            });
+        }
+
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration error', err));
+                navigator.serviceWorker.register('/sw.js').then(reg => {
+                    reg.update();
+                }).catch(err => console.log('SW registration error', err));
             });
         }
 

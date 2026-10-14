@@ -97,6 +97,13 @@ class IdentifyTenant
             view()->share('accessibleTenants', $accessibleTenants);
         }
 
-        return $next($request);
+        $response = $next($request);
+
+        // Prevent browsers and proxies from caching authenticated pages across tenants/refreshes
+        $response->headers->set('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate');
+        $response->headers->set('Pragma', 'no-cache');
+        $response->headers->set('Expires', 'Sun, 02 Jan 1990 00:00:00 GMT');
+
+        return $response;
     }
 }

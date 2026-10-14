@@ -18,28 +18,45 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Nombre del Producto *</label>
+                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">
+                    Nombre del Producto <span class="text-rose-500 font-bold">* Obligatorio</span>
+                </label>
                 <input type="text" name="name" value="{{ old('name', $product->name) }}" required
-                       class="input-night w-full text-sm">
+                       class="input-night w-full text-sm @error('name') border-rose-500 ring-2 ring-rose-500/20 @enderror">
+                @error('name')
+                    <p class="text-rose-500 text-xs mt-1 font-semibold">{{ $message }}</p>
+                @enderror
             </div>
             <div>
-                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Categoría *</label>
-                <select name="category_id" required class="input-night w-full text-sm">
+                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">
+                    Categoría <span class="text-rose-500 font-bold">* Obligatorio</span>
+                </label>
+                <select name="category_id" required class="input-night w-full text-sm @error('category_id') border-rose-500 ring-2 ring-rose-500/20 @enderror">
                     @foreach($categories as $cat)
                         <option value="{{ $cat->id }}" {{ (old('category_id', $product->category_id) == $cat->id) ? 'selected' : '' }}>{{ $cat->name }}</option>
                     @endforeach
                 </select>
+                @error('category_id')
+                    <p class="text-rose-500 text-xs mt-1 font-semibold">{{ $message }}</p>
+                @enderror
             </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">SKU *</label>
+                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">
+                    SKU / Referencia <span class="text-rose-500 font-bold">* Obligatorio</span>
+                </label>
                 <input type="text" name="sku" value="{{ old('sku', $product->sku) }}" required
-                       class="input-night w-full text-sm font-mono">
+                       class="input-night w-full text-sm font-mono @error('sku') border-rose-500 ring-2 ring-rose-500/20 @enderror">
+                @error('sku')
+                    <p class="text-rose-500 text-xs mt-1 font-semibold">{{ $message }}</p>
+                @enderror
             </div>
             <div>
-                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Código de Barras</label>
+                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">
+                    Código de Barras <span class="text-slate-400 font-normal">(Opcional)</span>
+                </label>
                 <input type="text" name="barcode" value="{{ old('barcode', $product->barcode) }}"
                        class="input-night w-full text-sm font-mono">
             </div>
@@ -47,19 +64,34 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-slate-200 dark:border-slate-800">
             <div>
-                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Costo ($)</label>
-                <input type="number" name="price_buy" value="{{ old('price_buy', $product->price_buy) }}" min="0" step="100" required
-                       class="input-night w-full font-mono text-sm">
+                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">
+                    Costo ($) <span class="text-rose-500 font-bold">* Obligatorio</span>
+                </label>
+                <input type="number" name="price_buy" value="{{ old('price_buy', $product->price_buy) }}" min="0" step="50" required
+                       class="input-night w-full font-mono text-sm @error('price_buy') border-rose-500 ring-2 ring-rose-500/20 @enderror">
+                @error('price_buy')
+                    <p class="text-rose-500 text-xs mt-1 font-semibold">{{ $message }}</p>
+                @enderror
             </div>
             <div>
-                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Precio Venta ($)</label>
-                <input type="number" name="price_sell" value="{{ old('price_sell', $product->price_sell) }}" min="0" step="100" required
-                       class="input-night w-full text-emerald-600 dark:text-emerald-400 font-mono font-bold text-sm">
+                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">
+                    Precio Venta ($) <span class="text-rose-500 font-bold">* Obligatorio</span>
+                </label>
+                <input type="number" name="price_sell" value="{{ old('price_sell', $product->price_sell) }}" min="0" step="50" required
+                       class="input-night w-full text-emerald-600 dark:text-emerald-400 font-mono font-bold text-sm @error('price_sell') border-rose-500 ring-2 ring-rose-500/20 @enderror">
+                @error('price_sell')
+                    <p class="text-rose-500 text-xs mt-1 font-semibold">{{ $message }}</p>
+                @enderror
             </div>
             <div>
-                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Stock Mínimo</label>
+                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">
+                    Stock Mínimo <span class="text-rose-500 font-bold">* Obligatorio</span>
+                </label>
                 <input type="number" name="stock_min" value="{{ old('stock_min', $product->stock_min) }}" min="0" step="1" required
-                       class="input-night w-full font-mono text-sm">
+                       class="input-night w-full font-mono text-sm @error('stock_min') border-rose-500 ring-2 ring-rose-500/20 @enderror">
+                @error('stock_min')
+                    <p class="text-rose-500 text-xs mt-1 font-semibold">{{ $message }}</p>
+                @enderror
             </div>
         </div>
 
