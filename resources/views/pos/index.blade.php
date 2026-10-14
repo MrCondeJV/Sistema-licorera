@@ -70,8 +70,8 @@
             @endforeach
         </div>
 
-        <!-- Products Grid: STRICTLY 3 COLUMNS ON PC WITH PHOTO (Matches Mesas y Cuentas) -->
-        <div class="flex-1 min-h-0 overflow-y-auto pr-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3 gap-3.5 sm:gap-4 mt-2">
+        <!-- Products Grid: Responsive 2-4 columns based on available space -->
+        <div class="flex-1 min-h-0 overflow-y-auto pr-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-3.5 mt-2">
             <template x-for="product in filteredProducts" :key="product.id">
                 <div class="bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 flex flex-col justify-between hover:border-emerald-400 dark:hover:border-emerald-600 transition-all relative group shadow-sm hover:shadow-md"
                      :class="product.stock <= 0 ? 'opacity-50' : ''">
@@ -136,8 +136,8 @@
         </div>
     </div>
 
-    <!-- RIGHT: Cart & Checkout Sidebar (Wide PC Mode, Zero Scroll, Matches Mesas y Cuentas) -->
-    <div class="w-full sm:w-[460px] lg:w-[460px] xl:w-[490px] 2xl:w-[520px] flex flex-col h-full min-h-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 sm:p-5 shadow-sm shrink-0 overflow-hidden"
+    <!-- RIGHT: Cart & Checkout Sidebar (Proportional PC Ticket, Zero Scroll) -->
+    <div class="w-full lg:w-96 xl:w-[420px] 2xl:w-[460px] flex flex-col h-full min-h-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 sm:p-5 shadow-sm shrink-0 overflow-hidden"
          :class="activeTab === 'cart' ? 'flex' : 'hidden lg:flex'">
         
         <!-- Cart Header: Table & Customer Selector Area -->

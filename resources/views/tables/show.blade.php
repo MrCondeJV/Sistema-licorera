@@ -64,8 +64,8 @@
             @endforeach
         </div>
 
-        <!-- Product Cards Grid: STRICTLY 3 COLUMNS ON PC (Matches POS) -->
-        <div class="flex-1 min-h-0 overflow-y-auto pr-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3 gap-3.5 sm:gap-4 mt-2">
+        <!-- Product Cards Grid: Responsive 2-4 columns based on available space -->
+        <div class="flex-1 min-h-0 overflow-y-auto pr-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-3.5 mt-2">
             @foreach($products as $product)
                 <div class="bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 flex flex-col justify-between hover:border-emerald-400 dark:hover:border-emerald-600 transition-all shadow-sm hover:shadow-md"
                      x-show="(selectedCategory === 'all' || selectedCategory === '{{ $product->category_id }}') && ('{{ strtolower(addslashes($product->name)) }}'.includes(search.toLowerCase()) || search === '')">
@@ -136,32 +136,32 @@
         </div>
     </div>
 
-    <!-- RIGHT: Active Tab Consumption Detail & Big Controls (Wide PC Mode, Zero Scroll) -->
-    <div class="w-full sm:w-[460px] lg:w-[460px] xl:w-[490px] 2xl:w-[520px] flex flex-col h-full min-h-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 sm:p-5 shadow-sm shrink-0 overflow-hidden"
+    <!-- RIGHT: Active Tab Consumption Detail & Big Controls (Proportional PC Ticket) -->
+    <div class="w-full lg:w-80 xl:w-96 2xl:w-[420px] flex flex-col h-full min-h-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 sm:p-5 shadow-sm shrink-0 overflow-hidden"
          :class="activeTab === 'bill' ? 'flex' : 'hidden lg:flex'">
         
         <!-- Header: Table Info & Transfer Button -->
         <div class="pb-3 border-b border-slate-200 dark:border-slate-800 shrink-0">
             <div class="flex items-start justify-between gap-2">
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-2xl font-black text-slate-900 dark:text-white">Mesa {{ $table->name }}</span>
-                        <span class="px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700 text-xs font-black tracking-wide">CUENTA ABIERTA</span>
+                <div class="min-w-0 flex-1">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white truncate">Mesa {{ $table->name }}</span>
+                        <span class="px-2.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700 text-[11px] font-black tracking-wide shrink-0">CUENTA ABIERTA</span>
                     </div>
-                    <p class="text-sm font-bold text-slate-700 dark:text-slate-200 mt-1 flex items-center gap-1.5">
+                    <p class="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 mt-1 flex items-center gap-1.5 truncate">
                         <span>👤</span>
-                        <span>{{ $account?->client_name ?: 'Consumidor General' }}</span>
+                        <span class="truncate">{{ $account?->client_name ?: 'Consumidor General' }}</span>
                     </p>
-                    <p class="text-xs text-slate-400 mt-0.5">
+                    <p class="text-[11px] text-slate-400 mt-0.5 truncate">
                         Abierta por: {{ $account?->opener?->name }} &bull; {{ $account?->opened_at?->diffForHumans() }}
                     </p>
                 </div>
 
                 <!-- Transfer Button -->
                 <button type="button" @click="showTransferModal = true" 
-                        class="px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold border border-slate-200 dark:border-slate-700 flex items-center gap-1.5 transition-colors shrink-0 shadow-sm"
+                        class="px-2.5 sm:px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold border border-slate-200 dark:border-slate-700 flex items-center gap-1.5 transition-colors shrink-0 shadow-sm"
                         title="Trasladar todo a otra mesa">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
                     </svg>
                     <span>Trasladar</span>
@@ -172,12 +172,12 @@
         <!-- Consumed Items List: INTERNAL SCROLL ONLY, LARGE READABLE ITEMS & BIG STEPPERS -->
         <div class="flex-1 min-h-0 overflow-y-auto py-3 space-y-2.5 pr-1">
             @if(!$account || $account->items->isEmpty())
-                <div class="h-full flex flex-col items-center justify-center text-center p-6 text-slate-400">
-                    <svg class="w-14 h-14 mb-2 text-slate-300 dark:text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="h-full min-h-[160px] flex flex-col items-center justify-center text-center p-4 text-slate-400">
+                    <svg class="w-12 h-12 mb-2 text-slate-300 dark:text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
                     </svg>
                     <p class="text-sm font-bold text-slate-700 dark:text-slate-200">No hay productos agregados</p>
-                    <p class="text-xs text-slate-400 mt-1">Selecciona productos del catálogo a la izquierda</p>
+                    <p class="text-xs text-slate-400 mt-1 max-w-[220px]">Selecciona productos del catálogo a la izquierda</p>
                 </div>
             @else
                 @foreach($account->items as $item)
