@@ -37,7 +37,7 @@ class CustomerController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        Customer::create([
+        $customer = Customer::create([
             'tenant_id' => app(\App\Services\TenantContext::class)->getTenantId()
                 ?? session('active_tenant_id')
                 ?? \App\Models\Tenant::first()?->id,
@@ -51,6 +51,20 @@ class CustomerController extends Controller
             'notes' => $request->input('notes'),
             'is_active' => true,
         ]);
+
+        AuditService::log(
+            'customer_created',
+            'Customer',
+            $customer->id,
+            null,
+            [
+                'name' => $customer->name,
+                'phone' => $customer->phone,
+                'tax_id' => $customer->tax_id,
+                'credit_limit' => (float) $customer->credit_limit,
+            ],
+            "Registro de cliente: {$customer->name}"
+        );
 
         return redirect()->route('customers.index')->with('success', 'Cliente registrado correctamente.');
     }

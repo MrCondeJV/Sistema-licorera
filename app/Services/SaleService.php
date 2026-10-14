@@ -280,7 +280,20 @@ class SaleService
                 }
             }
 
-            AuditService::log('sale_created', 'Sale', $sale->id, null, ['total' => $total, 'sale_number' => $saleNumber], "Venta registrada con éxito");
+            AuditService::log(
+                'sale_created',
+                'Sale',
+                $sale->id,
+                null,
+                [
+                    'sale_number' => $saleNumber,
+                    'total' => (float) $total,
+                    'item_count' => count($items),
+                    'customer' => $customer?->name ?? 'Cliente General',
+                    'is_debt' => (bool) $chargeToDebt,
+                ],
+                "Venta {$saleNumber} por $" . number_format($total, 0, ',', '.') . " COP"
+            );
 
             return $sale;
         });

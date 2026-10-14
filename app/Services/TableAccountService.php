@@ -158,6 +158,21 @@ class TableAccountService
 
         $account->recalculateTotals();
 
+        AuditService::log(
+            'table_item_added',
+            'Account',
+            $account->id,
+            null,
+            [
+                'product' => $product->name,
+                'presentation' => $presentationName,
+                'quantity' => (float) $quantity,
+                'unit_price' => (float) $unitPrice,
+                'table' => $account->table?->name ?? 'Mostrador',
+            ],
+            "Añadido {$quantity}x {$product->name} a Mesa " . ($account->table?->name ?? $account->client_name)
+        );
+
         return $item;
     }
 
@@ -171,6 +186,8 @@ class TableAccountService
         }
 
         $item = AccountItem::where('account_id', $account->id)->findOrFail($itemId);
+        $deletedQty = ($qtyToRemove === null || $qtyToRemove >= $item->quantity) ? (float) $item->quantity : (float) $qtyToRemove;
+        $productName = $item->product_name_snapshot;
 
         if ($qtyToRemove === null || $qtyToRemove >= $item->quantity) {
             $item->delete();
@@ -181,6 +198,19 @@ class TableAccountService
         }
 
         $account->recalculateTotals();
+
+        AuditService::log(
+            'table_item_removed',
+            'Account',
+            $account->id,
+            null,
+            [
+                'product' => $productName,
+                'quantity_removed' => $deletedQty,
+                'table' => $account->table?->name ?? 'Mostrador',
+            ],
+            "Retirado {$deletedQty}x {$productName} de Mesa " . ($account->table?->name ?? $account->client_name)
+        );
     }
 
     /**

@@ -8,6 +8,7 @@ use App\Models\InventoryCountItem;
 use App\Models\Product;
 use App\Models\ProductPresentation;
 use App\Models\StockMovement;
+use App\Services\AuditService;
 use App\Services\InventoryService;
 use Exception;
 use Illuminate\Http\Request;
@@ -179,6 +180,23 @@ class InventoryController extends Controller
             }
         }
 
+        AuditService::log(
+            'product_created',
+            'Product',
+            $product->id,
+            null,
+            [
+                'name' => $product->name,
+                'sku' => $product->sku,
+                'category_id' => $product->category_id,
+                'price_buy' => (float) $product->price_buy,
+                'price_sell' => (float) $product->price_sell,
+                'stock' => (float) $product->stock,
+                'stock_min' => (int) $product->stock_min,
+            ],
+            "Creación de producto '{$product->name}' por " . (auth()->user()?->name ?? 'Usuario')
+        );
+
         return redirect()->route('inventory.index')->with('success', "Producto '{$product->name}' creado correctamente.");
     }
 
@@ -226,6 +244,16 @@ class InventoryController extends Controller
             'image.max' => 'La imagen seleccionada supera el límite máximo de 5MB.',
         ]);
 
+        $oldValues = [
+            'name' => $product->name,
+            'sku' => $product->sku,
+            'category_id' => $product->category_id,
+            'price_buy' => (float) $product->price_buy,
+            'price_sell' => (float) $product->price_sell,
+            'stock_min' => (int) $product->stock_min,
+            'is_active' => (bool) $product->is_active,
+        ];
+
         $data = [
             'category_id' => $validated['category_id'],
             'sku' => $validated['sku'],
@@ -249,6 +277,37 @@ class InventoryController extends Controller
         }
 
         $product->update($data);
+
+        $newValues = [
+            'name' => $product->name,
+            'sku' => $product->sku,
+            'category_id' => $product->category_id,
+            'price_buy' => (float) $product->price_buy,
+            'price_sell' => (float) $product->price_sell,
+            'stock_min' => (int) $product->stock_min,
+            'is_active' => (bool) $product->is_active,
+        ];
+
+        $changes = [];
+        foreach ($newValues as $k => $v) {
+            if ($oldValues[$k] != $v) {
+                $changes[$k] = ['old' => $oldValues[$k], 'new' => $v];
+            }
+        }
+
+        $reason = "Actualización de producto '{$product->name}'";
+        if (!empty($changes)) {
+            $reason .= " (Modificó: " . implode(', ', array_keys($changes)) . ")";
+        }
+
+        AuditService::log(
+            'product_updated',
+            'Product',
+            $product->id,
+            $oldValues,
+            $newValues,
+            $reason
+        );
 
         return redirect()->route('inventory.index')->with('success', "Producto actualizado correctamente.");
     }

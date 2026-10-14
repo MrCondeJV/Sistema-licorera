@@ -17,9 +17,12 @@ class AuditService
     ): AuditLog {
         $context = app(TenantContext::class);
         $user = auth()->user();
+        $tenantId = $context->getTenantId()
+            ?? session('active_tenant_id')
+            ?? $user?->tenantUsers()->first()?->tenant_id;
 
         return AuditLog::create([
-            'tenant_id' => $context->getTenantId(),
+            'tenant_id' => $tenantId,
             'user_id' => $user?->id,
             'action' => $action,
             'entity_type' => $entityType,

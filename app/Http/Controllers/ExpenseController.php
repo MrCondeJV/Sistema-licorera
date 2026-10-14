@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\CashSession;
 use App\Models\Expense;
 use App\Models\ExpenseCategory;
+use App\Services\AuditService;
 use Illuminate\Http\Request;
 
 class ExpenseController extends Controller
@@ -40,7 +41,7 @@ class ExpenseController extends Controller
             $cashSessionId = $activeSession?->id;
         }
 
-        Expense::create([
+        $expense = Expense::create([
             'tenant_id' => app(\App\Services\TenantContext::class)->getTenantId(),
             'branch_id' => app(\App\Services\TenantContext::class)->getBranchId(),
             'expense_category_id' => $request->input('expense_category_id'),
@@ -52,6 +53,23 @@ class ExpenseController extends Controller
             'receipt_number' => $request->input('receipt_number'),
             'expense_date' => $request->input('expense_date'),
         ]);
+
+        $category = ExpenseCategory::find($expense->expense_category_id);
+
+        AuditService::log(
+            'expense_created',
+            'Expense',
+            $expense->id,
+            null,
+            [
+                'amount' => (float) $expense->amount,
+                'category' => $category?->name,
+                'payment_method' => $expense->payment_method,
+                'description' => $expense->description,
+                'receipt_number' => $expense->receipt_number,
+            ],
+            "Gasto operativo registrado: $" . number_format($expense->amount, 0, ',', '.') . " COP ({$category?->name})"
+        );
 
         return redirect()->route('expenses.index')->with('success', 'Gasto operativo registrado exitosamente.');
     }
