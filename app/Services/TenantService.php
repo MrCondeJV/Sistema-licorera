@@ -170,7 +170,7 @@ class TenantService
                 'tax_id' => $tenant->tax_id ?? '900.000.000-1',
                 'address' => $tenant->address ?? '',
                 'phone' => $tenant->phone ?? '',
-                'receipt_message' => '¡Gracias por visitarnos! La Noche te espera siempre.',
+                'receipt_message' => '¡Gracias por visitarnos!',
                 'printer_width' => '80mm', // 58mm or 80mm
                 'lock_timeout_minutes' => '15',
                 'debts_module_enabled' => '1',

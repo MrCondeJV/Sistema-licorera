@@ -49,6 +49,6 @@ class BusinessRegistrationController extends Controller
             'last_activity_time' => time(),
         ]);
 
-        return redirect()->route('pos.index')->with('success', "¡Bienvenido a LA NOCHE! Tu licorera '{$result['tenant']->name}' ha sido configurada con éxito.");
+        return redirect()->route('pos.index')->with('success', "¡Bienvenido a LICORERA POS! Tu licorera '{$result['tenant']->name}' ha sido configurada con éxito.");
     }
 }

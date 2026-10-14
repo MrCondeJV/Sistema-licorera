@@ -1,4 +1,4 @@
-const CACHE_NAME = 'licorera-pos-v3';
+const CACHE_NAME = 'licorera-pos-v4';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
