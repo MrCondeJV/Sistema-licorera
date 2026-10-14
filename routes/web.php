@@ -15,6 +15,7 @@ use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\SuperadminController;
+use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\TableController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -26,14 +27,12 @@ use Illuminate\Support\Facades\Route;
 */
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
-Route::post('/login/pin', [AuthController::class, 'loginWithPin'])->name('login.pin');
 Route::get('/unlock', [AuthController::class, 'showUnlock'])->name('unlock');
-Route::post('/unlock', [AuthController::class, 'unlockWithPin'])->name('unlock.pin');
+Route::post('/unlock', [AuthController::class, 'unlock'])->name('unlock.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Public SaaS Tenant Registration
-Route::get('/register-business', [BusinessRegistrationController::class, 'showForm'])->name('business.register');
-Route::post('/register-business', [BusinessRegistrationController::class, 'register'])->name('business.register.submit');
+// Public SaaS Tenant Registration (Deshabilitado para Producción — Alta gestionada por Superadmin)
+Route::redirect('/register-business', '/login')->name('business.register');
 
 /*
 |--------------------------------------------------------------------------
@@ -51,6 +50,7 @@ Route::middleware(['pin.auth'])->group(function () {
     // POS Sales screen (Counter quick sales)
     Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
     Route::post('/pos/checkout', [PosController::class, 'checkout'])->name('pos.checkout');
+    Route::post('/pos/quick-customer', [PosController::class, 'quickCustomer'])->name('pos.customer.quick');
     Route::get('/pos/receipt/{sale}', [PosController::class, 'receipt'])->name('pos.receipt');
 
     // Tables and Open Tabs
@@ -93,6 +93,12 @@ Route::middleware(['pin.auth'])->group(function () {
         Route::post('/purchases', [PurchaseController::class, 'store'])->name('purchases.store');
         Route::post('/purchases/{purchase}/receive', [PurchaseController::class, 'receive'])->name('purchases.receive');
 
+        Route::get('/suppliers', [SupplierController::class, 'index'])->name('suppliers.index');
+        Route::post('/suppliers', [SupplierController::class, 'store'])->name('suppliers.store');
+        Route::post('/suppliers/quick', [SupplierController::class, 'quickStore'])->name('suppliers.quick');
+        Route::put('/suppliers/{supplier}', [SupplierController::class, 'update'])->name('suppliers.update');
+        Route::post('/suppliers/{supplier}/toggle', [SupplierController::class, 'toggleStatus'])->name('suppliers.toggle');
+
         // Expenses
         Route::get('/expenses', [ExpenseController::class, 'index'])->name('expenses.index');
         Route::post('/expenses', [ExpenseController::class, 'store'])->name('expenses.store');
@@ -119,7 +125,7 @@ Route::middleware(['pin.auth'])->group(function () {
     Route::middleware(['role:admin'])->group(function () {
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
         Route::post('/users', [UserController::class, 'store'])->name('users.store');
-        Route::post('/users/{user}/reset-pin', [UserController::class, 'resetPin'])->name('users.reset-pin');
+        Route::post('/users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
         Route::post('/users/{user}/toggle', [UserController::class, 'toggleStatus'])->name('users.toggle');
 
         Route::get('/audit', [AuditController::class, 'index'])->name('audit.index');

@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\Account;
 use App\Models\CashSession;
+use App\Models\Customer;
+use App\Models\CustomerDebt;
 use App\Models\Payment;
 use App\Models\PaymentMethod;
 use App\Models\Product;
@@ -34,7 +36,8 @@ class SaleService
         User $user,
         ?int $accountId = null,
         ?int $customerId = null,
-        float $discountTotal = 0
+        float $discountTotal = 0,
+        bool $chargeToDebt = false
     ): Sale {
         if (!$cashSession->isOpen()) {
             throw new Exception("La caja actual no se encuentra abierta. Debe abrir turno de caja antes de vender.");
@@ -44,6 +47,10 @@ class SaleService
             throw new Exception("No hay productos en la venta.");
         }
 
+        if ($chargeToDebt && empty($customerId)) {
+            throw new Exception("Debe seleccionar o asignar un cliente para poder agregar la venta a su cuenta de deuda.");
+        }
+
         return DB::transaction(function () use (
             $items,
             $payments,
@@ -51,10 +58,18 @@ class SaleService
             $user,
             $accountId,
             $customerId,
-            $discountTotal
+            $discountTotal,
+            $chargeToDebt
         ) {
-            $tenantId = app(TenantContext::class)->getTenantId();
-            $branchId = app(TenantContext::class)->getBranchId();
+            $tenantId = app(TenantContext::class)->getTenantId() 
+                ?? session('active_tenant_id') 
+                ?? $cashSession->tenant_id 
+                ?? \App\Models\Tenant::first()?->id;
+
+            $branchId = app(TenantContext::class)->getBranchId() 
+                ?? session('active_branch_id') 
+                ?? $cashSession->branch_id 
+                ?? \App\Models\Branch::where('tenant_id', $tenantId)->first()?->id;
 
             // 1. Generate unique sequential invoice number for tenant
             $lastSale = Sale::withoutGlobalScopes()
@@ -131,15 +146,24 @@ class SaleService
 
             $total = max(0, $subtotal + $taxTotal - $discountTotal);
 
-            // 3. Validate payments cover total
-            $totalPaid = 0;
-            foreach ($payments as $pay) {
-                $totalPaid += (float) $pay['amount'];
-            }
+            // 3. Validate payments (or customer credit if charged to debt)
+            $customer = null;
+            if ($chargeToDebt) {
+                $customer = Customer::findOrFail($customerId);
+                if ($customer->credit_limit > 0 && ($customer->current_debt + $total) > $customer->credit_limit) {
+                    $disponible = max(0, $customer->credit_limit - $customer->current_debt);
+                    throw new Exception("El cliente {$customer->name} excede su cupo de crédito ($" . number_format($customer->credit_limit, 0, ',', '.') . "). Cupo disponible: $" . number_format($disponible, 0, ',', '.') . " COP.");
+                }
+            } else {
+                $totalPaid = 0;
+                foreach ($payments as $pay) {
+                    $totalPaid += (float) $pay['amount'];
+                }
 
-            // Allow rounding tolerance of 1 peso COP
-            if (abs($totalPaid - $total) > 1.0) {
-                throw new Exception("El valor abonado ($" . number_format($totalPaid, 0, ',', '.') . ") no coincide con el total de la venta ($" . number_format($total, 0, ',', '.') . ").");
+                // Allow rounding tolerance of 1 peso COP
+                if (abs($totalPaid - $total) > 1.0) {
+                    throw new Exception("El valor abonado ($" . number_format($totalPaid, 0, ',', '.') . ") no coincide con el total de la venta ($" . number_format($total, 0, ',', '.') . ").");
+                }
             }
 
             // 4. Create Sale Record
@@ -188,25 +212,52 @@ class SaleService
                 );
             }
 
-            // 6. Record Payments
-            foreach ($payments as $payData) {
-                $paymentMethod = PaymentMethod::findOrFail($payData['payment_method_id']);
-                $amount = (float) $payData['amount'];
-                $received = isset($payData['received_amount']) ? (float) $payData['received_amount'] : $amount;
-                $change = isset($payData['change_amount']) ? (float) $payData['change_amount'] : max(0, $received - $amount);
-
-                Payment::create([
+            // 6. Record Payments OR Register Customer Debt
+            if ($chargeToDebt) {
+                CustomerDebt::create([
                     'tenant_id' => $tenantId,
+                    'customer_id' => $customerId,
                     'sale_id' => $sale->id,
-                    'payment_method_id' => $paymentMethod->id,
-                    'amount' => $amount,
-                    'received_amount' => $received,
-                    'change_amount' => $change,
-                    'reference' => $payData['reference'] ?? null,
-                    'status' => 'confirmed',
-                    'received_by' => $user->id,
-                    'paid_at' => now(),
+                    'user_id' => $user->id,
+                    'original_amount' => $total,
+                    'remaining_amount' => $total,
+                    'status' => 'pending',
+                    'notes' => "Venta {$sale->sale_number} cargada a cuenta",
+                    'due_date' => now()->addDays(30),
                 ]);
+
+                // Update customer current_debt balance
+                $customer->current_debt = (float) $customer->current_debt + $total;
+                $customer->save();
+
+                AuditService::log(
+                    'customer_debt_charged',
+                    'CustomerDebt',
+                    $sale->id,
+                    null,
+                    ['amount' => $total, 'customer' => $customer->name, 'sale_number' => $sale->sale_number],
+                    "Venta cargada a cuenta del cliente sin cobro inmediato"
+                );
+            } else {
+                foreach ($payments as $payData) {
+                    $paymentMethod = PaymentMethod::findOrFail($payData['payment_method_id']);
+                    $amount = (float) $payData['amount'];
+                    $received = isset($payData['received_amount']) ? (float) $payData['received_amount'] : $amount;
+                    $change = isset($payData['change_amount']) ? (float) $payData['change_amount'] : max(0, $received - $amount);
+
+                    Payment::create([
+                        'tenant_id' => $tenantId,
+                        'sale_id' => $sale->id,
+                        'payment_method_id' => $paymentMethod->id,
+                        'amount' => $amount,
+                        'received_amount' => $received,
+                        'change_amount' => $change,
+                        'reference' => $payData['reference'] ?? null,
+                        'status' => 'confirmed',
+                        'received_by' => $user->id,
+                        'paid_at' => now(),
+                    ]);
+                }
             }
 
             // 7. If linked to an open Account, close it and free table

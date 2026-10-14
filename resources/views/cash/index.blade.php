@@ -14,6 +14,19 @@
                 @endif
             </h2>
             <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Control estricto de efectivo físico y segregación de medios electrónicos</p>
+            @if($activeSession)
+                <div class="flex flex-wrap items-center gap-2 mt-2 text-xs">
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-lg font-bold border border-slate-200 dark:border-slate-700">
+                        🖥️ {{ $activeSession->cashRegister->name ?? 'Caja Principal' }}
+                    </span>
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg font-medium border border-slate-200 dark:border-slate-700">
+                        👤 Abierta por: <strong class="text-slate-900 dark:text-white font-bold">{{ $activeSession->user->name }}</strong>
+                    </span>
+                    <span class="text-slate-500 dark:text-slate-400 font-mono text-[11px]">
+                        ⏰ {{ $activeSession->opened_at->format('d/m/Y h:i A') }}
+                    </span>
+                </div>
+            @endif
         </div>
 
         <div class="flex flex-wrap gap-2">
@@ -37,14 +50,18 @@
 
     @if($activeSession)
         <!-- Cash Summary Metrics -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-3">
             <div class="card-night p-3.5">
                 <span class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">Base Inicial</span>
                 <p class="text-lg font-black font-mono text-slate-900 dark:text-white mt-1">${{ number_format($summary['opening_amount'], 0, ',', '.') }}</p>
             </div>
             <div class="card-night p-3.5 border-emerald-500/30 bg-emerald-50/50 dark:bg-emerald-950/20">
-                <span class="text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400">Ventas en Efectivo</span>
+                <span class="text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400">Ventas Efectivo</span>
                 <p class="text-lg font-black font-mono text-emerald-600 dark:text-emerald-400 mt-1">+${{ number_format($summary['cash_sales'], 0, ',', '.') }}</p>
+            </div>
+            <div class="card-night p-3.5 border-emerald-500/30 bg-emerald-50/50 dark:bg-emerald-950/20">
+                <span class="text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400">Abonos Efectivo</span>
+                <p class="text-lg font-black font-mono text-emerald-600 dark:text-emerald-400 mt-1">+${{ number_format($summary['cash_customer_payments'] ?? 0, 0, ',', '.') }}</p>
             </div>
             <div class="card-night p-3.5">
                 <span class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">Entradas Manuales</span>
@@ -55,10 +72,10 @@
                 <p class="text-lg font-black font-mono text-slate-900 dark:text-white mt-1">-${{ number_format($summary['cash_out'], 0, ',', '.') }}</p>
             </div>
             <div class="card-night p-3.5 border-rose-500/30 bg-rose-50/50 dark:bg-rose-950/20">
-                <span class="text-[10px] uppercase font-bold text-rose-600 dark:text-rose-400">Gastos en Efectivo</span>
+                <span class="text-[10px] uppercase font-bold text-rose-600 dark:text-rose-400">Gastos Efectivo</span>
                 <p class="text-lg font-black font-mono text-rose-600 dark:text-rose-400 mt-1">-${{ number_format($summary['cash_expenses'], 0, ',', '.') }}</p>
             </div>
-            <div class="card-night p-3.5 border-emerald-500/40 bg-emerald-100/40 dark:bg-emerald-950/40 shadow-sm">
+            <div class="card-night p-3.5 border-emerald-500/40 bg-emerald-100/40 dark:bg-emerald-950/40 shadow-sm col-span-2 md:col-span-1">
                 <span class="text-[10px] uppercase font-black text-emerald-700 dark:text-emerald-300">Efectivo Esperado</span>
                 <p class="text-xl font-black font-mono text-emerald-700 dark:text-emerald-300 mt-1">${{ number_format($summary['expected_cash'], 0, ',', '.') }}</p>
             </div>
@@ -207,7 +224,7 @@
 
                     <div class="mb-3">
                         <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Monto ($ COP) *</label>
-                        <input type="number" name="amount" min="1" step="1000" required autofocus
+                        <input type="number" name="amount" min="1" step="any" required autofocus
                                class="input-night w-full font-mono font-bold text-lg">
                     </div>
 

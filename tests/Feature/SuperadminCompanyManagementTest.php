@@ -84,7 +84,7 @@ class SuperadminCompanyManagementTest extends TestCase
 
         $adminUser = $tenant->users()->first();
         $this->assertEquals('Sara Morales', $adminUser->name);
-        $this->assertTrue(Hash::check('4321', $adminUser->pin_hash));
+        $this->assertTrue(Hash::check('Secreta2026*', $adminUser->password));
     }
 
     public function test_superadmin_can_edit_company_information(): void

@@ -83,7 +83,7 @@ class TenantService
                 'name' => $data['admin_name'],
                 'email' => $data['email'] ?? null,
                 'phone' => $data['phone'] ?? null,
-                'pin_hash' => bcrypt($data['pin']),
+                'pin_hash' => !empty($data['pin']) ? bcrypt($data['pin']) : bcrypt(Str::random(32)),
                 'password' => !empty($data['password']) ? bcrypt($data['password']) : null,
                 'is_superadmin' => false,
                 'is_active' => true,
@@ -139,14 +139,10 @@ class TenantService
                 ]);
             }
 
-            // 8. Default Payment Methods in Colombia
+            // 8. Default Payment Methods (Efectivo y Transacción Bancaria)
             $paymentMethods = [
                 ['name' => 'Efectivo', 'code' => 'cash', 'is_cash' => true, 'sort_order' => 1],
-                ['name' => 'Nequi', 'code' => 'nequi', 'is_cash' => false, 'sort_order' => 2],
-                ['name' => 'Daviplata', 'code' => 'daviplata', 'is_cash' => false, 'sort_order' => 3],
-                ['name' => 'Tarjeta Débito', 'code' => 'card_debit', 'is_cash' => false, 'sort_order' => 4],
-                ['name' => 'Tarjeta Crédito', 'code' => 'card_credit', 'is_cash' => false, 'sort_order' => 5],
-                ['name' => 'Transferencia Bancaria', 'code' => 'transfer', 'is_cash' => false, 'sort_order' => 6],
+                ['name' => 'Transacción Bancaria', 'code' => 'transfer', 'is_cash' => false, 'sort_order' => 2],
             ];
 
             foreach ($paymentMethods as $pm) {

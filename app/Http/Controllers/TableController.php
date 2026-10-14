@@ -123,8 +123,9 @@ class TableController extends Controller
         }
 
         try {
-            $this->accountService->removeItem($account, $itemId);
-            return back()->with('success', 'Producto eliminado de la cuenta.');
+            $qty = $request->filled('qty') ? (float) $request->input('qty') : null;
+            $this->accountService->removeItem($account, $itemId, $qty);
+            return back()->with('success', 'Cuenta de mesa actualizada.');
         } catch (Exception $e) {
             return back()->with('error', $e->getMessage());
         }

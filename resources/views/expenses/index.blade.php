@@ -78,7 +78,7 @@
 
                 <div class="mb-3">
                     <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Monto ($ COP) *</label>
-                    <input type="number" name="amount" min="1" step="1000" required autofocus
+                    <input type="number" name="amount" min="1" step="any" required autofocus
                            class="input-night w-full font-mono font-bold text-lg">
                 </div>
 

@@ -48,9 +48,14 @@
                             <td class="py-3 px-2 text-slate-500 dark:text-slate-400 max-w-xs truncate">{{ $count->notes ?? 'Sin observaciones' }}</td>
                             <td class="py-3 px-2 text-right">
                                 @if($count->status === 'pending')
-                                    <form action="{{ route('inventory.counts.apply', $count->id) }}" method="POST" onsubmit="return confirm('¿Aplicar este conteo físico y ajustar el stock en el kardex?');">
+                                    <form action="{{ route('inventory.counts.apply', $count->id) }}" method="POST"
+                                          data-confirm="¿Deseas aplicar este conteo físico y ajustar el stock en el kardex de la empresa?"
+                                          data-confirm-title="Aplicar Conteo Físico #{{ $count->id }}"
+                                          data-confirm-btn="Sí, aplicar ajustes"
+                                          data-confirm-danger="false"
+                                          data-confirm-icon="question">
                                         @csrf
-                                        <button type="submit" class="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs rounded-xl shadow-md">
+                                        <button type="submit" class="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs rounded-xl shadow-md transition-all active:scale-95">
                                             Aplicar Ajustes
                                         </button>
                                     </form>

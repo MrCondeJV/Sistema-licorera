@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CashSession;
 use App\Models\Category;
+use App\Models\Customer;
 use App\Models\PaymentMethod;
 use App\Models\Product;
 use App\Models\Sale;
@@ -25,10 +26,8 @@ class PosController extends Controller
     {
         $user = auth()->user();
 
-        // Check if there is an open cash shift for this user or register
-        $openCashSession = CashSession::where('status', 'open')
-            ->where('user_id', $user->id)
-            ->first();
+        // Check if there is an open cash shift for this user, register or store
+        $openCashSession = CashSession::getActiveSession($user->id);
 
         $categories = Category::where('is_active', true)
             ->orderBy('sort_order')
@@ -43,8 +42,12 @@ class PosController extends Controller
             ->get();
 
         $tables = Table::where('is_active', true)
-            ->with('activeAccount')
+            ->with(['activeAccount.items'])
             ->orderBy('sort_order')
+            ->get();
+
+        $customers = Customer::where('is_active', true)
+            ->orderBy('name')
             ->get();
 
         $paymentMethods = PaymentMethod::where('is_active', true)
@@ -56,54 +59,91 @@ class PosController extends Controller
             'categories' => $categories,
             'products' => $products,
             'tables' => $tables,
+            'customers' => $customers,
             'paymentMethods' => $paymentMethods,
+        ]);
+    }
+
+    public function quickCustomer(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:150',
+            'phone' => 'nullable|string|max:30',
+            'tax_id' => 'nullable|string|max:30',
+            'address' => 'nullable|string|max:200',
+        ]);
+
+        $tenantId = app(\App\Services\TenantContext::class)->getTenantId()
+            ?? session('active_tenant_id')
+            ?? \App\Models\Tenant::first()?->id;
+
+        $customer = Customer::create([
+            'tenant_id' => $tenantId,
+            'name' => $request->input('name'),
+            'phone' => $request->input('phone'),
+            'tax_id' => $request->input('tax_id'),
+            'address' => $request->input('address'),
+            'credit_limit' => 0,
+            'current_debt' => 0,
+            'is_active' => true,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'customer' => $customer,
         ]);
     }
 
     public function checkout(Request $request)
     {
+        $chargeToDebt = filter_var($request->input('charge_to_debt'), FILTER_VALIDATE_BOOLEAN);
+
         $request->validate([
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|numeric|min:0.01',
             'items.*.product_presentation_id' => 'nullable|exists:product_presentations,id',
-            'payments' => 'required|array|min:1',
-            'payments.*.payment_method_id' => 'required|exists:payment_methods,id',
-            'payments.*.amount' => 'required|numeric|min:0',
+            'charge_to_debt' => 'nullable|boolean',
+            'payments' => $chargeToDebt ? 'nullable|array' : 'required|array|min:1',
+            'payments.*.payment_method_id' => 'required_with:payments|exists:payment_methods,id',
+            'payments.*.amount' => 'required_with:payments|numeric|min:0',
             'account_id' => 'nullable|exists:accounts,id',
-            'customer_id' => 'nullable|exists:customers,id',
+            'customer_id' => $chargeToDebt ? 'required|exists:customers,id' : 'nullable|exists:customers,id',
             'discount_total' => 'nullable|numeric|min:0',
         ]);
 
         $user = auth()->user();
 
-        // Resolve active cash session
-        $cashSession = CashSession::where('status', 'open')
-            ->where('user_id', $user->id)
-            ->first();
+        // Resolve active cash session (opened by user or store admin)
+        $cashSession = CashSession::getActiveSession($user->id);
 
         if (!$cashSession) {
             return response()->json([
                 'success' => false,
-                'message' => 'No tienes un turno de caja abierto. Por favor, abre caja antes de realizar ventas.',
+                'message' => 'No hay un turno de caja abierto en este momento. Por favor, abre caja antes de realizar ventas.',
             ], 422);
         }
 
         try {
             $sale = $this->saleService->createSale(
                 $request->input('items'),
-                $request->input('payments'),
+                $chargeToDebt ? [] : ($request->input('payments') ?? []),
                 $cashSession,
                 $user,
                 $request->input('account_id'),
                 $request->input('customer_id'),
-                (float) ($request->input('discount_total') ?? 0)
+                (float) ($request->input('discount_total') ?? 0),
+                $chargeToDebt
             );
+
+            $msg = $chargeToDebt
+                ? "¡Venta {$sale->sale_number} cargada exitosamente a la cuenta del cliente!"
+                : "¡Venta {$sale->sale_number} completada con éxito!";
 
             return response()->json([
                 'success' => true,
-                'message' => "¡Venta {$sale->sale_number} completada con éxito!",
-                'sale' => $sale->load(['items', 'payments.paymentMethod']),
+                'message' => $msg,
+                'sale' => $sale->load(['items', 'payments.paymentMethod', 'customer']),
                 'receipt_url' => route('pos.receipt', $sale->id),
             ]);
         } catch (Exception $e) {

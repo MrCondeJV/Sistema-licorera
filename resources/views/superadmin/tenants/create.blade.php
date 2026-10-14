@@ -83,16 +83,10 @@
                         <input type="email" name="email" value="{{ old('email') }}" required placeholder="andrea@licoreraelpoblado.com" class="input-night w-full text-sm">
                         @error('email') <span class="text-xs text-rose-500">{{ $message }}</span> @enderror
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">PIN de Acceso Táctil (4 Dígitos) *</label>
-                        <input type="text" name="pin" value="{{ old('pin') }}" maxlength="4" pattern="\d{4}" required placeholder="1234" class="input-night w-full font-mono text-center tracking-widest text-base">
-                        <p class="text-[10px] text-slate-400 mt-1">Utilizado para acceso táctil rápido en caja y comandero.</p>
-                        @error('pin') <span class="text-xs text-rose-500">{{ $message }}</span> @enderror
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Contraseña de Respaldo</label>
-                        <input type="password" name="password" placeholder="Mínimo 6 caracteres (Opcional)" class="input-night w-full text-sm">
-                        <p class="text-[10px] text-slate-400 mt-1">Por defecto: Admin1234* si se deja en blanco.</p>
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Contraseña de Acceso para el Administrador *</label>
+                        <input type="password" name="password" required minlength="6" placeholder="Mínimo 6 caracteres (ej: Admin2026*)" class="input-night w-full text-sm font-mono font-bold">
+                        <p class="text-[10px] text-slate-400 mt-1">Utilizada para el inicio de sesión seguro con correo y contraseña en producción.</p>
                         @error('password') <span class="text-xs text-rose-500">{{ $message }}</span> @enderror
                     </div>
                 </div>

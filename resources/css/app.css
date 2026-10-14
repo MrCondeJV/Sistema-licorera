@@ -73,3 +73,33 @@
     @apply w-full overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm;
   }
 }
+
+/* SweetAlert2 Styling harmonization */
+.swal2-container {
+  z-index: 99999 !important;
+}
+
+.swal2-popup {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
+  border-radius: 1.5rem !important;
+}
+
+.swal2-title {
+  font-weight: 800 !important;
+  font-size: 1.25rem !important;
+  letter-spacing: -0.02em !important;
+}
+
+.swal2-html-container {
+  font-size: 0.925rem !important;
+  line-height: 1.5 !important;
+}
+
+.swal2-actions button {
+  font-family: inherit !important;
+}
+
+.swal2-toast {
+  border-radius: 1rem !important;
+}
+

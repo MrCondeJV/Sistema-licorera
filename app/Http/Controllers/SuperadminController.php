@@ -51,9 +51,11 @@ class SuperadminController extends Controller
             'phone' => 'nullable|string|max:20',
             'tax_id' => 'nullable|string|max:30',
             'address' => 'nullable|string|max:190',
-            'pin' => 'required|digits:4',
-            'password' => 'nullable|string|min:6',
+            'password' => 'required|string|min:6',
             'plan_id' => 'required|exists:plans,id',
+        ], [
+            'password.required' => 'La contraseña de acceso del administrador es obligatoria.',
+            'password.min' => 'La contraseña debe tener al menos 6 caracteres.',
         ]);
 
         $plan = Plan::findOrFail($request->input('plan_id'));
@@ -66,7 +68,7 @@ class SuperadminController extends Controller
             'tax_id' => $request->input('tax_id'),
             'address' => $request->input('address'),
             'pin' => $request->input('pin'),
-            'password' => $request->input('password') ?: 'Admin2026*',
+            'password' => $request->input('password'),
             'plan_slug' => $plan->slug,
         ]);
 

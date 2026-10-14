@@ -56,6 +56,26 @@ class Tenant extends Model
             ->withTimestamps();
     }
 
+    public function categories(): HasMany
+    {
+        return $this->hasMany(Category::class);
+    }
+
+    public function tables(): HasMany
+    {
+        return $this->hasMany(Table::class);
+    }
+
+    public function products(): HasMany
+    {
+        return $this->hasMany(Product::class);
+    }
+
+    public function sales(): HasMany
+    {
+        return $this->hasMany(Sale::class);
+    }
+
     public function settings(): HasMany
     {
         return $this->hasMany(Setting::class);

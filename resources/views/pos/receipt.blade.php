@@ -123,19 +123,34 @@
 
             <!-- Payments -->
             <div class="border-t my-2 py-1">
-                <p class="font-bold" style="margin-bottom: 4px;">MEDIOS DE PAGO:</p>
-                @foreach($sale->payments as $payment)
-                    <div style="display: flex; justify-content: space-between;">
-                        <span>{{ $payment->paymentMethod->name }}:</span>
-                        <span>${{ number_format($payment->amount, 0, ',', '.') }}</span>
+                <p class="font-bold" style="margin-bottom: 4px;">ESTADO DE PAGO:</p>
+                @if($sale->payments->isEmpty())
+                    <div style="display: flex; justify-content: space-between; font-weight: bold; color: #b45309;">
+                        <span>CARGADO A CUENTA:</span>
+                        <span>${{ number_format($sale->total, 0, ',', '.') }}</span>
                     </div>
-                    @if($payment->paymentMethod->is_cash && $payment->received_amount > $payment->amount)
-                        <div style="display: flex; justify-content: space-between; font-size: 10px; color: #444;">
-                            <span>Recibido: ${{ number_format($payment->received_amount, 0, ',', '.') }}</span>
-                            <span>Cambio: ${{ number_format($payment->change_amount, 0, ',', '.') }}</span>
+                    @if($sale->customer)
+                        <div style="font-size: 11px; margin-top: 3px; color: #333;">
+                            <span>CLIENTE: {{ $sale->customer->name }}</span>
                         </div>
                     @endif
-                @endforeach
+                    <div style="font-size: 10px; color: #666; font-style: italic; margin-top: 2px;">
+                        (Pendiente de cobro / Cargado a cartera)
+                    </div>
+                @else
+                    @foreach($sale->payments as $payment)
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>{{ $payment->paymentMethod->name }}:</span>
+                            <span>${{ number_format($payment->amount, 0, ',', '.') }}</span>
+                        </div>
+                        @if($payment->paymentMethod->is_cash && $payment->received_amount > $payment->amount)
+                            <div style="display: flex; justify-content: space-between; font-size: 10px; color: #444;">
+                                <span>Recibido: ${{ number_format($payment->received_amount, 0, ',', '.') }}</span>
+                                <span>Cambio: ${{ number_format($payment->change_amount, 0, ',', '.') }}</span>
+                            </div>
+                        @endif
+                    @endforeach
+                @endif
             </div>
 
             <!-- Footer Message -->

@@ -36,9 +36,7 @@ class ExpenseController extends Controller
 
         $cashSessionId = null;
         if ($request->input('payment_method') === 'cash') {
-            $activeSession = CashSession::where('status', 'open')
-                ->where('user_id', auth()->id())
-                ->first();
+            $activeSession = CashSession::getActiveSession();
             $cashSessionId = $activeSession?->id;
         }
 

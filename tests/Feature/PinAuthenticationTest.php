@@ -14,45 +14,28 @@ class PinAuthenticationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_user_can_login_with_valid_pin(): void
+    public function test_screen_unlock_with_password(): void
     {
         $tenantService = new TenantService();
         $res = $tenantService->registerBusiness([
             'business_name' => 'Licorera La 80',
             'admin_name' => 'Admin La 80',
             'email' => 'la80@test.com',
+            'password' => 'Secreto123*',
             'pin' => '4321',
         ]);
+        $user = $res['user'];
         $tenant = $res['tenant'];
 
-        $response = $this->post(route('login.pin'), [
-            'tenant_id' => $tenant->id,
-            'pin' => '4321',
+        $this->actingAs($user);
+        session(['screen_locked' => true, 'active_tenant_id' => $tenant->id]);
+
+        $response = $this->post(route('unlock.submit'), [
+            'password' => 'Secreto123*',
         ]);
 
         $response->assertRedirect(route('pos.index'));
-        $this->assertAuthenticated();
-    }
-
-    public function test_user_cannot_login_with_invalid_pin(): void
-    {
-        $tenantService = new TenantService();
-        $res = $tenantService->registerBusiness([
-            'business_name' => 'Licorera Centro',
-            'admin_name' => 'Admin Centro',
-            'email' => 'centro@test.com',
-            'pin' => '1234',
-        ]);
-        $tenant = $res['tenant'];
-
-        $response = $this->from(route('login'))->post(route('login.pin'), [
-            'tenant_id' => $tenant->id,
-            'pin' => '9999', // Wrong pin
-        ]);
-
-        $response->assertRedirect(route('login'));
-        $response->assertSessionHasErrors('pin');
-        $this->assertGuest();
+        $this->assertFalse(session('screen_locked'));
     }
 
     public function test_waiter_cannot_access_administrative_settings(): void

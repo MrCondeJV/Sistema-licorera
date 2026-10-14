@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -16,7 +17,11 @@ class UserController extends Controller
     {
         $tenantId = app(\App\Services\TenantContext::class)->getTenantId();
 
+        // Carlos Administrador or any tenant user can NEVER see or know of the platform superadmin
         $memberships = TenantUser::where('tenant_id', $tenantId)
+            ->whereHas('user', function ($q) {
+                $q->where('is_superadmin', false);
+            })
             ->with('user')
             ->get();
 
@@ -29,10 +34,15 @@ class UserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:100',
-            'email' => 'nullable|email|max:100',
+            'email' => 'required|email|max:100|unique:users,email',
             'phone' => 'nullable|string|max:30',
             'role' => 'required|in:admin,cashier,waiter',
-            'pin' => 'required|digits:4',
+            'password' => 'required|string|min:6',
+        ], [
+            'email.required' => 'El correo electrónico es requerido para el inicio de sesión.',
+            'email.unique' => 'Ya existe un usuario registrado con este correo.',
+            'password.required' => 'La contraseña de acceso es requerida.',
+            'password.min' => 'La contraseña debe tener al menos 6 caracteres.',
         ]);
 
         $tenantId = app(\App\Services\TenantContext::class)->getTenantId();
@@ -40,9 +50,11 @@ class UserController extends Controller
         DB::transaction(function () use ($request, $tenantId) {
             $user = User::create([
                 'name' => $request->input('name'),
-                'email' => $request->input('email'),
+                'email' => strtolower(trim($request->input('email'))),
                 'phone' => $request->input('phone'),
-                'pin_hash' => Hash::make($request->input('pin')),
+                'password' => Hash::make($request->input('password')),
+                'pin_hash' => Hash::make(Str::random(32)),
+                'is_superadmin' => false,
                 'is_active' => true,
             ]);
 
@@ -53,28 +65,52 @@ class UserController extends Controller
                 'is_active' => true,
             ]);
 
-            AuditService::log('user_created', 'User', $user->id, null, ['name' => $user->name, 'role' => $request->input('role')], "Creación de empleado y asignación de PIN");
+            AuditService::log('user_created', 'User', $user->id, null, ['name' => $user->name, 'role' => $request->input('role')], "Creación de empleado y credenciales");
         });
 
-        return redirect()->route('users.index')->with('success', 'Empleado creado exitosamente con su PIN de acceso.');
+        return redirect()->route('users.index')->with('success', 'Empleado creado exitosamente con sus credenciales de acceso.');
     }
 
-    public function resetPin(Request $request, User $user)
+    public function resetPassword(Request $request, User $user)
     {
+        // Tenant admin can NEVER modify or know about superadmin
+        if ($user->is_superadmin) {
+            abort(404);
+        }
+
+        $tenantId = app(\App\Services\TenantContext::class)->getTenantId();
+        $membership = TenantUser::where('tenant_id', $tenantId)->where('user_id', $user->id)->first();
+        if (!$membership) {
+            abort(404);
+        }
+
         $request->validate([
-            'new_pin' => 'required|digits:4',
+            'new_password' => 'required|string|min:6',
+        ], [
+            'new_password.required' => 'La nueva contraseña es requerida.',
+            'new_password.min' => 'La contraseña debe tener al menos 6 caracteres.',
         ]);
 
-        $user->pin_hash = Hash::make($request->input('new_pin'));
+        $user->password = Hash::make($request->input('new_password'));
         $user->save();
 
-        AuditService::log('user_pin_reset', 'User', $user->id, null, null, "Restablecimiento de PIN");
+        AuditService::log('user_password_reset', 'User', $user->id, null, null, "Restablecimiento de contraseña");
 
-        return back()->with('success', "PIN de {$user->name} restablecido correctamente.");
+        return back()->with('success', "Contraseña de {$user->name} actualizada correctamente.");
     }
 
     public function toggleStatus(User $user)
     {
+        // Tenant admin can NEVER deactivate or know about superadmin
+        if ($user->is_superadmin) {
+            abort(404);
+        }
+
+        // A user cannot deactivate their own account
+        if ($user->id === auth()->id()) {
+            return back()->withErrors(['error' => 'No puedes desactivar tu propia cuenta de usuario.']);
+        }
+
         $tenantId = app(\App\Services\TenantContext::class)->getTenantId();
         $membership = TenantUser::where('tenant_id', $tenantId)->where('user_id', $user->id)->firstOrFail();
 

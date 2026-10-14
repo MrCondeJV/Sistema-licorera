@@ -45,6 +45,22 @@ class Product extends Model
         'is_active' => 'boolean',
     ];
 
+    protected $appends = ['image_url'];
+
+    public function getImageUrlAttribute(): ?string
+    {
+        if ($this->image) {
+            if (str_starts_with($this->image, 'http://') || str_starts_with($this->image, 'https://')) {
+                return $this->image;
+            }
+            if (str_starts_with($this->image, 'images/')) {
+                return asset($this->image);
+            }
+            return asset('storage/' . $this->image);
+        }
+        return null;
+    }
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);

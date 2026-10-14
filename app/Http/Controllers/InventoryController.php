@@ -11,6 +11,7 @@ use App\Models\StockMovement;
 use App\Services\InventoryService;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class InventoryController extends Controller
 {
@@ -76,6 +77,7 @@ class InventoryController extends Controller
             'is_beer' => 'nullable|boolean',
             'is_liquor' => 'nullable|boolean',
             'tax_percentage' => 'nullable|numeric|min:0|max:100',
+            'image' => 'nullable|image|max:5120',
             'is_favorite' => 'nullable|boolean',
             'presentations' => 'nullable|array',
             'presentations.*.name' => 'required_with:presentations|string',
@@ -89,6 +91,11 @@ class InventoryController extends Controller
         // Liquor Rule: strictly bottle only
         if ($isLiquor && !empty($request->input('presentations'))) {
             return back()->withInput()->with('error', 'Los licores no admiten presentaciones de fraccionamiento. Solo botella completa.');
+        }
+
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('products', 'public');
         }
 
         $product = Product::create([
@@ -106,6 +113,7 @@ class InventoryController extends Controller
             'is_beer' => $isBeer,
             'is_liquor' => $isLiquor,
             'tax_percentage' => $validated['tax_percentage'] ?? 0,
+            'image' => $imagePath,
             'is_favorite' => $request->boolean('is_favorite'),
             'is_active' => true,
         ]);
@@ -167,11 +175,12 @@ class InventoryController extends Controller
             'price_sell' => 'required|numeric|min:0',
             'stock_min' => 'required|numeric|min:0',
             'tax_percentage' => 'nullable|numeric|min:0|max:100',
+            'image' => 'nullable|image|max:5120',
             'is_favorite' => 'nullable|boolean',
             'is_active' => 'nullable|boolean',
         ]);
 
-        $product->update([
+        $data = [
             'category_id' => $validated['category_id'],
             'sku' => $validated['sku'],
             'barcode' => $validated['barcode'] ?? null,
@@ -184,7 +193,16 @@ class InventoryController extends Controller
             'tax_percentage' => $validated['tax_percentage'] ?? 0,
             'is_favorite' => $request->boolean('is_favorite'),
             'is_active' => $request->boolean('is_active', true),
-        ]);
+        ];
+
+        if ($request->hasFile('image')) {
+            if ($product->image && Storage::disk('public')->exists($product->image)) {
+                Storage::disk('public')->delete($product->image);
+            }
+            $data['image'] = $request->file('image')->store('products', 'public');
+        }
+
+        $product->update($data);
 
         return redirect()->route('inventory.index')->with('success', "Producto actualizado correctamente.");
     }

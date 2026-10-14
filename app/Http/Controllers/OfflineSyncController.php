@@ -24,8 +24,7 @@ class OfflineSyncController extends Controller
             'payload' => 'required|array',
         ]);
 
-        $user = auth()->user();
-        $session = CashSession::where('status', 'open')->where('user_id', $user->id)->first();
+        $session = CashSession::getActiveSession($user->id);
 
         if (!$session) {
             return response()->json([

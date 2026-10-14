@@ -45,9 +45,18 @@ class PurchaseService
                 $subtotal += (float)$item['quantity'] * (float)$item['unit_cost'];
             }
 
+            $tenantId = app(TenantContext::class)->getTenantId() 
+                ?? session('active_tenant_id') 
+                ?? $supplier->tenant_id 
+                ?? \App\Models\Tenant::first()?->id;
+
+            $branchId = app(TenantContext::class)->getBranchId() 
+                ?? session('active_branch_id') 
+                ?? \App\Models\Branch::where('tenant_id', $tenantId)->first()?->id;
+
             $purchase = Purchase::create([
-                'tenant_id' => app(TenantContext::class)->getTenantId(),
-                'branch_id' => app(TenantContext::class)->getBranchId(),
+                'tenant_id' => $tenantId,
+                'branch_id' => $branchId,
                 'supplier_id' => $supplier->id,
                 'user_id' => $user->id,
                 'invoice_number' => $invoiceNumber,

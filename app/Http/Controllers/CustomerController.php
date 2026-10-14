@@ -38,7 +38,9 @@ class CustomerController extends Controller
         ]);
 
         Customer::create([
-            'tenant_id' => app(\App\Services\TenantContext::class)->getTenantId(),
+            'tenant_id' => app(\App\Services\TenantContext::class)->getTenantId()
+                ?? session('active_tenant_id')
+                ?? \App\Models\Tenant::first()?->id,
             'name' => $request->input('name'),
             'phone' => $request->input('phone'),
             'email' => $request->input('email'),
@@ -115,7 +117,12 @@ class CustomerController extends Controller
             return back()->with('error', 'El abono no puede superar la deuda total pendiente.');
         }
 
-        $activeSession = CashSession::where('status', 'open')->where('user_id', auth()->id())->first();
+        $paymentMethod = PaymentMethod::findOrFail($request->input('payment_method_id'));
+        $activeSession = CashSession::getActiveSession();
+
+        if ($paymentMethod->is_cash && !$activeSession) {
+            return back()->with('error', 'No hay un turno de caja abierto en este momento para recibir abonos en efectivo. Por favor abre caja primero.');
+        }
 
         DB::transaction(function () use ($customer, $amount, $request, $activeSession) {
             // Apply payment to pending debts in FIFO order

@@ -58,6 +58,34 @@ class CredentialsAuthenticationTest extends TestCase
         $this->assertEquals($tenant->id, session('active_tenant_id'));
     }
 
+    public function test_cashier_can_login_with_email_and_password(): void
+    {
+        $tenant = Tenant::create(['name' => 'Licorera Medellín', 'slug' => 'lic-med', 'status' => 'active']);
+        $cashier = User::create([
+            'name' => 'Cajera Ana',
+            'email' => 'ana@pos.com',
+            'password' => Hash::make('Cajera2026*'),
+            'pin_hash' => Hash::make('1234'),
+            'is_superadmin' => false,
+            'is_active' => true,
+        ]);
+        TenantUser::create([
+            'tenant_id' => $tenant->id,
+            'user_id' => $cashier->id,
+            'role' => 'cashier',
+            'is_active' => true,
+        ]);
+
+        $response = $this->post(route('login.submit'), [
+            'email' => 'ana@pos.com',
+            'password' => 'Cajera2026*',
+        ]);
+
+        $response->assertRedirect(route('pos.index'));
+        $this->assertAuthenticatedAs($cashier);
+        $this->assertEquals($tenant->id, session('active_tenant_id'));
+    }
+
     public function test_cannot_login_with_invalid_password(): void
     {
         User::create([
@@ -77,5 +105,52 @@ class CredentialsAuthenticationTest extends TestCase
         $response->assertRedirect(route('login'));
         $response->assertSessionHasErrors('email');
         $this->assertGuest();
+    }
+
+    public function test_tenant_admin_cannot_see_modify_or_deactivate_superadmin(): void
+    {
+        $superadmin = User::create([
+            'name' => 'Super Administrador Global',
+            'email' => 'superadmin@licorerapos.com',
+            'password' => Hash::make('Admin1234*'),
+            'pin_hash' => Hash::make('1234'),
+            'is_superadmin' => true,
+            'is_active' => true,
+        ]);
+
+        $tenant = Tenant::create(['name' => 'Licorera Medellín', 'slug' => 'lic-med-2', 'status' => 'active']);
+        $admin = User::create([
+            'name' => 'Carlos Administrador',
+            'email' => 'carlos@licorera.com',
+            'password' => Hash::make('Admin1234*'),
+            'pin_hash' => Hash::make('1234'),
+            'is_superadmin' => false,
+            'is_active' => true,
+        ]);
+        TenantUser::create([
+            'tenant_id' => $tenant->id,
+            'user_id' => $admin->id,
+            'role' => 'admin',
+            'is_active' => true,
+        ]);
+
+        $this->actingAs($admin);
+        session(['active_tenant_id' => $tenant->id]);
+
+        // 1. Cannot see or know existence of superadmin in users list
+        $response = $this->get(route('users.index'));
+        $response->assertStatus(200);
+        $response->assertDontSee('Super Administrador Global');
+        $response->assertDontSee('superadmin@licorerapos.com');
+
+        // 2. Cannot reset password of superadmin (returns 404)
+        $resetResponse = $this->post(route('users.reset-password', $superadmin->id), [
+            'new_password' => 'HackedPassword123*',
+        ]);
+        $resetResponse->assertStatus(404);
+
+        // 3. Cannot toggle status of superadmin (returns 404)
+        $toggleResponse = $this->post(route('users.toggle', $superadmin->id));
+        $toggleResponse->assertStatus(404);
     }
 }

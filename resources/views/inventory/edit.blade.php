@@ -12,7 +12,7 @@
         </a>
     </div>
 
-    <form action="{{ route('inventory.update', $product->id) }}" method="POST" class="card-night p-6 space-y-4">
+    <form action="{{ route('inventory.update', $product->id) }}" method="POST" enctype="multipart/form-data" class="card-night p-6 space-y-4">
         @csrf
         @method('PUT')
 
@@ -60,6 +60,27 @@
                 <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Stock Mínimo</label>
                 <input type="number" name="stock_min" value="{{ old('stock_min', $product->stock_min) }}" min="0" step="1" required
                        class="input-night w-full font-mono text-sm">
+            </div>
+        </div>
+
+        <!-- Image Upload Field with Preview -->
+        <div class="pt-3 border-t border-slate-200 dark:border-slate-800" x-data="{ imagePreview: '{{ $product->image_url }}' }">
+            <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1.5">Foto del Producto</label>
+            <div class="flex items-center gap-4">
+                <div class="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
+                    <template x-if="imagePreview">
+                        <img :src="imagePreview" class="w-full h-full object-cover">
+                    </template>
+                    <template x-if="!imagePreview">
+                        <span class="text-2xl">📸</span>
+                    </template>
+                </div>
+                <div class="flex-1">
+                    <input type="file" name="image" accept="image/*"
+                           @change="const file = $event.target.files[0]; if (file) { const reader = new FileReader(); reader.onload = (e) => imagePreview = e.target.result; reader.readAsDataURL(file); }"
+                           class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 dark:file:bg-emerald-950 dark:file:text-emerald-400 cursor-pointer">
+                    <p class="text-[11px] text-slate-400 mt-1">Selecciona una imagen para reemplazar la actual. JPG, PNG, WEBP. Máx: 5MB.</p>
+                </div>
             </div>
         </div>
 

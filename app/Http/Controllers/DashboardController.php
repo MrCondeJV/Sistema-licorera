@@ -20,10 +20,7 @@ class DashboardController extends Controller
     {
         $metrics = $this->reportService->getDashboardMetrics();
         $tables = Table::orderBy('sort_order')->get();
-        $openCashSession = CashSession::where('status', 'open')
-            ->where('user_id', auth()->id())
-            ->latest()
-            ->first();
+        $openCashSession = CashSession::getActiveSession();
 
         return view('dashboard.index', [
             'metrics' => $metrics,

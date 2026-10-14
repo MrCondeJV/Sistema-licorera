@@ -23,11 +23,7 @@ class CashRegisterController extends Controller
         $user = auth()->user();
         $registers = CashRegister::where('is_active', true)->get();
 
-        $activeSession = CashSession::where('status', 'open')
-            ->where('user_id', $user->id)
-            ->with(['cashRegister', 'movements.user', 'sales'])
-            ->latest()
-            ->first();
+        $activeSession = CashSession::getActiveSession($user->id);
 
         $summary = $activeSession ? $activeSession->calculateCashSummary() : null;
 

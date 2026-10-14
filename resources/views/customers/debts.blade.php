@@ -121,7 +121,7 @@
                 @csrf
                 <div class="mb-3">
                     <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Valor del Fiado ($ COP) *</label>
-                    <input type="number" name="amount" min="1" step="1000" required autofocus
+                    <input type="number" name="amount" min="1" step="any" required autofocus
                            class="input-night w-full font-mono font-bold text-lg">
                 </div>
 
@@ -149,7 +149,7 @@
                 @csrf
                 <div class="mb-3">
                     <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Valor del Abono ($ COP) *</label>
-                    <input type="number" name="amount" max="{{ $customer->current_debt }}" min="1" step="1000" value="{{ $customer->current_debt }}" required autofocus
+                    <input type="number" name="amount" max="{{ $customer->current_debt }}" min="1" step="any" value="{{ $customer->current_debt }}" required autofocus
                            class="input-night w-full font-mono font-bold text-lg">
                 </div>
 

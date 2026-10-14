@@ -49,9 +49,19 @@ class TableAccountService
                 $table->save();
             }
 
+            $tenantId = $table?->tenant_id 
+                ?? app(TenantContext::class)->getTenantId() 
+                ?? session('active_tenant_id') 
+                ?? \App\Models\Tenant::first()?->id;
+
+            $branchId = $table?->branch_id 
+                ?? app(TenantContext::class)->getBranchId() 
+                ?? session('active_branch_id') 
+                ?? \App\Models\Branch::where('tenant_id', $tenantId)->first()?->id;
+
             $account = Account::create([
-                'tenant_id' => app(TenantContext::class)->getTenantId(),
-                'branch_id' => app(TenantContext::class)->getBranchId(),
+                'tenant_id' => $tenantId,
+                'branch_id' => $branchId,
                 'table_id' => $tableId,
                 'customer_id' => $customerId,
                 'client_name' => $clientName ?: ($table ? "Mesa {$table->name}" : 'Cliente Ocasional'),

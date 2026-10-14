@@ -56,27 +56,38 @@
     <div class="card-night p-4 flex-1 overflow-hidden flex flex-col">
         <div class="flex-1 overflow-y-auto">
             <div class="overflow-x-auto min-w-full">
-                <table class="w-full text-left text-xs min-w-[700px]">
-                <thead class="border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">
+                <table class="w-full text-left text-sm min-w-[700px]">
+                <thead class="border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-bold text-xs uppercase tracking-wider">
                     <tr>
-                        <th class="py-3 px-2">Producto / Categoría</th>
-                        <th class="py-3 px-2">SKU</th>
-                        <th class="py-3 px-2 text-right">Costo Unit.</th>
-                        <th class="py-3 px-2 text-right">Precio Venta</th>
-                        <th class="py-3 px-2 text-center">Stock Base</th>
-                        <th class="py-3 px-2">Presentaciones</th>
-                        <th class="py-3 px-2 text-right">Acciones</th>
+                        <th class="py-3.5 px-3">Producto / Categoría</th>
+                        <th class="py-3.5 px-3">SKU</th>
+                        <th class="py-3.5 px-3 text-right">Costo Unit.</th>
+                        <th class="py-3.5 px-3 text-right">Precio Venta</th>
+                        <th class="py-3.5 px-3 text-center">Stock Base</th>
+                        <th class="py-3.5 px-3">Presentaciones</th>
+                        <th class="py-3.5 px-3 text-right">Acciones</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                     @forelse($products as $prod)
-                        <tr class="{{ $prod->stock <= 0 ? 'bg-rose-50/50 dark:bg-rose-950/10' : ($prod->isLowStock() ? 'bg-amber-50/50 dark:bg-amber-950/10' : '') }}">
-                            <td class="py-3 px-2">
-                                <span class="font-bold text-slate-900 dark:text-white text-sm block">{{ $prod->name }}</span>
-                                <span class="text-slate-500 dark:text-slate-400 text-[11px]">{{ $prod->category->name ?? 'Sin categoría' }}</span>
-                                @if($prod->is_liquor)
-                                    <span class="inline-block text-[10px] text-amber-600 dark:text-amber-400 font-semibold mt-0.5">🍾 Botella completa</span>
-                                @endif
+                        <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors {{ $prod->stock <= 0 ? 'bg-rose-50/50 dark:bg-rose-950/10' : ($prod->isLowStock() ? 'bg-amber-50/50 dark:bg-amber-950/10' : '') }}">
+                            <td class="py-3 px-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-11 h-11 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
+                                        @if($prod->image_url)
+                                            <img src="{{ $prod->image_url }}" alt="{{ $prod->name }}" class="w-full h-full object-cover">
+                                        @else
+                                            <span class="text-xl">🍾</span>
+                                        @endif
+                                    </div>
+                                    <div class="min-w-0">
+                                        <span class="font-bold text-slate-900 dark:text-white text-sm block leading-snug">{{ $prod->name }}</span>
+                                        <span class="text-slate-500 dark:text-slate-400 text-xs">{{ $prod->category->name ?? 'Sin categoría' }}</span>
+                                        @if($prod->is_liquor)
+                                            <span class="inline-block text-[10px] text-amber-600 dark:text-amber-400 font-semibold mt-0.5">🍾 Botella completa</span>
+                                        @endif
+                                    </div>
+                                </div>
                             </td>
                             <td class="py-3 px-2 font-mono text-slate-600 dark:text-slate-300">{{ $prod->sku }}</td>
                             <td class="py-3 px-2 text-right font-mono text-slate-600 dark:text-slate-300">${{ number_format($prod->price_buy, 0, ',', '.') }}</td>

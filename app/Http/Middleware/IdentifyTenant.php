@@ -37,6 +37,12 @@ class IdentifyTenant
             if ($membership && $membership->tenant) {
                 $tenantId = $membership->tenant_id;
                 session(['active_tenant_id' => $tenantId]);
+            } elseif ($user->is_superadmin) {
+                $firstTenant = Tenant::first();
+                if ($firstTenant) {
+                    $tenantId = $firstTenant->id;
+                    session(['active_tenant_id' => $tenantId]);
+                }
             }
         }
 
