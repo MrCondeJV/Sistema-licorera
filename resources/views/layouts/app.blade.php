@@ -194,6 +194,12 @@
                         <span>Auditoría y Trazabilidad</span>
                     </a>
 
+                    <a href="{{ route('branches.index') }}"
+                       class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all {{ request()->routeIs('branches.*') ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/20' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800' }}">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                        <span>Sucursales & Sedes</span>
+                    </a>
+
                     <a href="{{ route('settings.index') }}"
                        class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all {{ request()->routeIs('settings.*') ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/20' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800' }}">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
@@ -264,21 +270,21 @@
                 </button>
                 <div>
                     <h1 class="text-sm font-black text-slate-900 dark:text-white leading-none">LICORERA POS</h1>
-                    @if(isset($accessibleTenants) && count($accessibleTenants) > 1)
+                    @if(isset($accessibleBranches) && count($accessibleBranches) > 1)
                         <form method="POST" class="mt-0.5">
                             @csrf
-                            <select onchange="if(this.value){ this.form.action='{{ url('/tenant/switch') }}/' + this.value; this.form.submit(); }"
-                                    class="text-[11px] font-bold py-0.5 px-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white max-w-[150px] truncate focus:outline-none">
-                                @foreach($accessibleTenants as $t)
-                                    <option value="{{ $t->id }}" {{ ($currentTenant->id ?? 0) == $t->id ? 'selected' : '' }}>
-                                        {{ $t->name }}
+                            <select onchange="if(this.value){ this.form.action='{{ url('/branch/switch') }}/' + this.value; this.form.submit(); }"
+                                    class="text-[10px] font-black py-0.5 px-1.5 rounded-lg border border-emerald-500/30 bg-emerald-50/50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 max-w-[140px] truncate focus:outline-none">
+                                @foreach($accessibleBranches as $b)
+                                    <option value="{{ $b->id }}" {{ ($currentBranch->id ?? 0) == $b->id ? 'selected' : '' }}>
+                                        🏪 {{ $b->name }}
                                     </option>
                                 @endforeach
                             </select>
                         </form>
                     @else
-                        <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-[170px] mt-0.5 font-medium">
-                            {{ $currentTenant->name ?? 'Licorera' }}
+                        <p class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold truncate max-w-[150px] mt-0.5">
+                            🏪 {{ $currentBranch->name ?? 'Sede Principal' }}
                         </p>
                     @endif
                 </div>
@@ -310,12 +316,27 @@
                 @if(isset($accessibleTenants) && count($accessibleTenants) > 1)
                     <form method="POST" class="flex items-center gap-2 pl-4 border-l border-slate-200 dark:border-slate-800">
                         @csrf
-                        <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Empresa Activa:</span>
+                        <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Empresa:</span>
                         <select onchange="if(this.value){ this.form.action='{{ url('/tenant/switch') }}/' + this.value; this.form.submit(); }"
                                 class="text-xs font-bold py-1.5 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm cursor-pointer">
                             @foreach($accessibleTenants as $t)
                                 <option value="{{ $t->id }}" {{ ($currentTenant->id ?? 0) == $t->id ? 'selected' : '' }}>
                                     🏢 {{ $t->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </form>
+                @endif
+
+                @if(isset($accessibleBranches) && count($accessibleBranches) > 0)
+                    <form method="POST" class="flex items-center gap-2 pl-4 border-l border-slate-200 dark:border-slate-800">
+                        @csrf
+                        <span class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Sucursal:</span>
+                        <select onchange="if(this.value){ this.form.action='{{ url('/branch/switch') }}/' + this.value; this.form.submit(); }"
+                                class="text-xs font-black py-1.5 px-3 rounded-xl border border-emerald-500/30 bg-emerald-50/50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm cursor-pointer">
+                            @foreach($accessibleBranches as $b)
+                                <option value="{{ $b->id }}" {{ ($currentBranch->id ?? 0) == $b->id ? 'selected' : '' }}>
+                                    🏪 {{ $b->name }} {{ $b->is_main ? '(Principal)' : '' }}
                                 </option>
                             @endforeach
                         </select>
@@ -583,6 +604,10 @@
                         <a href="{{ route('audit.index') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">
                             <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                             <span>Auditoría y Trazabilidad</span>
+                        </a>
+                        <a href="{{ route('branches.index') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">
+                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                            <span>Sucursales & Sedes</span>
                         </a>
                         <a href="{{ route('settings.index') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">
                             <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>

@@ -71,15 +71,28 @@ class IdentifyTenant
 
             $context->setTenant($tenant);
 
-            // Resolve branch
+            // Resolve branch with user authorization
             $branchId = session('active_branch_id');
             $branch = null;
             if ($branchId) {
-                $branch = Branch::where('tenant_id', $tenant->id)->find($branchId);
+                $branchCandidate = Branch::where('tenant_id', $tenant->id)->where('is_active', true)->find($branchId);
+                if ($branchCandidate && $user->canAccessBranch($branchCandidate)) {
+                    $branch = $branchCandidate;
+                }
             }
+
             if (!$branch) {
-                $branch = Branch::where('tenant_id', $tenant->id)->where('is_main', true)->first()
-                       ?? Branch::where('tenant_id', $tenant->id)->first();
+                // Find first branch user is authorized to access
+                $userRole = $user->getRoleInTenant($tenant->id);
+                if ($user->is_superadmin || $userRole === 'admin') {
+                    $branch = Branch::where('tenant_id', $tenant->id)->where('is_main', true)->where('is_active', true)->first()
+                           ?? Branch::where('tenant_id', $tenant->id)->where('is_active', true)->first();
+                } else {
+                    $branch = $user->branches()->where('branches.tenant_id', $tenant->id)->where('branches.is_active', true)->first()
+                           ?? Branch::where('tenant_id', $tenant->id)->where('is_main', true)->where('is_active', true)->first()
+                           ?? Branch::where('tenant_id', $tenant->id)->where('is_active', true)->first();
+                }
+
                 if ($branch) {
                     session(['active_branch_id' => $branch->id]);
                 }
@@ -90,11 +103,17 @@ class IdentifyTenant
                 ? Tenant::where('status', 'active')->orderBy('name')->get()
                 : $user->tenants()->where('status', 'active')->orderBy('name')->get();
 
+            $userRole = $user->getRoleInTenant($tenant->id);
+            $accessibleBranches = ($user->is_superadmin || $userRole === 'admin')
+                ? Branch::where('tenant_id', $tenant->id)->where('is_active', true)->orderByDesc('is_main')->orderBy('name')->get()
+                : $user->branches()->where('branches.tenant_id', $tenant->id)->where('branches.is_active', true)->orderByDesc('is_main')->orderBy('name')->get();
+
             // Share current tenant & user role with all Blade views
             view()->share('currentTenant', $tenant);
             view()->share('currentBranch', $branch);
-            view()->share('currentUserRole', $user->getRoleInTenant($tenant->id));
+            view()->share('currentUserRole', $userRole);
             view()->share('accessibleTenants', $accessibleTenants);
+            view()->share('accessibleBranches', $accessibleBranches);
         }
 
         $response = $next($request);

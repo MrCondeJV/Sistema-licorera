@@ -91,9 +91,31 @@ class Product extends Model
         return $this->stock <= 0;
     }
 
-    public function hasEnoughStock(float $quantity, int $conversionFactor = 1): bool
+    public function branchInventories(): HasMany
+    {
+        return $this->hasMany(BranchInventory::class);
+    }
+
+    public function stockInBranch(?int $branchId = null): float
+    {
+        $branchId = $branchId ?? app(\App\Services\TenantContext::class)->getBranchId();
+        if (!$branchId) {
+            return (float) $this->stock;
+        }
+
+        $inv = $this->branchInventories()->where('branch_id', $branchId)->first();
+        return $inv ? (float) $inv->stock : 0.0;
+    }
+
+    public function hasEnoughStock(float $quantity, int $conversionFactor = 1, ?int $branchId = null): bool
     {
         $baseUnitsRequired = $quantity * $conversionFactor;
+        $branchId = $branchId ?? app(\App\Services\TenantContext::class)->getBranchId();
+
+        if ($branchId) {
+            return $this->stockInBranch($branchId) >= $baseUnitsRequired;
+        }
+
         return $this->stock >= $baseUnitsRequired;
     }
 }

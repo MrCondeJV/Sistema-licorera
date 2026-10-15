@@ -15,29 +15,40 @@ use Illuminate\Support\Facades\DB;
 class ReportService
 {
     /**
-     * Metrics for executive daily dashboard.
+     * Metrics for executive daily dashboard with optional branch scope.
      */
-    public function getDashboardMetrics(): array
+    public function getDashboardMetrics(?int $branchId = null): array
     {
+        $branchId = $branchId ?? app(TenantContext::class)->getBranchId() ?? session('active_branch_id');
         $today = Carbon::today();
         $startOfMonth = Carbon::now()->startOfMonth();
 
-        $todaySales = Sale::where('status', 'completed')
-            ->whereDate('sold_at', $today)
-            ->sum('total');
+        $todaySalesQuery = Sale::where('status', 'completed')->whereDate('sold_at', $today);
+        if ($branchId) {
+            $todaySalesQuery->where('branch_id', $branchId);
+        }
+        $todaySales = $todaySalesQuery->sum('total');
 
-        $monthSales = Sale::where('status', 'completed')
-            ->where('sold_at', '>=', $startOfMonth)
-            ->sum('total');
+        $monthSalesQuery = Sale::where('status', 'completed')->where('sold_at', '>=', $startOfMonth);
+        if ($branchId) {
+            $monthSalesQuery->where('branch_id', $branchId);
+        }
+        $monthSales = $monthSalesQuery->sum('total');
 
-        $todayTransactions = Sale::where('status', 'completed')
-            ->whereDate('sold_at', $today)
-            ->count();
+        $todayTransactionsQuery = Sale::where('status', 'completed')->whereDate('sold_at', $today);
+        if ($branchId) {
+            $todayTransactionsQuery->where('branch_id', $branchId);
+        }
+        $todayTransactions = $todayTransactionsQuery->count();
 
         $averageTicket = $todayTransactions > 0 ? round($todaySales / $todayTransactions, 2) : 0;
 
-        $occupiedTables = Table::where('status', 'occupied')->count();
-        $totalTables = Table::count();
+        $tablesQuery = Table::query();
+        if ($branchId) {
+            $tablesQuery->where('branch_id', $branchId);
+        }
+        $occupiedTables = (clone $tablesQuery)->where('status', 'occupied')->count();
+        $totalTables = $tablesQuery->count();
 
         $lowStockCount = Product::where('is_active', true)
             ->whereColumn('stock', '<=', 'stock_min')
@@ -48,13 +59,24 @@ class ReportService
             ->where('stock', '<=', 0)
             ->count();
 
-        $activeCashSessions = CashSession::where('status', 'open')->count();
+        $activeCashSessionsQuery = CashSession::where('status', 'open');
+        if ($branchId) {
+            $activeCashSessionsQuery->where('branch_id', $branchId);
+        }
+        $activeCashSessions = $activeCashSessionsQuery->count();
 
-        $todayExpenses = Expense::whereDate('expense_date', $today)->sum('amount');
+        $todayExpensesQuery = Expense::whereDate('expense_date', $today);
+        if ($branchId) {
+            $todayExpensesQuery->where('branch_id', $branchId);
+        }
+        $todayExpenses = $todayExpensesQuery->sum('amount');
 
         // Estimate today's gross profit
-        $todayItems = SaleItem::whereHas('sale', function ($q) use ($today) {
+        $todayItems = SaleItem::whereHas('sale', function ($q) use ($today, $branchId) {
             $q->where('status', 'completed')->whereDate('sold_at', $today);
+            if ($branchId) {
+                $q->where('branch_id', $branchId);
+            }
         })->get();
 
         $cogs = $todayItems->sum(function ($item) {
@@ -93,11 +115,17 @@ class ReportService
     /**
      * Filtered sales report.
      */
-    public function getFilteredSalesReport(Carbon $startDate, Carbon $endDate, ?int $userId = null, ?int $paymentMethodId = null): array
+    public function getFilteredSalesReport(Carbon $startDate, Carbon $endDate, ?int $userId = null, ?int $paymentMethodId = null, ?int $branchId = null): array
     {
+        $branchId = $branchId ?? app(TenantContext::class)->getBranchId() ?? session('active_branch_id');
+
         $salesQuery = Sale::where('status', 'completed')
             ->whereBetween('sold_at', [$startDate->copy()->startOfDay(), $endDate->copy()->endOfDay()])
             ->with(['user', 'payments.paymentMethod', 'items']);
+
+        if ($branchId) {
+            $salesQuery->where('branch_id', $branchId);
+        }
 
         if ($userId) {
             $salesQuery->where('user_id', $userId);

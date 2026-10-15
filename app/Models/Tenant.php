@@ -59,6 +59,21 @@ class Tenant extends Model
         return $this->hasMany(Branch::class);
     }
 
+    public function getMaxBranches(): ?int
+    {
+        return $this->plan?->max_branches;
+    }
+
+    public function canCreateBranch(): bool
+    {
+        $max = $this->getMaxBranches();
+        if ($max === null) {
+            return true; // Unlimited
+        }
+
+        return $this->branches()->count() < $max;
+    }
+
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'tenant_user')

@@ -27,7 +27,8 @@ class PosController extends Controller
         $user = auth()->user();
 
         // Check if there is an open cash shift for this user, register or store
-        $openCashSession = CashSession::getActiveSession($user->id);
+        $branchId = app(\App\Services\TenantContext::class)->getBranchId() ?? session('active_branch_id');
+        $openCashSession = CashSession::getActiveSession($user->id, null, $branchId);
 
         $categories = Category::where('is_active', true)
             ->orderBy('sort_order')
@@ -36,13 +37,28 @@ class PosController extends Controller
         $products = Product::where('is_active', true)
             ->with(['presentations' => function ($q) {
                 $q->where('is_active', true);
-            }, 'category'])
+            }, 'category', 'branchInventories' => function ($q) use ($branchId) {
+                if ($branchId) {
+                    $q->where('branch_id', $branchId);
+                }
+            }])
             ->orderByDesc('is_favorite')
             ->orderBy('name')
             ->get();
 
-        $tables = Table::where('is_active', true)
-            ->with(['activeAccount.items'])
+        // Attach branch-specific stock to each product
+        if ($branchId) {
+            foreach ($products as $p) {
+                $bInv = $p->branchInventories->firstWhere('branch_id', $branchId);
+                $p->stock = $bInv ? $bInv->stock : 0;
+            }
+        }
+
+        $tablesQuery = Table::where('is_active', true);
+        if ($branchId) {
+            $tablesQuery->where('branch_id', $branchId);
+        }
+        $tables = $tablesQuery->with(['activeAccount.items'])
             ->orderBy('sort_order')
             ->get();
 

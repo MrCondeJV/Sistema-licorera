@@ -200,7 +200,7 @@ class SaleService
                     'tax_amount' => $pItem['tax_amount'],
                 ]);
 
-                // Deduct inventory with strict concurrency lock & liquor check
+                // Deduct inventory with strict concurrency lock & liquor check in current branch
                 $this->inventoryService->deductStock(
                     $pItem['product'],
                     $pItem['quantity'],
@@ -208,7 +208,8 @@ class SaleService
                     'sale',
                     "Venta #{$sale->sale_number}",
                     $user,
-                    $sale
+                    $sale,
+                    $branchId
                 );
             }
 
@@ -337,7 +338,7 @@ class SaleService
                     'amount_refunded' => $refundAmount,
                 ]);
 
-                // Return stock to inventory
+                // Return stock to inventory in original branch
                 $this->inventoryService->addStock(
                     $saleItem->product,
                     $qty,
@@ -345,7 +346,8 @@ class SaleService
                     'return',
                     "Devolución de venta #{$sale->sale_number} - {$reason}",
                     $user,
-                    $refund
+                    $refund,
+                    $sale->branch_id
                 );
             }
 

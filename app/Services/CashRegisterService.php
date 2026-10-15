@@ -29,6 +29,7 @@ class CashRegisterService
 
             $session = CashSession::create([
                 'tenant_id' => $register->tenant_id,
+                'branch_id' => $register->branch_id ?? app(TenantContext::class)->getBranchId(),
                 'cash_register_id' => $register->id,
                 'user_id' => $user->id,
                 'opening_amount' => $openingAmount,

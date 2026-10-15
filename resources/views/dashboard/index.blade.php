@@ -5,8 +5,13 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-            <h2 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">Panel Operativo — {{ $currentTenant->name ?? 'Licorera' }}</h2>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Visión en tiempo real de ventas, inventario, mesas y caja</p>
+            <div class="flex items-center gap-2">
+                <h2 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">Panel Operativo — {{ $currentTenant->name ?? 'Licorera' }}</h2>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-black uppercase tracking-wider bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25">
+                    🏪 {{ $currentBranch->name ?? 'Sede Principal' }}
+                </span>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Visión en tiempo real de ventas, inventario, mesas y caja de esta sucursal</p>
         </div>
 
         <div class="flex items-center gap-2">

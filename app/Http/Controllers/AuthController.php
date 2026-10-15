@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Branch;
 use App\Models\LoginAttempt;
 use App\Models\Tenant;
 use App\Models\TenantUser;
@@ -226,5 +227,35 @@ class AuthController extends Controller
         ]);
 
         return back()->with('success', "Cambiado a {$tenant->name}");
+    }
+
+    /**
+     * Switch active branch for authorized user within the current tenant.
+     */
+    public function switchBranch(Request $request, Branch $branch)
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        $tenantId = session('active_tenant_id') ?? app(TenantContext::class)->getTenantId();
+
+        if ($branch->tenant_id !== $tenantId) {
+            abort(403, 'No tienes acceso a una sucursal de otro negocio.');
+        }
+
+        if (!$branch->is_active) {
+            abort(403, 'La sucursal seleccionada se encuentra inactiva.');
+        }
+
+        if (!$user->canAccessBranch($branch)) {
+            abort(403, 'No tienes autorización para operar en esta sucursal.');
+        }
+
+        session(['active_branch_id' => $branch->id]);
+        app(TenantContext::class)->setBranch($branch);
+
+        return back()->with('success', "Cambiado a sucursal {$branch->name}");
     }
 }

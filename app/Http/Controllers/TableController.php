@@ -25,12 +25,18 @@ class TableController extends Controller
 
     public function index()
     {
-        $tables = Table::where('is_active', true)
-            ->with(['activeAccount.items', 'activeAccount.opener'])
+        $branchId = app(\App\Services\TenantContext::class)->getBranchId() ?? session('active_branch_id');
+
+        $query = Table::where('is_active', true);
+        if ($branchId) {
+            $query->where('branch_id', $branchId);
+        }
+
+        $tables = $query->with(['activeAccount.items', 'activeAccount.opener'])
             ->orderBy('sort_order')
             ->get();
 
-        $freeTables = Table::where('is_active', true)->where('status', 'free')->get();
+        $freeTables = (clone $query)->where('status', 'free')->get();
 
         return view('tables.index', [
             'tables' => $tables,
@@ -40,6 +46,16 @@ class TableController extends Controller
 
     public function show(Table $table)
     {
+        $tenantId = app(\App\Services\TenantContext::class)->getTenantId();
+        if ($table->tenant_id !== $tenantId) {
+            abort(404);
+        }
+
+        $branchId = app(\App\Services\TenantContext::class)->getBranchId() ?? session('active_branch_id');
+        if ($branchId && $table->branch_id && $table->branch_id !== $branchId && !auth()->user()->is_superadmin && auth()->user()->getRoleInTenant($tenantId) !== 'admin') {
+            abort(403, 'Esta mesa pertenece a otra sucursal.');
+        }
+
         $table->load(['activeAccount.items.product', 'activeAccount.items.presentation', 'activeAccount.opener']);
         $account = $table->activeAccount;
 

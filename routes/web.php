@@ -4,6 +4,7 @@ use App\Http\Controllers\AuditController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\BillingController;
+use App\Http\Controllers\BranchController;
 use App\Http\Controllers\BusinessRegistrationController;
 use App\Http\Controllers\CashRegisterController;
 use App\Http\Controllers\CustomerController;
@@ -73,6 +74,7 @@ Route::middleware(['pin.auth'])->group(function () {
 
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::post('/tenant/switch/{tenant}', [AuthController::class, 'switchTenant'])->name('tenant.switch');
+        Route::post('/branch/switch/{branch}', [AuthController::class, 'switchBranch'])->name('branch.switch');
 
     // POS Sales screen (Counter quick sales)
     Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
@@ -159,6 +161,13 @@ Route::middleware(['pin.auth'])->group(function () {
 
         Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
         Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
+
+        // Branches Management & Transfers
+        Route::get('/branches', [BranchController::class, 'index'])->name('branches.index');
+        Route::post('/branches', [BranchController::class, 'store'])->name('branches.store');
+        Route::put('/branches/{branch}', [BranchController::class, 'update'])->name('branches.update');
+        Route::post('/branches/{branch}/toggle', [BranchController::class, 'toggle'])->name('branches.toggle');
+        Route::post('/branches/transfer', [BranchController::class, 'transfer'])->name('branches.transfer');
 
         // Backups & Snapshots
         Route::get('/backups', [BackupController::class, 'index'])->name('backups.index');

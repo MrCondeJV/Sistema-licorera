@@ -22,11 +22,14 @@ class UserController extends Controller
             ->whereHas('user', function ($q) {
                 $q->where('is_superadmin', false);
             })
-            ->with('user')
+            ->with(['user.branches'])
             ->get();
+
+        $branches = \App\Models\Branch::where('tenant_id', $tenantId)->where('is_active', true)->get();
 
         return view('users.index', [
             'memberships' => $memberships,
+            'branches' => $branches,
         ]);
     }
 
@@ -38,6 +41,8 @@ class UserController extends Controller
             'phone' => 'nullable|string|max:30',
             'role' => 'required|in:admin,cashier,waiter',
             'password' => 'required|string|min:6',
+            'branch_ids' => 'nullable|array',
+            'branch_ids.*' => 'exists:branches,id',
         ], [
             'email.required' => 'El correo electrónico es requerido para el inicio de sesión.',
             'email.unique' => 'Ya existe un usuario registrado con este correo.',
@@ -64,6 +69,19 @@ class UserController extends Controller
                 'role' => $request->input('role'),
                 'is_active' => true,
             ]);
+
+            $branchIds = $request->input('branch_ids', []);
+            if (empty($branchIds)) {
+                // If not specified, attach to tenant's main branch
+                $mainBranchId = \App\Models\Branch::where('tenant_id', $tenantId)->where('is_main', true)->value('id');
+                if ($mainBranchId) {
+                    $branchIds = [$mainBranchId];
+                }
+            }
+
+            foreach ($branchIds as $bId) {
+                $user->branches()->attach($bId, ['tenant_id' => $tenantId]);
+            }
 
             AuditService::log('user_created', 'User', $user->id, null, ['name' => $user->name, 'role' => $request->input('role')], "Creación de empleado y credenciales");
         });

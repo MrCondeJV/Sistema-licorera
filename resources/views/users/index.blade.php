@@ -39,6 +39,19 @@
                                 <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold {{ $m->role === 'admin' ? 'bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-700' : ($m->role === 'cashier' ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700' : 'bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-700') }}">
                                     {{ strtoupper($m->role) }}
                                 </span>
+                                <div class="mt-1 flex flex-wrap gap-1">
+                                    @if($m->role === 'admin')
+                                        <span class="text-[10px] text-slate-400 font-semibold">Todas las sedes</span>
+                                    @else
+                                        @forelse($m->user->branches as $ub)
+                                            <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                                                {{ $ub->name }}
+                                            </span>
+                                        @empty
+                                            <span class="text-[10px] text-slate-400 italic">Sede Principal</span>
+                                        @endforelse
+                                    @endif
+                                </div>
                             </td>
                             <td class="py-3 px-2">
                                 <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold {{ $m->is_active ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700' : 'bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-700' }}">
@@ -102,13 +115,25 @@
                            class="input-night w-full text-xs font-mono">
                 </div>
 
-                <div class="mb-4">
+                <div class="mb-3">
                     <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Rol Operativo *</label>
                     <select name="role" required class="input-night w-full text-xs">
                         <option value="cashier">Cajero (Ventas, Cobros y Caja)</option>
                         <option value="waiter">Mesero (Mesas y Cuentas)</option>
                         <option value="admin">Administrador (Control Total)</option>
                     </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Sucursal(es) Asignadas</label>
+                    <div class="space-y-1.5 p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 max-h-32 overflow-y-auto">
+                        @foreach($branches as $br)
+                            <label class="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300 cursor-pointer">
+                                <input type="checkbox" name="branch_ids[]" value="{{ $br->id }}" {{ $br->is_main ? 'checked' : '' }} class="rounded text-emerald-600 focus:ring-emerald-500">
+                                <span>{{ $br->name }} {{ $br->is_main ? '(Principal)' : '' }}</span>
+                            </label>
+                        @endforeach
+                    </div>
                 </div>
 
                 <div class="flex gap-2">

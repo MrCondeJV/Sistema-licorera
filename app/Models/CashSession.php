@@ -74,17 +74,19 @@ class CashSession extends Model
      * Resolve the active open cash session.
      * Priority:
      * 1. If a specific register is set in session('active_cash_register_id')
-     * 2. If the user opened a session that is still open
-     * 3. Any active open session within the current tenant scope (e.g. opened by admin)
+     * 2. If the user opened a session in current branch that is still open
+     * 3. Any active open session within the current branch / tenant scope
      */
-    public static function getActiveSession(?int $userId = null, ?int $registerId = null): ?self
+    public static function getActiveSession(?int $userId = null, ?int $registerId = null, ?int $branchId = null): ?self
     {
         $userId = $userId ?? auth()->id();
         $registerId = $registerId ?? session('active_cash_register_id');
+        $branchId = $branchId ?? app(\App\Services\TenantContext::class)->getBranchId() ?? session('active_branch_id');
 
         if ($registerId) {
             $regSession = static::where('status', 'open')
                 ->where('cash_register_id', $registerId)
+                ->when($branchId, fn($q) => $q->where(fn($sub) => $sub->where('branch_id', $branchId)->orWhereNull('branch_id')))
                 ->with(['cashRegister', 'user', 'movements.user', 'sales'])
                 ->latest()
                 ->first();
@@ -97,6 +99,7 @@ class CashSession extends Model
         if ($userId) {
             $userSession = static::where('status', 'open')
                 ->where('user_id', $userId)
+                ->when($branchId, fn($q) => $q->where(fn($sub) => $sub->where('branch_id', $branchId)->orWhereNull('branch_id')))
                 ->with(['cashRegister', 'user', 'movements.user', 'sales'])
                 ->latest()
                 ->first();
@@ -106,6 +109,17 @@ class CashSession extends Model
             }
         }
 
+        $session = static::where('status', 'open')
+            ->when($branchId, fn($q) => $q->where(fn($sub) => $sub->where('branch_id', $branchId)->orWhereNull('branch_id')))
+            ->with(['cashRegister', 'user', 'movements.user', 'sales'])
+            ->latest()
+            ->first();
+
+        if ($session) {
+            return $session;
+        }
+
+        // Global fallback within tenant if no branch-specific session found
         return static::where('status', 'open')
             ->with(['cashRegister', 'user', 'movements.user', 'sales'])
             ->latest()

@@ -41,7 +41,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->index(['tenant_id', 'status']);
-            $table->unique(['tenant_id', 'name']);
+            $table->unique(['tenant_id', 'branch_id', 'name']);
         });
 
         Schema::create('accounts', function (Blueprint $table) {

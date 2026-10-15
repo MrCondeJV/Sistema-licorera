@@ -125,7 +125,7 @@ class PurchaseService
                     $product->save();
                 }
 
-                // Add stock via inventory service
+                // Add stock via inventory service in purchase branch
                 $this->inventoryService->addStock(
                     $product,
                     (float) $item->quantity,
@@ -133,7 +133,8 @@ class PurchaseService
                     'purchase',
                     "Compra #{$lockedPurchase->id} - Factura: " . ($lockedPurchase->invoice_number ?? 'S/N'),
                     $user,
-                    $lockedPurchase
+                    $lockedPurchase,
+                    $lockedPurchase->branch_id
                 );
             }
 

@@ -25,7 +25,13 @@ class InventoryController extends Controller
 
     public function index(Request $request)
     {
-        $query = Product::with(['category', 'presentations']);
+        $branchId = app(\App\Services\TenantContext::class)->getBranchId() ?? session('active_branch_id');
+
+        $query = Product::with(['category', 'presentations', 'branchInventories' => function ($q) use ($branchId) {
+            if ($branchId) {
+                $q->where('branch_id', $branchId);
+            }
+        }]);
 
         if ($request->filled('category_id')) {
             $query->where('category_id', $request->input('category_id'));
@@ -47,6 +53,18 @@ class InventoryController extends Controller
         }
 
         $products = $query->orderBy('name')->paginate(25);
+
+        // Reflect branch-specific stock on product items
+        if ($branchId) {
+            foreach ($products as $p) {
+                $bInv = $p->branchInventories->firstWhere('branch_id', $branchId);
+                if ($bInv) {
+                    $p->branch_stock = $bInv->stock;
+                    $p->stock = $bInv->stock;
+                }
+            }
+        }
+
         $categories = Category::where('is_active', true)->orderBy('sort_order')->get();
 
         return view('inventory.index', [

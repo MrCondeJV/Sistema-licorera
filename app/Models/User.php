@@ -76,4 +76,38 @@ class User extends Authenticatable
 
         return $userRole !== null && in_array($userRole, $roles, true);
     }
+
+    public function branches(): BelongsToMany
+    {
+        return $this->belongsToMany(Branch::class, 'branch_user')->withTimestamps();
+    }
+
+    public function canAccessBranch(Branch|int $branch): bool
+    {
+        if ($this->is_superadmin) {
+            return true;
+        }
+
+        $branchId = $branch instanceof Branch ? $branch->id : (int) $branch;
+        $branchModel = $branch instanceof Branch ? $branch : Branch::find($branchId);
+
+        if (!$branchModel) {
+            return false;
+        }
+
+        // Must belong to the same tenant
+        $tenantId = $branchModel->tenant_id;
+        $userRole = $this->getRoleInTenant($tenantId);
+        if (!$userRole) {
+            return false;
+        }
+
+        // Tenant admins have tenant-wide branch access by default
+        if ($userRole === 'admin') {
+            return true;
+        }
+
+        // Cashiers/Waiters must have explicit branch assignment or if none assigned yet, main branch
+        return $this->branches()->where('branches.id', $branchId)->exists();
+    }
 }

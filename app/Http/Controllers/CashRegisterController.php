@@ -21,9 +21,15 @@ class CashRegisterController extends Controller
     public function index()
     {
         $user = auth()->user();
-        $registers = CashRegister::where('is_active', true)->get();
+        $branchId = app(\App\Services\TenantContext::class)->getBranchId() ?? session('active_branch_id');
 
-        $activeSession = CashSession::getActiveSession($user->id);
+        $registersQuery = CashRegister::where('is_active', true);
+        if ($branchId) {
+            $registersQuery->where('branch_id', $branchId);
+        }
+        $registers = $registersQuery->get();
+
+        $activeSession = CashSession::getActiveSession($user->id, null, $branchId);
 
         $summary = $activeSession ? $activeSession->calculateCashSummary() : null;
 
