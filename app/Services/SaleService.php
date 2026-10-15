@@ -224,6 +224,28 @@ class SaleService
 
             // 6. Record Payments OR Register Customer Debt
             if ($chargeToDebt) {
+                $itemsSummaryParts = [];
+                $itemsSnapshot = [];
+                foreach ($processedItems as $pItem) {
+                    $presText = !empty($pItem['presentation_name']) && $pItem['presentation_name'] !== 'Unidad'
+                        ? " ({$pItem['presentation_name']})"
+                        : '';
+                    $qtyStr = (float) $pItem['quantity'];
+                    $itemsSummaryParts[] = "{$qtyStr}x {$pItem['product']->name}{$presText}";
+
+                    $itemsSnapshot[] = [
+                        'product_id' => $pItem['product']->id,
+                        'product_name' => $pItem['product']->name,
+                        'presentation_name' => $pItem['presentation_name'] ?: 'Unidad',
+                        'quantity' => (float) $pItem['quantity'],
+                        'unit_price' => (float) $pItem['unit_price'],
+                        'subtotal' => (float) $pItem['subtotal'],
+                    ];
+                }
+
+                $itemsSummaryText = implode(', ', $itemsSummaryParts);
+                $notes = "Venta {$sale->sale_number}: {$itemsSummaryText}";
+
                 CustomerDebt::create([
                     'tenant_id' => $tenantId,
                     'customer_id' => $customerId,
@@ -232,7 +254,8 @@ class SaleService
                     'original_amount' => $total,
                     'remaining_amount' => $total,
                     'status' => 'pending',
-                    'notes' => "Venta {$sale->sale_number} cargada a cuenta",
+                    'notes' => $notes,
+                    'items_snapshot' => $itemsSnapshot,
                     'due_date' => now()->addDays(30),
                 ]);
 

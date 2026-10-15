@@ -12,6 +12,10 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
+use App\Models\Product;
+use App\Models\ProductPresentation;
+use App\Services\InventoryService;
+
 class CustomerController extends Controller
 {
     public function index()
@@ -71,49 +75,163 @@ class CustomerController extends Controller
 
     public function debts(Customer $customer)
     {
-        $customer->load(['debts.sale', 'payments.paymentMethod']);
+        $customer->load([
+            'debts' => function ($q) {
+                $q->latest();
+            },
+            'debts.sale.items.presentation',
+            'debts.sale.items.product',
+            'debts.user',
+            'payments' => function ($q) {
+                $q->latest();
+            },
+            'payments.paymentMethod',
+            'payments.user',
+        ]);
+
         $paymentMethods = PaymentMethod::where('is_active', true)->get();
+
+        $products = Product::where('is_active', true)
+            ->with(['presentations' => function ($q) {
+                $q->where('is_active', true);
+            }])
+            ->orderBy('name')
+            ->get();
 
         return view('customers.debts', [
             'customer' => $customer,
             'paymentMethods' => $paymentMethods,
+            'products' => $products,
         ]);
     }
 
     public function storeDebt(Request $request, Customer $customer)
     {
         $request->validate([
-            'amount' => 'required|numeric|min:1',
-            'notes' => 'nullable|string|max:250',
+            'amount' => 'nullable|numeric|min:0.01',
+            'notes' => 'nullable|string|max:500',
             'due_date' => 'nullable|date',
+            'deduct_stock' => 'nullable',
+            'items' => 'nullable|array',
+            'items.*.product_id' => 'nullable|exists:products,id',
+            'items.*.product_presentation_id' => 'nullable|exists:product_presentations,id',
+            'items.*.name' => 'required_with:items|string|max:150',
+            'items.*.quantity' => 'required_with:items|numeric|min:0.01',
+            'items.*.unit_price' => 'required_with:items|numeric|min:0',
+            'items.*.subtotal' => 'nullable|numeric|min:0',
         ]);
 
-        $amount = (float) $request->input('amount');
+        $items = $request->input('items', []);
+        $itemsSnapshot = [];
+        $calculatedTotal = 0;
+        $summaryParts = [];
+
+        if (!empty($items)) {
+            foreach ($items as $item) {
+                $qty = (float) ($item['quantity'] ?? 1);
+                $unitPrice = (float) ($item['unit_price'] ?? 0);
+                $subtotal = isset($item['subtotal']) && (float) $item['subtotal'] > 0
+                    ? (float) $item['subtotal']
+                    : ($qty * $unitPrice);
+
+                $calculatedTotal += $subtotal;
+                $name = trim($item['name']);
+                $presName = !empty($item['presentation_name']) ? trim($item['presentation_name']) : 'Unidad';
+                $presSuffix = $presName !== 'Unidad' ? " ({$presName})" : '';
+
+                $summaryParts[] = "{$qty}x {$name}{$presSuffix}";
+
+                $itemsSnapshot[] = [
+                    'product_id' => !empty($item['product_id']) ? (int) $item['product_id'] : null,
+                    'product_presentation_id' => !empty($item['product_presentation_id']) ? (int) $item['product_presentation_id'] : null,
+                    'product_name' => $name,
+                    'presentation_name' => $presName,
+                    'quantity' => $qty,
+                    'unit_price' => $unitPrice,
+                    'subtotal' => $subtotal,
+                ];
+            }
+        }
+
+        $amount = !empty($items) ? $calculatedTotal : (float) $request->input('amount');
+
+        if ($amount <= 0) {
+            return back()->with('error', 'El monto de la deuda debe ser mayor a cero.');
+        }
 
         // Check credit limit
         if ($customer->credit_limit > 0 && ($customer->current_debt + $amount) > $customer->credit_limit) {
             return back()->with('error', "El monto supera el cupo de crédito del cliente ($" . number_format($customer->credit_limit, 0, ',', '.') . ").");
         }
 
-        DB::transaction(function () use ($customer, $amount, $request) {
-            CustomerDebt::create([
-                'tenant_id' => $customer->tenant_id,
-                'customer_id' => $customer->id,
-                'user_id' => auth()->id(),
-                'original_amount' => $amount,
-                'remaining_amount' => $amount,
-                'status' => 'pending',
-                'notes' => $request->input('notes'),
-                'due_date' => $request->input('due_date'),
-            ]);
+        $notes = $request->input('notes');
+        if (!empty($summaryParts)) {
+            $itemsText = implode(', ', $summaryParts);
+            $notes = $notes ? "{$itemsText} — {$notes}" : $itemsText;
+        }
 
-            $customer->current_debt += $amount;
-            $customer->save();
+        $deductStock = filter_var($request->input('deduct_stock', false), FILTER_VALIDATE_BOOLEAN);
 
-            AuditService::log('debt_created', 'CustomerDebt', $customer->id, null, ['amount' => $amount], "Registro de fiado / deuda");
-        });
+        try {
+            DB::transaction(function () use ($customer, $amount, $notes, $itemsSnapshot, $request, $deductStock, $items) {
+                // If requested and items contain products, deduct physical inventory
+                if ($deductStock && !empty($items)) {
+                    $inventoryService = app(InventoryService::class);
+                    $user = auth()->user();
+                    $branchId = session('active_branch_id')
+                        ?? $user?->branches()->where('tenant_id', $customer->tenant_id)->first()?->id
+                        ?? $customer->tenant?->branches()->where('is_main', true)->value('id')
+                        ?? $customer->tenant?->branches()->value('id');
 
-        return back()->with('success', 'Deuda/fiado registrado correctamente.');
+                    foreach ($items as $item) {
+                        if (!empty($item['product_id'])) {
+                            $product = Product::find($item['product_id']);
+                            if ($product) {
+                                $factor = 1;
+                                if (!empty($item['product_presentation_id'])) {
+                                    $pres = ProductPresentation::find($item['product_presentation_id']);
+                                    if ($pres) {
+                                        $factor = (int) $pres->conversion_factor;
+                                    }
+                                }
+
+                                $inventoryService->deductStock(
+                                    $product,
+                                    (float) $item['quantity'],
+                                    $factor,
+                                    'sale',
+                                    "Fiado cargado a cuenta del cliente {$customer->name}",
+                                    $user,
+                                    null,
+                                    $branchId
+                                );
+                            }
+                        }
+                    }
+                }
+
+                CustomerDebt::create([
+                    'tenant_id' => $customer->tenant_id,
+                    'customer_id' => $customer->id,
+                    'user_id' => auth()->id(),
+                    'original_amount' => $amount,
+                    'remaining_amount' => $amount,
+                    'status' => 'pending',
+                    'notes' => $notes ?: 'Fiado manual',
+                    'items_snapshot' => !empty($itemsSnapshot) ? $itemsSnapshot : null,
+                    'due_date' => $request->input('due_date'),
+                ]);
+
+                $customer->current_debt += $amount;
+                $customer->save();
+
+                AuditService::log('debt_created', 'CustomerDebt', $customer->id, null, ['amount' => $amount, 'items' => $itemsSnapshot], "Registro de fiado / deuda de cliente");
+            });
+        } catch (Exception $e) {
+            return back()->with('error', 'Error al registrar el fiado: ' . $e->getMessage());
+        }
+
+        return back()->with('success', 'Deuda/fiado registrado correctamente con el detalle de lo vendido.');
     }
 
     public function storePayment(Request $request, Customer $customer)
