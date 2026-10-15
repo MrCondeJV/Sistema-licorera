@@ -100,48 +100,48 @@ class Sale extends Model
         $date = $this->sold_at ? $this->sold_at->format('d/m/Y h:i A') : now()->format('d/m/Y h:i A');
 
         $lines = [];
-        $lines[] = "\u{1F37E} *" . mb_strtoupper($businessName, 'UTF-8') . "*";
-        $lines[] = "\u{1F4CC} *Comprobante:* #{$this->sale_number}";
-        $lines[] = "\u{1F4C5} *Fecha:* {$date}";
+        $lines[] = "*" . mb_strtoupper($businessName, 'UTF-8') . "*";
+        $lines[] = "*Comprobante:* #{$this->sale_number}";
+        $lines[] = "*Fecha:* {$date}";
         if ($this->user) {
-            $lines[] = "\u{1F464} *Atendido por:* {$this->user->name}";
+            $lines[] = "*Atendido por:* {$this->user->name}";
         }
         if ($this->customer) {
-            $lines[] = "\u{1F464} *Cliente:* {$this->customer->name}";
+            $lines[] = "*Cliente:* {$this->customer->name}";
         }
         if ($this->account && $this->account->table) {
-            $lines[] = "\u{1F4CD} *Mesa:* {$this->account->table->name}";
+            $lines[] = "*Mesa:* {$this->account->table->name}";
         }
         $lines[] = "--------------------------------";
-        $lines[] = "\u{1F4E6} *DETALLE DE COMPRA:*";
+        $lines[] = "*DETALLE DE COMPRA:*";
 
         foreach ($this->items as $item) {
             $pres = ($item->presentation_name_snapshot && $item->presentation_name_snapshot !== 'Unidad')
                 ? " ({$item->presentation_name_snapshot})"
                 : "";
             $qty = rtrim(rtrim((string)$item->quantity, '0'), '.');
-            $lines[] = "\u{2022} {$qty}x {$item->product_name_snapshot}{$pres} - $" . number_format($item->subtotal, 0, ',', '.');
+            $lines[] = "• {$qty}x {$item->product_name_snapshot}{$pres} - $" . number_format($item->subtotal, 0, ',', '.');
         }
 
         $lines[] = "--------------------------------";
         if ($this->discount_total > 0) {
-            $lines[] = "\u{1F3F7}\u{FE0F} *Descuento:* -$" . number_format($this->discount_total, 0, ',', '.');
+            $lines[] = "*Descuento:* -$" . number_format($this->discount_total, 0, ',', '.');
         }
-        $lines[] = "\u{1F4B5} *TOTAL: $" . number_format($this->total, 0, ',', '.') . " COP*";
+        $lines[] = "*TOTAL: $" . number_format($this->total, 0, ',', '.') . " COP*";
 
         if ($this->payments->isNotEmpty()) {
             $methods = $this->payments->map(function ($p) {
                 return ($p->paymentMethod?->name ?? 'Pago') . " ($" . number_format($p->amount, 0, ',', '.') . ")";
             })->implode(', ');
-            $lines[] = "\u{1F4B3} *Medio de Pago:* {$methods}";
+            $lines[] = "*Medio de Pago:* {$methods}";
         }
 
         $lines[] = "";
         $receiptUrl = route('pos.receipt', $this->id);
-        $lines[] = "\u{1F517} *Ver comprobante digital:*";
+        $lines[] = "*Comprobante digital:*";
         $lines[] = $receiptUrl;
         $lines[] = "";
-        $lines[] = "\u{00A1}Muchas gracias por su compra! \u{2728}";
+        $lines[] = "¡Muchas gracias por su compra!";
 
         return implode("\n", $lines);
     }
