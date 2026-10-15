@@ -100,17 +100,20 @@ class Sale extends Model
         $date = $this->sold_at ? $this->sold_at->format('d/m/Y h:i A') : now()->format('d/m/Y h:i A');
 
         $lines = [];
-        $lines[] = "🧾 *" . mb_strtoupper($businessName, 'UTF-8') . "*";
-        $lines[] = "📄 *Comprobante:* #{$this->sale_number}";
+        $lines[] = "🍾 *" . mb_strtoupper($businessName, 'UTF-8') . "*";
+        $lines[] = "📌 *Comprobante:* #{$this->sale_number}";
         $lines[] = "📅 *Fecha:* {$date}";
         if ($this->user) {
             $lines[] = "👤 *Atendido por:* {$this->user->name}";
         }
         if ($this->customer) {
-            $lines[] = "🤝 *Cliente:* {$this->customer->name}";
+            $lines[] = "👤 *Cliente:* {$this->customer->name}";
+        }
+        if ($this->account && $this->account->table) {
+            $lines[] = "📍 *Mesa:* {$this->account->table->name}";
         }
         $lines[] = "--------------------------------";
-        $lines[] = "🛒 *DETALLE DE COMPRA:*";
+        $lines[] = "📦 *DETALLE DE COMPRA:*";
 
         foreach ($this->items as $item) {
             $pres = ($item->presentation_name_snapshot && $item->presentation_name_snapshot !== 'Unidad')
@@ -122,9 +125,9 @@ class Sale extends Model
 
         $lines[] = "--------------------------------";
         if ($this->discount_total > 0) {
-            $lines[] = "🔻 *Descuento:* -$" . number_format($this->discount_total, 0, ',', '.');
+            $lines[] = "🏷️ *Descuento:* -$" . number_format($this->discount_total, 0, ',', '.');
         }
-        $lines[] = "💰 *TOTAL: $" . number_format($this->total, 0, ',', '.') . " COP*";
+        $lines[] = "💵 *TOTAL: $" . number_format($this->total, 0, ',', '.') . " COP*";
 
         if ($this->payments->isNotEmpty()) {
             $methods = $this->payments->map(function ($p) {
@@ -135,10 +138,10 @@ class Sale extends Model
 
         $lines[] = "";
         $receiptUrl = route('pos.receipt', $this->id);
-        $lines[] = "📄 *Ver comprobante digital:*";
+        $lines[] = "🔗 *Ver comprobante digital:*";
         $lines[] = $receiptUrl;
         $lines[] = "";
-        $lines[] = "¡Muchas gracias por su compra! 🍻";
+        $lines[] = "¡Muchas gracias por su compra! ✨";
 
         return implode("\n", $lines);
     }
