@@ -225,7 +225,7 @@ window.AppAlert = {
                             phone = '57' + phone;
                         }
                         const encodedMsg = encodeURIComponent(whatsappMessage || 'Comprobante de venta Licorera POS');
-                        const url = phone ? `https://wa.me/${phone}?text=${encodedMsg}` : `https://api.whatsapp.com/send?text=${encodedMsg}`;
+                        const url = phone ? `https://wa.me/${phone}?text=${encodedMsg}` : `https://wa.me/?text=${encodedMsg}`;
                         window.open(url, '_blank');
                     };
 
