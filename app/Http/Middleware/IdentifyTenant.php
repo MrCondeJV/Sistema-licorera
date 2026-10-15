@@ -15,8 +15,17 @@ class IdentifyTenant
     {
         $context = app(TenantContext::class);
 
-        // If route is superadmin, bypass tenant requirement
-        if ($request->is('superadmin*')) {
+        // Bypass tenant isolation for public, auth, and platform superadmin routes
+        if (
+            $request->is('/') ||
+            $request->is('login*') ||
+            $request->is('logout') ||
+            $request->is('unlock*') ||
+            $request->is('register-business*') ||
+            $request->is('registro*') ||
+            $request->is('wompi*') ||
+            $request->is('superadmin*')
+        ) {
             $context->setBypassScope(true);
             return $next($request);
         }

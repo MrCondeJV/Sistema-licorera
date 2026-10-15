@@ -88,6 +88,20 @@
             </div>
         @endif
 
+        @if(auth()->check())
+            <div class="mb-4 p-3 bg-purple-50 border border-purple-200 dark:bg-purple-950/60 dark:border-purple-500/30 rounded-2xl text-purple-800 dark:text-purple-300 text-xs font-semibold flex items-center justify-between gap-2 shadow-xs">
+                <div class="flex items-center gap-1.5 truncate">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+                    <span class="truncate">Sesión iniciada: <strong class="font-bold">{{ auth()->user()->name }}</strong></span>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                    <a href="{{ auth()->user()->is_superadmin && !session('superadmin_impersonating') ? route('superadmin.index') : route('pos.index') }}" class="px-2.5 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-[11px] font-bold transition-all shadow-xs">
+                        Ir al Panel &rarr;
+                    </a>
+                </div>
+            </div>
+        @endif
+
         <!-- CREDENTIALS FORM -->
         <form action="{{ route('login.submit') }}" method="POST">
             @csrf

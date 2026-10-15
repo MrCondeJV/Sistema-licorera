@@ -21,10 +21,6 @@ class AuthController extends Controller
      */
     public function showLogin(Request $request)
     {
-        if (Auth::check()) {
-            return redirect()->route('dashboard');
-        }
-
         return view('auth.login');
     }
 
@@ -183,6 +179,10 @@ class AuthController extends Controller
                 'screen_locked' => false,
                 'last_activity_time' => time(),
             ]);
+
+            if ($user->is_superadmin && !session('superadmin_impersonating')) {
+                return redirect()->intended(route('superadmin.index'));
+            }
 
             return redirect()->intended(route('pos.index'));
         }

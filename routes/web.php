@@ -29,12 +29,6 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 Route::get('/', function () {
-    if (auth()->check() && !session('screen_locked', false)) {
-        if (auth()->user()->is_superadmin && !session('superadmin_impersonating')) {
-            return redirect()->route('superadmin.index');
-        }
-        return redirect()->route('pos.index');
-    }
     return redirect()->route('login');
 })->name('home');
 

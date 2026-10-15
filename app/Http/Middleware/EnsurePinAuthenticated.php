@@ -25,6 +25,12 @@ class EnsurePinAuthenticated
             return redirect()->route('login')->withErrors(['pin' => 'Tu usuario se encuentra desactivado.']);
         }
 
+        // Superadmin in platform area is not subjected to POS touch screen lock
+        if ($user->is_superadmin && !session('superadmin_impersonating')) {
+            session(['last_activity_time' => time(), 'screen_locked' => false]);
+            return $next($request);
+        }
+
         // Screen lock check
         if (session('screen_locked', false) && !$request->routeIs('unlock*') && !$request->routeIs('logout')) {
             if ($request->expectsJson()) {
