@@ -25,6 +25,16 @@ class Tenant extends Model
         'currency',
         'status',
         'plan_id',
+        'trial_ends_at',
+        'subscription_status',
+        'subscription_ends_at',
+        'wompi_customer_email',
+        'last_payment_reference',
+    ];
+
+    protected $casts = [
+        'trial_ends_at' => 'datetime',
+        'subscription_ends_at' => 'datetime',
     ];
 
     protected static function booted(): void
@@ -98,5 +108,46 @@ class Tenant extends Model
     public function isActive(): bool
     {
         return $this->status === 'active';
+    }
+
+    public function subscriptionPayments(): HasMany
+    {
+        return $this->hasMany(SubscriptionPayment::class);
+    }
+
+    public function isOnTrial(): bool
+    {
+        return $this->subscription_status === 'trial' 
+            && $this->trial_ends_at !== null 
+            && $this->trial_ends_at->isFuture();
+    }
+
+    public function hasActiveSubscription(): bool
+    {
+        return $this->subscription_status === 'active' 
+            && ($this->subscription_ends_at === null || $this->subscription_ends_at->isFuture());
+    }
+
+    public function hasAccess(): bool
+    {
+        return $this->isActive() && ($this->isOnTrial() || $this->hasActiveSubscription());
+    }
+
+    public function isExpired(): bool
+    {
+        return !$this->hasAccess();
+    }
+
+    public function daysRemaining(): int
+    {
+        if ($this->hasActiveSubscription() && $this->subscription_ends_at) {
+            return max(0, (int) now()->diffInDays($this->subscription_ends_at, false));
+        }
+
+        if ($this->trial_ends_at) {
+            return max(0, (int) now()->diffInDays($this->trial_ends_at, false));
+        }
+
+        return 0;
     }
 }

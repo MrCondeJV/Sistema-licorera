@@ -170,6 +170,18 @@
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                     <span>Configuración</span>
                 </a>
+
+                <a href="{{ route('billing.index') }}"
+                   class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all {{ request()->routeIs('billing.*') ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/20' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800' }}">
+                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                    <span>Suscripción y Wompi</span>
+                </a>
+
+                <a href="{{ route('backups.index') }}"
+                   class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all {{ request()->routeIs('backups.*') ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/20' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800' }}">
+                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+                    <span>Copias de Seguridad</span>
+                </a>
             @endif
 
             @if(auth()->user()->is_superadmin)
@@ -314,6 +326,30 @@
 
         <!-- Main Body Content -->
         <main class="flex-1 min-h-0 overflow-y-auto p-3 sm:p-4 lg:p-4 pb-24 lg:pb-4 relative flex flex-col">
+            @if(isset($currentTenant) && !auth()->user()->is_superadmin)
+                @if($currentTenant->isExpired())
+                    <div class="mb-4 p-3.5 bg-rose-500/10 border border-rose-500/30 rounded-2xl text-rose-700 dark:text-rose-300 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs shadow-sm">
+                        <div class="flex items-center gap-2">
+                            <span class="text-base">⚠️</span>
+                            <span class="font-bold">Tu membresía ha expirado. Renueva hoy mismo con Wompi para asegurar la continuidad de tu servicio.</span>
+                        </div>
+                        <a href="{{ route('billing.index') }}" class="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black whitespace-nowrap text-center shadow-md">
+                            💳 Renovar con Wompi
+                        </a>
+                    </div>
+                @elseif($currentTenant->isOnTrial())
+                    <div class="mb-4 p-3 bg-amber-500/10 border border-amber-500/25 rounded-2xl text-amber-800 dark:text-amber-300 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs shadow-sm">
+                        <div class="flex items-center gap-2">
+                            <span class="text-base">🎁</span>
+                            <span>Prueba gratuita de 14 días activa: te quedan <strong>{{ $currentTenant->daysRemaining() }} días</strong> de acceso completo.</span>
+                        </div>
+                        <a href="{{ route('billing.index') }}" class="px-3 py-1 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black whitespace-nowrap text-center shadow-sm text-[11px]">
+                            💳 Activar Plan con Wompi
+                        </a>
+                    </div>
+                @endif
+            @endif
+
             @if(session('success'))
                 <div class="mb-4 p-3.5 bg-emerald-50 border border-emerald-200 dark:bg-emerald-950/80 dark:border-emerald-500/30 rounded-2xl text-emerald-800 dark:text-emerald-300 flex items-center justify-between text-sm shadow-sm">
                     <div class="flex items-center gap-2">

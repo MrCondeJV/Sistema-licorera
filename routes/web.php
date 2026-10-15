@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BackupController;
+use App\Http\Controllers\BillingController;
 use App\Http\Controllers\BusinessRegistrationController;
 use App\Http\Controllers\CashRegisterController;
 use App\Http\Controllers\CustomerController;
@@ -25,14 +27,26 @@ use Illuminate\Support\Facades\Route;
 | Public Routes
 |--------------------------------------------------------------------------
 */
+Route::get('/', function () {
+    if (auth()->check() && !session('screen_locked', false)) {
+        return redirect()->route('pos.index');
+    }
+    return view('welcome');
+})->name('landing');
+
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 Route::get('/unlock', [AuthController::class, 'showUnlock'])->name('unlock');
 Route::post('/unlock', [AuthController::class, 'unlock'])->name('unlock.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Public SaaS Tenant Registration (Deshabilitado para Producción — Alta gestionada por Superadmin)
-Route::redirect('/register-business', '/login')->name('business.register');
+// Public SaaS Tenant Registration (14-day Free Trial)
+Route::get('/register-business', [BusinessRegistrationController::class, 'showForm'])->name('business.register');
+Route::post('/register-business', [BusinessRegistrationController::class, 'register'])->name('business.register.submit');
+Route::get('/registro', fn() => redirect()->route('business.register'));
+
+// Wompi Webhook (Public, CSRF-exempted in bootstrap/app.php)
+Route::post('/wompi/webhook', [BillingController::class, 'webhook'])->name('wompi.webhook');
 
 /*
 |--------------------------------------------------------------------------
@@ -40,7 +54,7 @@ Route::redirect('/register-business', '/login')->name('business.register');
 |--------------------------------------------------------------------------
 */
 Route::middleware(['pin.auth'])->group(function () {
-    Route::get('/', function () {
+    Route::get('/home', function () {
         return redirect()->route('pos.index');
     });
 
@@ -132,6 +146,17 @@ Route::middleware(['pin.auth'])->group(function () {
 
         Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
         Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
+
+        // Billing & Wompi Subscriptions
+        Route::get('/billing', [BillingController::class, 'index'])->name('billing.index');
+        Route::post('/billing/checkout-data', [BillingController::class, 'getCheckoutData'])->name('billing.checkout-data');
+        Route::get('/billing/callback', [BillingController::class, 'wompiCallback'])->name('billing.wompi-callback');
+
+        // Backups & Snapshots
+        Route::get('/backups', [BackupController::class, 'index'])->name('backups.index');
+        Route::post('/backups', [BackupController::class, 'create'])->name('backups.create');
+        Route::get('/backups/download/{filename}', [BackupController::class, 'download'])->name('backups.download');
+        Route::delete('/backups/{filename}', [BackupController::class, 'destroy'])->name('backups.destroy');
     });
 });
 

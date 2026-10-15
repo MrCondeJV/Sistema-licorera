@@ -61,6 +61,10 @@ class TenantService
                 'currency' => 'COP',
                 'status' => 'active',
                 'plan_id' => $plan->id,
+                'trial_ends_at' => isset($data['trial_days']) ? ($data['trial_days'] > 0 ? now()->addDays((int)$data['trial_days']) : null) : now()->addDays(14),
+                'subscription_status' => $data['subscription_status'] ?? 'trial',
+                'subscription_ends_at' => isset($data['subscription_status']) && $data['subscription_status'] === 'active' ? now()->addDays(30) : null,
+                'wompi_customer_email' => $data['email'] ?? null,
             ]);
 
             // Set context for child creation

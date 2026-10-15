@@ -19,6 +19,10 @@ return Application::configure(basePath: dirname(__DIR__))
             IdentifyTenant::class,
         ]);
 
+        $middleware->validateCsrfTokens(except: [
+            'wompi/webhook',
+        ]);
+
         $middleware->alias([
             'tenant' => IdentifyTenant::class,
             'pin.auth' => EnsurePinAuthenticated::class,

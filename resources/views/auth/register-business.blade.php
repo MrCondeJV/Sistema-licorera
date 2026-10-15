@@ -76,6 +76,18 @@
                        class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl px-4 py-3 text-sm focus:border-emerald-500 focus:outline-none">
             </div>
 
+            <!-- Plan Selector -->
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Plan a Probar (Gratis por 14 días)</label>
+                <select name="plan_slug" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl px-4 py-3 text-sm focus:border-emerald-500 focus:outline-none font-semibold">
+                    @foreach($plans as $p)
+                        <option value="{{ $p->slug }}" {{ (old('plan_slug') ?? 'pro') === $p->slug ? 'selected' : '' }}>
+                            {{ $p->name }} — ${{ number_format($p->price_monthly, 0, ',', '.') }} COP/mes
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
             <!-- Admin User Details -->
             <div class="pt-4 border-t border-slate-200 dark:border-slate-800">
                 <h3 class="text-sm font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-3">Datos del Administrador</h3>
@@ -95,28 +107,30 @@
                     </div>
                 </div>
 
-                <!-- 4-Digit Touch PIN Setup -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">PIN de Acceso (4 dígitos) *</label>
-                        <input type="password" name="pin" maxlength="4" pattern="\d{4}" inputmode="numeric" required
-                               placeholder="••••"
-                               class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl px-4 py-3 text-center text-xl font-mono tracking-widest focus:border-emerald-500 focus:outline-none">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Contraseña de Acceso *</label>
+                        <input type="password" name="password" minlength="6" required
+                               placeholder="Mínimo 6 caracteres"
+                               class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl px-4 py-3 text-sm focus:border-emerald-500 focus:outline-none">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Confirmar PIN *</label>
-                        <input type="password" name="pin_confirmation" maxlength="4" pattern="\d{4}" inputmode="numeric" required
-                               placeholder="••••"
-                               class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl px-4 py-3 text-center text-xl font-mono tracking-widest focus:border-emerald-500 focus:outline-none">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">PIN Rápido de Pantalla (4 dígitos)</label>
+                        <input type="password" name="pin" maxlength="4" pattern="\d{4}" inputmode="numeric"
+                               placeholder="Ej: 1234 (Opcional)"
+                               class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl px-4 py-3 text-center text-sm font-mono tracking-widest focus:border-emerald-500 focus:outline-none">
                     </div>
                 </div>
             </div>
 
             <!-- Submit Button -->
             <div class="pt-6">
-                <button type="submit" class="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl shadow-lg shadow-emerald-600/25 transition-all text-base">
-                    CREAR LICORERA Y COMENZAR
+                <button type="submit" class="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-xl shadow-lg shadow-emerald-600/25 transition-all text-base tracking-wide flex items-center justify-center gap-2">
+                    <span>🚀 ACTIVAR MI PRUEBA GRATIS DE 14 DÍAS</span>
                 </button>
+                <p class="text-[11px] text-center text-slate-400 dark:text-slate-500 mt-2">
+                    Sin compromisos · Sin ingresar tarjeta de crédito · Acceso inmediato
+                </p>
             </div>
         </form>
 
