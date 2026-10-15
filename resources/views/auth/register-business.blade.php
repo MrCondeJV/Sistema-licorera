@@ -125,8 +125,8 @@
 
             <!-- Submit Button -->
             <div class="pt-6">
-                <button type="submit" class="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-xl shadow-lg shadow-emerald-600/25 transition-all text-base tracking-wide flex items-center justify-center gap-2">
-                    <span>🚀 ACTIVAR MI PRUEBA GRATIS DE 14 DÍAS</span>
+                <button type="submit" class="w-full py-3 px-4 bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:hover:bg-white dark:text-slate-900 font-bold rounded-xl shadow-xs transition-all text-sm tracking-wide flex items-center justify-center gap-2">
+                    <span>ACTIVAR PRUEBA GRATUITA (14 DÍAS)</span>
                 </button>
                 <p class="text-[11px] text-center text-slate-400 dark:text-slate-500 mt-2">
                     Sin compromisos · Sin ingresar tarjeta de crédito · Acceso inmediato

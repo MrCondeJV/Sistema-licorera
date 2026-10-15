@@ -11,12 +11,14 @@
 
         <div class="flex items-center gap-2">
             <a href="{{ route('reports.pdf', request()->query()) }}" target="_blank"
-               class="btn-touch py-2 px-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-rose-600 dark:text-rose-400 border border-slate-200 dark:border-slate-700 text-xs font-bold flex items-center gap-1.5 rounded-xl transition-colors">
-                <span>📄 Exportar PDF</span>
+               class="btn-touch py-2 px-3 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-750 text-xs font-semibold flex items-center gap-1.5 rounded-xl shadow-xs transition-colors">
+                <svg class="w-4 h-4 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+                <span>Exportar PDF</span>
             </a>
             <a href="{{ route('reports.excel', request()->query()) }}"
-               class="btn-touch py-2 px-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-emerald-600 dark:text-emerald-400 border border-slate-200 dark:border-slate-700 text-xs font-bold flex items-center gap-1.5 rounded-xl transition-colors">
-                <span>📊 Exportar Excel</span>
+               class="btn-touch py-2 px-3 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-750 text-xs font-semibold flex items-center gap-1.5 rounded-xl shadow-xs transition-colors">
+                <svg class="w-4 h-4 text-emerald-700 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" /></svg>
+                <span>Exportar Excel</span>
             </a>
         </div>
     </div>
@@ -50,7 +52,7 @@
                 @endforeach
             </select>
 
-            <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-md">
+            <button type="submit" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:hover:bg-slate-100 dark:text-slate-900 font-semibold text-xs rounded-xl shadow-xs transition-colors">
                 Filtrar Reporte
             </button>
         </form>

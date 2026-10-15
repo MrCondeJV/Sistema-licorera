@@ -57,9 +57,13 @@
 <body>
     <div>
         <div class="no-print" style="display: flex; gap: 8px; justify-content: center; align-items: center; margin-bottom: 15px; flex-wrap: wrap;">
-            <button class="btn-print" onclick="window.print()">🖨️ IMPRIMIR COMPROBANTE</button>
-            <a href="{{ $sale->getWhatsappUrl() }}" target="_blank" style="background: #16a34a; color: #fff; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; text-decoration: none; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
-                📲 ENVIAR POR WHATSAPP
+            <button class="btn-print" onclick="window.print()" style="display: inline-flex; align-items: center; gap: 6px;">
+                <svg style="width: 15px; height: 15px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                IMPRIMIR COMPROBANTE
+            </button>
+            <a href="{{ $sale->getWhatsappUrl() }}" target="_blank" style="background: #0f766e; color: #fff; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; text-decoration: none; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
+                <svg style="width: 15px; height: 15px;" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.976.532 1.943.792 3.149.792 3.182 0 5.767-2.587 5.767-5.766.001-3.182-2.585-5.734-5.767-5.734zm0-2c4.28 0 7.767 3.486 7.767 7.734 0 4.281-3.487 7.766-7.767 7.766-1.332 0-2.585-.34-3.69-.935L4 20l1.272-4.225A7.697 7.697 0 0 1 4.264 11.938c0-4.248 3.487-7.766 7.767-7.766z"/></svg>
+                ENVIAR POR WHATSAPP
             </a>
         </div>
 

@@ -5,34 +5,34 @@
     <!-- Header -->
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
-            <h2 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white flex flex-wrap items-center gap-2">
+            <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex flex-wrap items-center gap-2">
                 <span>Plataforma SaaS — Panel Superadministrador</span>
-                <span class="px-2.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-700 text-xs font-bold">SUPERADMIN</span>
+                <span class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 text-[10px] font-semibold uppercase tracking-wider">Superadmin</span>
             </h2>
             <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Control global de licoreras registradas, planes de suscripción y acceso maestro a empresas</p>
         </div>
         
         <!-- Quick Action Buttons (Always wrapped, never clipped) -->
         <div class="flex flex-wrap items-center gap-2">
-            <a href="{{ route('superadmin.tenants.create') }}" class="btn-touch bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:hover:bg-slate-100 dark:text-slate-900 border border-slate-800 dark:border-white px-3.5 py-2 text-xs font-semibold rounded-xl flex items-center gap-2 shrink-0 transition-colors shadow-xs">
+            <a href="{{ route('superadmin.tenants.create') }}" class="btn-touch bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:hover:bg-white dark:text-slate-900 border border-slate-800 dark:border-white px-3.5 py-2 text-xs font-semibold rounded-lg flex items-center gap-2 shrink-0 transition-colors shadow-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>
-                <span>+ Nueva Empresa / Licorera</span>
+                <span>Nueva Empresa / Licorera</span>
             </a>
-            <a href="{{ route('superadmin.plans.index') }}" class="btn-touch bg-white hover:bg-slate-50 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-750 dark:text-slate-200 border border-slate-200 dark:border-slate-700 px-3.5 py-2 text-xs font-medium rounded-xl flex items-center gap-2 shrink-0 transition-colors shadow-xs">
+            <a href="{{ route('superadmin.plans.index') }}" class="btn-touch bg-white hover:bg-slate-50 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-750 dark:text-slate-200 border border-slate-200 dark:border-slate-700 px-3.5 py-2 text-xs font-medium rounded-lg flex items-center gap-2 shrink-0 transition-colors shadow-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
                 <span>Planes SaaS</span>
             </a>
-            <a href="{{ route('superadmin.payments') }}" class="btn-touch bg-white hover:bg-slate-50 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-750 dark:text-slate-200 border border-slate-200 dark:border-slate-700 px-3.5 py-2 text-xs font-medium rounded-xl flex items-center gap-2 shrink-0 transition-colors shadow-xs">
+            <a href="{{ route('superadmin.payments') }}" class="btn-touch bg-white hover:bg-slate-50 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-750 dark:text-slate-200 border border-slate-200 dark:border-slate-700 px-3.5 py-2 text-xs font-medium rounded-lg flex items-center gap-2 shrink-0 transition-colors shadow-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
                 <span>Pagos SaaS</span>
             </a>
-            <a href="{{ route('superadmin.audit') }}" class="btn-touch bg-white hover:bg-slate-50 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-750 dark:text-slate-200 border border-slate-200 dark:border-slate-700 px-3.5 py-2 text-xs font-medium rounded-xl flex items-center gap-2 shrink-0 transition-colors shadow-xs">
+            <a href="{{ route('superadmin.audit') }}" class="btn-touch bg-white hover:bg-slate-50 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-750 dark:text-slate-200 border border-slate-200 dark:border-slate-700 px-3.5 py-2 text-xs font-medium rounded-lg flex items-center gap-2 shrink-0 transition-colors shadow-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                <span>Auditoría Global</span>
+                <span>Auditoría</span>
             </a>
-            <a href="{{ route('superadmin.backups') }}" class="btn-touch bg-white hover:bg-slate-50 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-750 dark:text-slate-200 border border-slate-200 dark:border-slate-700 px-3.5 py-2 text-xs font-medium rounded-xl flex items-center gap-2 shrink-0 transition-colors shadow-xs">
+            <a href="{{ route('superadmin.backups') }}" class="btn-touch bg-white hover:bg-slate-50 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-750 dark:text-slate-200 border border-slate-200 dark:border-slate-700 px-3.5 py-2 text-xs font-medium rounded-lg flex items-center gap-2 shrink-0 transition-colors shadow-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
                 <span>Backups</span>
             </a>
@@ -42,24 +42,24 @@
     <!-- Platform KPI Metrics -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div class="card-night p-4 border-slate-200 dark:border-slate-800">
-            <span class="text-xs font-bold uppercase text-slate-500 dark:text-slate-400">Licoreras Registradas</span>
-            <p class="text-2xl font-black font-mono text-slate-900 dark:text-white mt-1">{{ $totalTenants }}</p>
-            <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">{{ $activeTenants }} activas &bull; {{ $suspendedTenants }} suspendidas</span>
+            <span class="text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">Licoreras Registradas</span>
+            <p class="text-2xl font-bold font-mono text-slate-900 dark:text-white mt-1">{{ $totalTenants }}</p>
+            <span class="text-[11px] text-slate-500 dark:text-slate-400">{{ $activeTenants }} activas &bull; {{ $suspendedTenants }} suspendidas</span>
         </div>
         <div class="card-night p-4 border-slate-200 dark:border-slate-800">
-            <span class="text-xs font-bold uppercase text-slate-500 dark:text-slate-400">Total Usuarios Plataforma</span>
-            <p class="text-2xl font-black font-mono text-slate-900 dark:text-white mt-1">{{ $totalUsers }}</p>
-            <span class="text-[10px] text-slate-400">Admins, cajeros y meseros</span>
+            <span class="text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">Total Usuarios Plataforma</span>
+            <p class="text-2xl font-bold font-mono text-slate-900 dark:text-white mt-1">{{ $totalUsers }}</p>
+            <span class="text-[11px] text-slate-500 dark:text-slate-400">Operadores y cajeros</span>
         </div>
         <div class="card-night p-4 border-slate-200 dark:border-slate-800">
-            <span class="text-xs font-bold uppercase text-slate-500 dark:text-slate-400">Ventas Procesadas</span>
-            <p class="text-2xl font-black font-mono text-cyan-600 dark:text-cyan-400 mt-1">{{ $totalSalesCount }}</p>
-            <span class="text-[10px] text-slate-400">Transacciones globales</span>
+            <span class="text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">Ventas Procesadas</span>
+            <p class="text-2xl font-bold font-mono text-slate-900 dark:text-white mt-1">{{ $totalSalesCount }}</p>
+            <span class="text-[11px] text-slate-500 dark:text-slate-400">Transacciones globales</span>
         </div>
-        <div class="card-night p-4 border-emerald-500/30 bg-emerald-50/50 dark:bg-emerald-950/20">
-            <span class="text-xs font-black uppercase text-emerald-600 dark:text-emerald-400">Volumen Transaccional</span>
-            <p class="text-2xl font-black font-mono text-emerald-600 dark:text-emerald-400 mt-1">${{ number_format($totalVolume, 0, ',', '.') }}</p>
-            <span class="text-[10px] text-slate-400">Pesos colombianos (COP)</span>
+        <div class="card-night p-4 border-slate-200 dark:border-slate-800">
+            <span class="text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">Volumen Transaccional</span>
+            <p class="text-2xl font-bold font-mono text-slate-900 dark:text-white mt-1">${{ number_format($totalVolume, 0, ',', '.') }}</p>
+            <span class="text-[11px] text-slate-500 dark:text-slate-400">Pesos colombianos (COP)</span>
         </div>
     </div>
 
@@ -89,10 +89,10 @@
                             <span class="text-[10px] font-mono text-slate-400 block">{{ $t->uuid }}</span>
                         </div>
                         <div class="flex items-center gap-1.5 flex-wrap justify-end">
-                            <span class="px-2 py-0.5 rounded-full {{ $t->status === 'active' ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700' : 'bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 border border-rose-300 dark:border-rose-700' }} text-[10px] font-black uppercase">
-                                {{ $t->status === 'active' ? '✅ Activa' : '🚨 Suspendida' }}
+                            <span class="px-2 py-0.5 rounded-full {{ $t->status === 'active' ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700' : 'bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 border border-rose-300 dark:border-rose-700' }} text-[10px] font-semibold uppercase">
+                                {{ $t->status === 'active' ? 'Activa' : 'Suspendida' }}
                             </span>
-                            <span class="px-2 py-0.5 rounded-full bg-cyan-100 dark:bg-cyan-950 text-cyan-800 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-700 text-[10px] font-bold">
+                            <span class="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-[10px] font-semibold">
                                 {{ $t->plan->name ?? 'Plan Básico' }}
                             </span>
                         </div>
@@ -112,7 +112,7 @@
                             </div>
                         </div>
                         <div class="col-span-2 text-[11px] font-mono text-slate-500 dark:text-slate-400">
-                            🏢 {{ $t->branches->count() }} sedes &bull; 👥 {{ $t->users->count() }} usuarios
+                            {{ $t->branches->count() }} sedes &bull; {{ $t->users->count() }} usuarios
                         </div>
                     </div>
 
@@ -121,32 +121,32 @@
                         <!-- Enter / Impersonate Button -->
                         <form action="{{ route('superadmin.tenants.enter', $t->id) }}" method="POST" class="w-full">
                             @csrf
-                            <button type="submit" class="w-full py-2 px-3 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:hover:bg-white dark:text-slate-900 border border-slate-800 dark:border-white flex items-center justify-center gap-1.5 shadow-xs transition-colors">
+                            <button type="submit" class="w-full py-2 px-3 rounded-lg text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:hover:bg-white dark:text-slate-900 border border-slate-800 dark:border-white flex items-center justify-center gap-1.5 shadow-xs transition-colors">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
                                 <span>Acceder</span>
                             </button>
                         </form>
 
                         <!-- Edit Button -->
-                        <a href="{{ route('superadmin.tenants.edit', $t->id) }}" class="w-full py-2 px-3 rounded-xl text-xs font-medium bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 dark:text-slate-200 dark:border-slate-700 flex items-center justify-center gap-1.5 shadow-xs transition-colors text-center">
+                        <a href="{{ route('superadmin.tenants.edit', $t->id) }}" class="w-full py-2 px-3 rounded-lg text-xs font-medium bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 dark:text-slate-200 dark:border-slate-700 flex items-center justify-center gap-1.5 shadow-xs transition-colors text-center">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                             <span>Editar</span>
                         </a>
 
                         <!-- Manage Users & Credentials -->
-                        <a href="{{ route('superadmin.tenants.users', $t->id) }}" class="w-full py-2 px-3 rounded-xl text-xs font-medium bg-slate-100 hover:bg-slate-200/80 text-slate-700 dark:bg-slate-800/80 dark:hover:bg-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700/60 flex items-center justify-center gap-1.5 shadow-xs transition-colors text-center">
-                            <span>👥 Usuarios ({{ $t->users->count() }})</span>
+                        <a href="{{ route('superadmin.tenants.users', $t->id) }}" class="w-full py-2 px-3 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200/80 text-slate-700 dark:bg-slate-800/80 dark:hover:bg-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700/60 flex items-center justify-center gap-1.5 shadow-xs transition-colors text-center">
+                            <span>Usuarios ({{ $t->users->count() }})</span>
                         </a>
 
                         <!-- SaaS Payments History for this tenant -->
-                        <a href="{{ route('superadmin.payments', ['tenant_id' => $t->id]) }}" class="w-full py-2 px-3 rounded-xl text-xs font-medium bg-slate-100 hover:bg-slate-200/80 text-slate-700 dark:bg-slate-800/80 dark:hover:bg-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700/60 flex items-center justify-center gap-1.5 shadow-xs transition-colors text-center">
-                            <span>💳 Pagos ({{ $t->subscriptionPayments->count() }})</span>
+                        <a href="{{ route('superadmin.payments', ['tenant_id' => $t->id]) }}" class="w-full py-2 px-3 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200/80 text-slate-700 dark:bg-slate-800/80 dark:hover:bg-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700/60 flex items-center justify-center gap-1.5 shadow-xs transition-colors text-center">
+                            <span>Pagos ({{ $t->subscriptionPayments->count() }})</span>
                         </a>
 
                         <!-- Toggle Status Button -->
                         <form action="{{ route('superadmin.tenants.toggle', $t->id) }}" method="POST" class="w-full col-span-2">
                             @csrf
-                            <button type="submit" class="w-full py-2 px-3 rounded-xl text-xs font-medium border border-slate-200 dark:border-slate-700 flex items-center justify-center gap-1.5 shadow-xs transition-colors {{ $t->status === 'active' ? 'text-slate-600 hover:text-rose-600 hover:bg-rose-50/50 dark:text-slate-400 dark:hover:text-rose-300 dark:hover:bg-rose-950/20' : 'text-slate-700 hover:text-emerald-600 hover:bg-emerald-50/50 dark:text-slate-300 dark:hover:text-emerald-300 dark:hover:bg-emerald-950/20' }}">
+                            <button type="submit" class="w-full py-2 px-3 rounded-lg text-xs font-medium border border-slate-200 dark:border-slate-700 flex items-center justify-center gap-1.5 shadow-xs transition-colors {{ $t->status === 'active' ? 'text-slate-600 hover:text-rose-600 hover:bg-rose-50/50 dark:text-slate-400 dark:hover:text-rose-300 dark:hover:bg-rose-950/20' : 'text-slate-700 hover:text-emerald-600 hover:bg-emerald-50/50 dark:text-slate-300 dark:hover:text-emerald-300 dark:hover:bg-emerald-950/20' }}">
                                 <span>{{ $t->status === 'active' ? 'Suspender Empresa' : 'Reactivar Empresa' }}</span>
                             </button>
                         </form>
@@ -192,7 +192,7 @@
                             <div class="text-[11px] text-slate-400">{{ $t->phone ?? 'Sin teléfono' }}</div>
                         </td>
                         <td class="py-3 px-3">
-                            <span class="px-2.5 py-0.5 rounded-full bg-cyan-100 dark:bg-cyan-950 text-cyan-800 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-700 text-[10px] font-bold">
+                            <span class="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-[10px] font-semibold">
                                 {{ $t->plan->name ?? 'Plan Básico' }}
                             </span>
                         </td>
@@ -200,39 +200,39 @@
                             <div class="space-y-0.5">
                                 @if($t->hasActiveSubscription())
                                     <div class="flex items-center gap-1.5">
-                                        <span class="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 text-[10px] font-black">
-                                            ✅ ACTIVA
+                                        <span class="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 text-[10px] font-bold">
+                                            ACTIVA
                                         </span>
-                                        <span class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                                        <span class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
                                             Faltan {{ $daysRemaining }}d
                                         </span>
                                     </div>
                                 @elseif($t->isOnTrial())
                                     <div class="flex items-center gap-1.5">
-                                        <span class="px-2 py-0.5 rounded-full bg-cyan-100 dark:bg-cyan-950 text-cyan-800 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-700 text-[10px] font-black">
-                                            🎁 PRUEBA 14D
+                                        <span class="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-[10px] font-bold">
+                                            PRUEBA 14D
                                         </span>
-                                        <span class="text-[11px] font-bold text-cyan-600 dark:text-cyan-400">
+                                        <span class="text-[11px] font-semibold text-slate-600 dark:text-slate-400">
                                             Quedan {{ $daysRemaining }}d
                                         </span>
                                     </div>
                                 @elseif($graceExceeded)
                                     <div class="flex items-center gap-1.5">
-                                        <span class="px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 border border-rose-300 dark:border-rose-700 text-[10px] font-black">
-                                            🚨 SUSPENDIDA
+                                        <span class="px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 border border-rose-300 dark:border-rose-700 text-[10px] font-bold">
+                                            SUSPENDIDA
                                         </span>
-                                        <span class="text-[11px] font-bold text-rose-600 dark:text-rose-400">
+                                        <span class="text-[11px] font-semibold text-rose-600 dark:text-rose-400">
                                             Venció hace {{ $t->daysPastDue() }}d
                                         </span>
                                     </div>
                                 @elseif($isPastDue)
                                     <div class="flex items-center gap-1.5">
-                                        <span class="px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700 text-[10px] font-black">
-                                            ⚠️ GRACIA ({{ $t->graceDaysRemaining() }}d)
+                                        <span class="px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700 text-[10px] font-bold">
+                                            GRACIA ({{ $t->graceDaysRemaining() }}d)
                                         </span>
                                     </div>
                                 @else
-                                    <span class="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[10px] font-bold">
+                                    <span class="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[10px] font-medium">
                                         SIN PLAN
                                     </span>
                                 @endif
@@ -245,7 +245,7 @@
                             {{ $t->branches->count() }} sedes &bull; {{ $t->users->count() }} usuarios
                         </td>
                         <td class="py-3 px-3">
-                            <span class="px-2.5 py-0.5 rounded-full {{ $t->status === 'active' ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700' : 'bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 border border-rose-300 dark:border-rose-700' }} text-[10px] font-bold">
+                            <span class="px-2.5 py-0.5 rounded-full {{ $t->status === 'active' ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700' : 'bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 border border-rose-300 dark:border-rose-700' }} text-[10px] font-semibold">
                                 {{ strtoupper($t->status) }}
                             </span>
                         </td>
@@ -271,7 +271,6 @@
                                 <a href="{{ route('superadmin.tenants.users', $t->id) }}"
                                    class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200/80 text-slate-700 dark:bg-slate-800/80 dark:hover:bg-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700/60 shadow-xs flex items-center gap-1 shrink-0 transition-colors"
                                    title="Modificar credenciales y empleados de esta licorera">
-                                    <span>👥</span>
                                     <span>Usuarios ({{ $t->users->count() }})</span>
                                 </a>
 
@@ -279,7 +278,6 @@
                                 <a href="{{ route('superadmin.payments', ['tenant_id' => $t->id]) }}"
                                    class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200/80 text-slate-700 dark:bg-slate-800/80 dark:hover:bg-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700/60 shadow-xs flex items-center gap-1 shrink-0 transition-colors"
                                    title="Ver historial de pagos de esta licorera">
-                                    <span>💳</span>
                                     <span>Pagos ({{ $t->subscriptionPayments->count() }})</span>
                                 </a>
 

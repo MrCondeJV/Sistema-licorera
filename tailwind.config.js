@@ -22,13 +22,19 @@ export default {
           200: '#cbd5e1',
           100: '#f1f5f9',
         },
-        neon: {
-          green: '#00f59b',
-          emerald: '#10b981',
-          amber: '#f59e0b',
-          cyan: '#06b6d4',
-          rose: '#f43f5e',
-          purple: '#8b5cf6',
+        corporate: {
+          950: '#0a0f1d',
+          900: '#0f172a',
+          850: '#141e33',
+          800: '#1e293b',
+          700: '#334155',
+          600: '#475569',
+        },
+        brand: {
+          DEFAULT: '#059669',
+          dark: '#047857',
+          light: '#10b981',
+          subtle: '#ecfdf5',
         },
         slate: {
           850: '#141d2e',
@@ -44,6 +50,9 @@ export default {
       },
       minWidth: {
         'touch': '60px',
+      },
+      boxShadow: {
+        'xs': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
       }
     },
   },

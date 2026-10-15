@@ -81,10 +81,10 @@
                 <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Filtrar por Empresa</label>
                 <select name="tenant_id" class="input-night w-full text-xs">
                     <option value="">Todas las empresas</option>
-                    <option value="platform" {{ request('tenant_id') === 'platform' ? 'selected' : '' }}>⚙️ Solo Plataforma / Superadmin</option>
+                    <option value="platform" {{ request('tenant_id') === 'platform' ? 'selected' : '' }}>Solo Plataforma / Superadmin</option>
                     @foreach($tenants as $t)
                         <option value="{{ $t->id }}" {{ request('tenant_id') == $t->id ? 'selected' : '' }}>
-                            🏢 {{ $t->name }}
+                            {{ $t->name }}
                         </option>
                     @endforeach
                 </select>
@@ -153,12 +153,14 @@
                                 <!-- Tenant -->
                                 <td class="py-3 px-3 whitespace-nowrap">
                                     @if($log->tenant)
-                                        <span class="px-2 py-0.5 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
-                                            🏢 {{ $log->tenant->name }}
+                                        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
+                                            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                                            {{ $log->tenant->name }}
                                         </span>
                                     @else
-                                        <span class="px-2 py-0.5 rounded-lg text-xs font-bold bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
-                                            ⚙️ Plataforma SaaS
+                                        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                                            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                            Plataforma SaaS
                                         </span>
                                     @endif
                                 </td>

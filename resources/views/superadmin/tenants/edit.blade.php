@@ -22,7 +22,7 @@
         <!-- Quick Access Buttons -->
         <div class="flex items-center gap-2">
             <a href="{{ route('superadmin.tenants.users', $tenant->id) }}" class="px-3.5 py-2 text-xs font-medium bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 shadow-xs flex items-center gap-1.5 rounded-xl transition-colors">
-                <span>👥</span>
+                <svg class="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
                 <span>Usuarios ({{ $users->count() }})</span>
             </a>
 

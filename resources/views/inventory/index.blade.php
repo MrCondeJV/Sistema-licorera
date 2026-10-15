@@ -10,11 +10,13 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
-            <a href="{{ route('inventory.kardex') }}" class="btn-touch py-2 px-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-750 text-xs font-bold rounded-xl">
-                📜 Kardex
+            <a href="{{ route('inventory.kardex') }}" class="btn-touch py-2 px-3 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-xs font-semibold rounded-xl inline-flex items-center gap-1.5 shadow-xs">
+                <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                <span>Kardex</span>
             </a>
-            <a href="{{ route('inventory.counts') }}" class="btn-touch py-2 px-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-750 text-xs font-bold rounded-xl">
-                📋 Conteo Físico
+            <a href="{{ route('inventory.counts') }}" class="btn-touch py-2 px-3 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-xs font-semibold rounded-xl inline-flex items-center gap-1.5 shadow-xs">
+                <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+                <span>Conteo Físico</span>
             </a>
             @if(auth()->user()->is_superadmin || auth()->user()->hasRoleInTenant($currentTenant->id ?? 0, 'admin'))
                 <a href="{{ route('inventory.create') }}" class="btn-touch py-2 px-4 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:hover:bg-slate-100 dark:text-slate-900 border border-slate-800 dark:border-white text-xs font-semibold rounded-xl shadow-xs transition-colors">
@@ -73,18 +75,20 @@
                         <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors {{ $prod->stock <= 0 ? 'bg-rose-50/50 dark:bg-rose-950/10' : ($prod->isLowStock() ? 'bg-amber-50/50 dark:bg-amber-950/10' : '') }}">
                             <td class="py-3 px-3">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-11 h-11 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
+                                    <div class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
                                         @if($prod->image_url)
                                             <img src="{{ $prod->image_url }}" alt="{{ $prod->name }}" class="w-full h-full object-cover">
                                         @else
-                                            <span class="text-xl">🍾</span>
+                                            <svg class="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                            </svg>
                                         @endif
                                     </div>
                                     <div class="min-w-0">
-                                        <span class="font-bold text-slate-900 dark:text-white text-sm block leading-snug">{{ $prod->name }}</span>
+                                        <span class="font-semibold text-slate-900 dark:text-white text-sm block leading-snug">{{ $prod->name }}</span>
                                         <span class="text-slate-500 dark:text-slate-400 text-xs">{{ $prod->category->name ?? 'Sin categoría' }}</span>
                                         @if($prod->is_liquor)
-                                            <span class="inline-block text-[10px] text-amber-600 dark:text-amber-400 font-semibold mt-0.5">🍾 Botella completa</span>
+                                            <span class="inline-block text-[10px] text-slate-500 dark:text-slate-400 font-medium mt-0.5">Botella completa</span>
                                         @endif
                                     </div>
                                 </div>

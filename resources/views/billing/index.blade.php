@@ -28,15 +28,15 @@
                 <span class="text-xs font-black uppercase tracking-wider {{ $isGracePeriodExceeded ? 'text-rose-600 dark:text-rose-400' : ($isPastDue ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400') }}">
                     Estado de Cuenta:
                 </span>
-                <span class="px-3 py-1 rounded-full text-xs font-black {{ $isGracePeriodExceeded ? 'bg-rose-600 text-white animate-pulse' : ($isPastDue ? 'bg-amber-500 text-slate-950 font-bold' : ($isOnTrial ? 'bg-emerald-600 text-white' : 'bg-emerald-600 text-white')) }}">
+                <span class="px-3 py-1 rounded-full text-xs font-semibold {{ $isGracePeriodExceeded ? 'bg-rose-700 text-white' : ($isPastDue ? 'bg-amber-600 text-white font-bold' : ($isOnTrial ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900' : 'bg-emerald-700 text-white')) }}">
                     @if($isGracePeriodExceeded)
-                        🚨 SERVICIO SUSPENDIDO POR FALTA DE PAGO
+                        SERVICIO SUSPENDIDO POR FALTA DE PAGO
                     @elseif($isPastDue)
-                        ⚠️ PERÍODO DE GRACIA ({{ $graceDaysRemaining }} {{ Str::plural('DÍA', $graceDaysRemaining) }} RESTANTES)
+                        PERÍODO DE GRACIA ({{ $graceDaysRemaining }} {{ Str::plural('DÍA', $graceDaysRemaining) }} RESTANTES)
                     @elseif($isOnTrial)
-                        🎁 PRUEBA GRATUITA (14 DÍAS)
+                        PRUEBA GRATUITA (14 DÍAS)
                     @else
-                        ✅ SUSCRIPCIÓN ACTIVA
+                        SUSCRIPCIÓN ACTIVA
                     @endif
                 </span>
             </div>
@@ -110,7 +110,7 @@
 
         <div class="card-night p-4 border-slate-200 dark:border-slate-800 rounded-2xl">
             <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Histórico de Pagos</span>
-            <p class="text-xl sm:text-2xl font-black font-mono text-purple-600 dark:text-purple-400 mt-1">
+            <p class="text-xl sm:text-2xl font-bold font-mono text-slate-900 dark:text-white mt-1">
                 {{ $payments->total() }}
             </p>
             <span class="text-[10px] text-slate-400">Transacciones Wompi registradas</span>
@@ -129,9 +129,9 @@
                     $isCurrent = $currentPlan && $currentPlan->id === $plan->id;
                     $breakdown = $plan->fee_breakdown ?? ['base_amount' => $plan->price_monthly, 'surcharge' => 0, 'total_amount' => $plan->price_monthly];
                 @endphp
-                <div class="card-night p-6 flex flex-col justify-between relative {{ $isCurrent ? 'ring-2 ring-emerald-500' : '' }}">
+                <div class="card-night p-6 flex flex-col justify-between relative {{ $isCurrent ? 'ring-2 ring-slate-900 dark:ring-white' : '' }}">
                     @if($isCurrent)
-                        <span class="absolute -top-3 right-6 bg-emerald-500 text-white font-black text-[10px] uppercase tracking-wider px-3 py-0.5 rounded-full shadow-md">
+                        <span class="absolute -top-3 right-6 bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-bold text-[10px] uppercase tracking-wider px-3 py-0.5 rounded-full shadow-xs">
                             Plan Actual
                         </span>
                     @endif
@@ -146,37 +146,44 @@
                                 <span>Base Plan:</span>
                                 <span class="font-mono font-bold">${{ number_format($breakdown['base_amount'], 0, ',', '.') }} COP</span>
                             </div>
-                            <div class="flex justify-between text-emerald-600 dark:text-emerald-400">
+                            <div class="flex justify-between text-slate-700 dark:text-slate-300">
                                 <span>Comisión Wompi:</span>
                                 <span class="font-mono font-bold">+${{ number_format($breakdown['surcharge'], 0, ',', '.') }} COP</span>
                             </div>
                         </div>
-                        <ul class="space-y-2 text-xs text-slate-600 dark:text-slate-300 mb-6">
+                        <ul class="space-y-2.5 text-xs text-slate-600 dark:text-slate-300 mb-6">
                             <li class="flex items-center gap-2">
-                                <span class="text-emerald-500 font-bold">✓</span> Hasta {{ $plan->max_users }} usuarios y cajeros
+                                <svg class="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                                <span>Hasta {{ $plan->max_users }} usuarios y cajeros</span>
                             </li>
                             <li class="flex items-center gap-2">
-                                <span class="text-emerald-500 font-bold">✓</span> {{ $plan->max_branches }} sucursal / sede
+                                <svg class="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                                <span>{{ $plan->max_branches }} sucursal / sede</span>
                             </li>
                             <li class="flex items-center gap-2">
-                                <span class="text-emerald-500 font-bold">✓</span> Hasta {{ number_format($plan->max_products) }} productos en catálogo
+                                <svg class="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                                <span>Hasta {{ number_format($plan->max_products) }} productos en catálogo</span>
                             </li>
                             <li class="flex items-center gap-2">
-                                <span class="text-emerald-500 font-bold">✓</span> Tickets WhatsApp 100% ilimitados y gratis
+                                <svg class="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                                <span>Tickets WhatsApp 100% ilimitados y gratis</span>
                             </li>
                             <li class="flex items-center gap-2">
-                                <span class="text-emerald-500 font-bold">✓</span> Control de arqueo a ciegas y kardex
+                                <svg class="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                                <span>Control de arqueo a ciegas y kardex</span>
                             </li>
                             <li class="flex items-center gap-2">
-                                <span class="text-emerald-500 font-bold">✓</span> Respaldos de base de datos
+                                <svg class="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                                <span>Respaldos de base de datos</span>
                             </li>
                         </ul>
                     </div>
 
                     <button type="button" @click="payWithWompi({{ $plan->id }}, '{{ $plan->name }}', {{ $breakdown['total_amount'] }})"
                             :disabled="loading"
-                            class="w-full btn-touch py-3 px-4 rounded-xl text-xs font-black shadow-lg transition-all flex items-center justify-center gap-2 {{ $isCurrent ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-600/30' : 'bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900' }}">
-                        <span>💳 PAGAR CON WOMPI</span>
+                            class="w-full btn-touch py-3 px-4 rounded-xl text-xs font-bold shadow-xs transition-all flex items-center justify-center gap-2 {{ $isCurrent ? 'bg-emerald-700 hover:bg-emerald-800 text-white' : 'bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900' }}">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
+                        <span>PAGAR CON WOMPI</span>
                     </button>
                 </div>
             @endforeach

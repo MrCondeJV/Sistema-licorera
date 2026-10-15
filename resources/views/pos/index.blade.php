@@ -5,16 +5,16 @@
      x-data="posApp()">
 
     <!-- Mobile Switcher Tabs (Only visible on screens < lg) -->
-    <div class="lg:hidden flex bg-slate-100 dark:bg-slate-850 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 shrink-0">
+    <div class="lg:hidden flex bg-slate-100 dark:bg-slate-850 p-1.5 rounded-xl border border-slate-200 dark:border-slate-800 shrink-0">
         <button type="button" @click="activeTab = 'catalog'"
-                class="flex-1 py-2.5 px-3 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5"
-                :class="activeTab === 'catalog' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
-            <span>🛍️ Catálogo</span>
+                class="flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-1.5"
+                :class="activeTab === 'catalog' ? 'bg-slate-900 text-white dark:bg-slate-800 dark:text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
+            <span>Catálogo</span>
         </button>
         <button type="button" @click="activeTab = 'cart'"
-                class="flex-1 py-2.5 px-3 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5"
-                :class="activeTab === 'cart' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
-            <span>🛒 Mostrador (<span x-text="formatMoney(cartTotal)"></span>)</span>
+                class="flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-1.5"
+                :class="activeTab === 'cart' ? 'bg-slate-900 text-white dark:bg-slate-800 dark:text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
+            <span>Mostrador (<span x-text="formatMoney(cartTotal)"></span>)</span>
         </button>
     </div>
 
@@ -80,12 +80,14 @@
                         <!-- Header with Photo and Info -->
                         <div class="flex items-start gap-3 mb-2.5">
                             <!-- Product Photo -->
-                            <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
+                            <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
                                 <template x-if="product.image_url">
                                     <img :src="product.image_url" :alt="product.name" class="w-full h-full object-cover">
                                 </template>
                                 <template x-if="!product.image_url">
-                                    <span class="text-2xl" x-text="product.is_beer ? '🍺' : (product.is_liquor ? '🍾' : '🥤')"></span>
+                                    <svg class="w-6 h-6 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                                    </svg>
                                 </template>
                             </div>
 
@@ -99,7 +101,7 @@
                                 </div>
                                 <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-snug break-words" x-text="product.name"></h3>
                                 <template x-if="product.is_liquor">
-                                    <span class="inline-block mt-0.5 text-[11px] text-amber-600 dark:text-amber-400 font-semibold">🍾 Botella completa</span>
+                                    <span class="inline-block mt-0.5 text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 tracking-wider">Botella</span>
                                 </template>
                             </div>
                         </div>
@@ -111,7 +113,7 @@
                         <button type="button"
                                 @click="addToCart(product, null)"
                                 :disabled="product.stock <= 0"
-                                class="w-full btn-touch min-h-[46px] py-2.5 px-3.5 bg-white dark:bg-slate-800 hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-600 text-slate-800 dark:text-white font-bold text-sm sm:text-base rounded-xl border border-slate-200 dark:border-slate-700 transition-all flex items-center justify-between active:scale-95 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed">
+                                class="w-full btn-touch min-h-[46px] py-2.5 px-3.5 bg-white dark:bg-slate-800 hover:bg-slate-900 hover:text-white dark:hover:bg-slate-700 text-slate-800 dark:text-white font-bold text-sm sm:text-base rounded-xl border border-slate-200 dark:border-slate-700 transition-all flex items-center justify-between active:scale-95 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed">
                             <span class="font-medium" x-text="product.base_unit || 'Unidad'"></span>
                             <span class="font-mono font-bold text-emerald-600 dark:text-emerald-400 group-hover:text-white" x-text="formatMoney(product.price_sell)"></span>
                         </button>
@@ -123,9 +125,9 @@
                                     <button type="button"
                                             @click="addToCart(product, pres)"
                                             :disabled="product.stock < pres.conversion_factor"
-                                            class="py-2 px-2 bg-white dark:bg-slate-800 hover:bg-cyan-600 hover:text-white dark:hover:bg-cyan-600 text-slate-700 dark:text-slate-200 font-semibold text-xs rounded-xl border border-slate-200 dark:border-slate-700 transition-all flex flex-col items-center justify-center min-h-[42px] disabled:opacity-40">
+                                            class="py-2 px-2 bg-white dark:bg-slate-800 hover:bg-slate-900 hover:text-white dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-xs rounded-lg border border-slate-200 dark:border-slate-700 transition-all flex flex-col items-center justify-center min-h-[42px] disabled:opacity-40">
                                         <span class="truncate max-w-full font-medium" x-text="pres.name"></span>
-                                        <span class="font-mono text-xs font-bold text-cyan-600 dark:text-cyan-400" x-text="formatMoney(pres.sale_price)"></span>
+                                        <span class="font-mono text-xs font-bold text-slate-900 dark:text-slate-100 group-hover:text-white" x-text="formatMoney(pres.sale_price)"></span>
                                     </button>
                                 </template>
                             </div>
@@ -227,13 +229,15 @@
                                     <img :src="item.image_url" :alt="item.name" class="w-full h-full object-cover">
                                 </template>
                                 <template x-if="!item.image_url">
-                                    <span class="text-xl">🍾</span>
+                                    <svg class="w-5 h-5 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                                    </svg>
                                 </template>
                             </div>
                             <div class="min-w-0 flex-1">
                                 <p class="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-tight break-normal" x-text="item.name"></p>
                                 <div class="flex flex-wrap items-center gap-1.5 mt-1">
-                                    <span class="px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 text-[11px] font-bold font-mono" x-text="item.presentation_name"></span>
+                                    <span class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-[11px] font-semibold font-mono" x-text="item.presentation_name"></span>
                                     <span class="text-xs text-slate-500 dark:text-slate-400 font-mono" x-text="'$' + Math.round(item.unit_price).toLocaleString('es-CO') + ' c/u'"></span>
                                 </div>
                             </div>
@@ -248,13 +252,13 @@
                     <!-- Bottom Row: Big Tactile Stepper + Total Price -->
                     <div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800/80">
                         <!-- Big Stepper -->
-                        <div class="flex items-center bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-1 rounded-xl shadow-inner">
+                        <div class="flex items-center bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-1 rounded-xl">
                             <button type="button" @click="decreaseQty(idx)" 
                                     class="w-10 h-10 sm:w-11 sm:h-11 rounded-lg bg-white dark:bg-slate-900 text-slate-800 dark:text-white font-black text-xl flex items-center justify-center active:scale-90 shadow-sm transition-all"
                                     title="Restar">-</button>
                             <span class="w-10 sm:w-11 text-center text-base sm:text-lg font-mono font-black text-slate-900 dark:text-white" x-text="item.quantity"></span>
                             <button type="button" @click="increaseQty(idx)" 
-                                    class="w-10 h-10 sm:w-11 sm:h-11 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xl flex items-center justify-center active:scale-90 shadow-sm shadow-emerald-600/30 transition-all"
+                                    class="w-10 h-10 sm:w-11 sm:h-11 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xl flex items-center justify-center active:scale-90 shadow-sm transition-all"
                                     title="Sumar">+</button>
                         </div>
 
@@ -279,8 +283,8 @@
             <button type="button"
                     @click="openPaymentModal()"
                     :disabled="cart.length === 0 || isProcessing"
-                    class="w-full btn-touch min-h-[52px] bg-emerald-600 hover:bg-emerald-500 active:scale-98 text-white font-black text-base rounded-2xl shadow-xl shadow-emerald-600/30 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 uppercase tracking-wide">
-                <span x-show="!isProcessing" x-text="'💵 COBRAR ' + formatMoney(cartTotal)"></span>
+                    class="w-full btn-touch min-h-[50px] bg-emerald-700 hover:bg-emerald-800 active:scale-98 text-white font-bold text-base rounded-xl shadow-md disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 uppercase tracking-wide">
+                <span x-show="!isProcessing" x-text="'COBRAR ' + formatMoney(cartTotal)"></span>
                 <span x-show="isProcessing">PROCESANDO...</span>
             </button>
 
@@ -458,9 +462,8 @@
             <div class="flex flex-wrap gap-2 pb-3 shrink-0">
                 @foreach($paymentMethods as $pm)
                     <button type="button" @click="chargeToDebt = false; selectedMethodId = {{ $pm->id }}; isCashMethod = {{ $pm->is_cash ? 'true' : 'false' }}"
-                            class="px-4 py-2.5 rounded-xl border text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5"
-                            :class="(!chargeToDebt && selectedMethodId === {{ $pm->id }}) ? 'bg-emerald-600 text-white border-emerald-600 font-black shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700'">
-                        <span>{{ $pm->is_cash ? '💵' : '🏦' }}</span>
+                            class="px-3.5 py-2 rounded-lg border text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5"
+                            :class="(!chargeToDebt && selectedMethodId === {{ $pm->id }}) ? 'bg-slate-900 text-white dark:bg-slate-800 dark:text-white border-slate-900 dark:border-slate-700 shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-200'">
                         <span>{{ $pm->name }}</span>
                     </button>
                 @endforeach
@@ -468,27 +471,26 @@
                 <!-- Option: Agregar a cuenta del cliente (Only when a customer is selected) -->
                 <template x-if="selectedCustomer">
                     <button type="button" @click="chargeToDebt = true"
-                            class="px-4 py-2.5 rounded-xl border text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5"
-                            :class="chargeToDebt ? 'bg-amber-600 text-white border-amber-600 font-black shadow-sm' : 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800 hover:bg-amber-100'">
-                        <span>📋</span>
-                        <span>Agregar a Cuenta (No Cobrar)</span>
+                            class="px-3.5 py-2 rounded-lg border text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5"
+                            :class="chargeToDebt ? 'bg-amber-600 text-white border-amber-600 shadow-sm' : 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800 hover:bg-amber-100'">
+                        <span>Agregar a Cuenta</span>
                     </button>
                 </template>
             </div>
 
             <!-- MODE 1: Charge to Customer Account / Debt (No immediate payment) -->
             <template x-if="chargeToDebt">
-                <div class="space-y-3 mb-4 p-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700/60 rounded-2xl">
-                    <div class="flex items-center gap-2 text-amber-800 dark:text-amber-300 font-black text-sm">
+                <div class="space-y-3 mb-4 p-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-xl">
+                    <div class="flex items-center gap-2 text-amber-800 dark:text-amber-300 font-bold text-sm">
                         <svg class="w-5 h-5 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                         <span>Cargar a Deuda del Cliente (Sin Cobro Inmediato)</span>
                     </div>
                     <p class="text-xs text-amber-900/80 dark:text-amber-200/90 leading-relaxed">
-                        Esta venta se registrará sin recibir dinero en caja. El total de <strong class="font-mono text-amber-800 dark:text-amber-200 font-black" x-text="formatMoney(cartTotal)"></strong> se sumará automáticamente a las deudas pendientes de <strong class="text-slate-900 dark:text-white" x-text="selectedCustomer?.name"></strong>.
+                        Esta venta se registrará sin recibir dinero en caja. El total de <strong class="font-mono text-amber-800 dark:text-amber-200 font-bold" x-text="formatMoney(cartTotal)"></strong> se sumará automáticamente a las deudas pendientes de <strong class="text-slate-900 dark:text-white" x-text="selectedCustomer?.name"></strong>.
                     </p>
                     <div class="pt-2 border-t border-amber-200 dark:border-amber-800/80 flex items-center justify-between text-xs">
-                        <span class="text-amber-800 dark:text-amber-400 font-bold">Nuevo saldo de deuda:</span>
-                        <span class="font-mono font-black text-amber-900 dark:text-amber-200 text-base" x-text="formatMoney((parseFloat(selectedCustomer?.current_debt) || 0) + cartTotal)"></span>
+                        <span class="text-amber-800 dark:text-amber-400 font-semibold">Nuevo saldo de deuda:</span>
+                        <span class="font-mono font-bold text-amber-900 dark:text-amber-200 text-base" x-text="formatMoney((parseFloat(selectedCustomer?.current_debt) || 0) + cartTotal)"></span>
                     </div>
                 </div>
             </template>
@@ -497,23 +499,23 @@
             <template x-if="!chargeToDebt && isCashMethod">
                 <div class="space-y-3 mb-4">
                     <div class="flex items-center gap-2">
-                        <button type="button" @click="setCashReceived(cartTotal)" class="flex-1 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-800 dark:text-white hover:bg-slate-200">
+                        <button type="button" @click="setCashReceived(cartTotal)" class="flex-1 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-semibold text-slate-800 dark:text-white hover:bg-slate-200">
                             Efectivo Exacto
                         </button>
-                        <button type="button" @click="setCashReceived(20000)" class="flex-1 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-800 dark:text-white hover:bg-slate-200">$ 20.000</button>
-                        <button type="button" @click="setCashReceived(50000)" class="flex-1 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-800 dark:text-white hover:bg-slate-200">$ 50.000</button>
-                        <button type="button" @click="setCashReceived(100000)" class="flex-1 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-800 dark:text-white hover:bg-slate-200">$ 100.000</button>
+                        <button type="button" @click="setCashReceived(20000)" class="flex-1 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-semibold text-slate-800 dark:text-white hover:bg-slate-200">$ 20.000</button>
+                        <button type="button" @click="setCashReceived(50000)" class="flex-1 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-semibold text-slate-800 dark:text-white hover:bg-slate-200">$ 50.000</button>
+                        <button type="button" @click="setCashReceived(100000)" class="flex-1 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-semibold text-slate-800 dark:text-white hover:bg-slate-200">$ 100.000</button>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Efectivo Recibido</label>
+                            <label class="block text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 mb-1">Efectivo Recibido</label>
                             <input type="number" x-model.number="cashReceived"
-                                   class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-mono text-xl font-bold rounded-xl px-3.5 py-2.5 focus:border-emerald-500 focus:outline-none">
+                                   class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-mono text-xl font-bold rounded-lg px-3.5 py-2.5 focus:border-slate-500 focus:outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Cambio / Vueltas</label>
-                            <div class="w-full bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 font-mono text-xl font-black rounded-xl px-3.5 py-2.5 flex items-center justify-between">
+                            <label class="block text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 mb-1">Cambio / Vueltas</label>
+                            <div class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-mono text-xl font-bold rounded-lg px-3.5 py-2.5 flex items-center justify-between">
                                 <span x-text="formatMoney(cashChange)"></span>
                             </div>
                         </div>
@@ -524,23 +526,23 @@
             <!-- MODE 3: Electronic / Voucher Reference (If Bank Selected and NOT chargeToDebt) -->
             <template x-if="!chargeToDebt && !isCashMethod">
                 <div class="mb-4">
-                    <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Referencia / Comprobante de Transacción (Opcional)</label>
+                    <label class="block text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 mb-1">Referencia / Comprobante de Transacción (Opcional)</label>
                     <input type="text" x-model="paymentReference" placeholder="Ej: Aprobación #123456 / Comprobante Bancario"
-                           class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-3.5 py-2.5 text-sm focus:border-emerald-500 focus:outline-none">
+                           class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-lg px-3.5 py-2.5 text-sm focus:border-slate-500 focus:outline-none">
                 </div>
             </template>
 
             <!-- Action Buttons -->
             <div class="pt-4 border-t border-slate-200 dark:border-slate-800 flex gap-3">
-                <button type="button" @click="showPaymentModal = false" class="btn-touch flex-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 font-bold text-sm">
+                <button type="button" @click="showPaymentModal = false" class="btn-touch flex-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 font-semibold text-sm rounded-lg">
                     Cancelar
                 </button>
                 <button type="button" @click="confirmPayment()"
                         :disabled="isProcessing || (!chargeToDebt && isCashMethod && cashReceived < cartTotal)"
-                        class="btn-touch flex-[2] active:scale-98 text-white font-black text-base shadow-lg disabled:opacity-40 transition-all flex items-center justify-center gap-2"
-                        :class="chargeToDebt ? 'bg-amber-600 hover:bg-amber-500 shadow-amber-600/30' : 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-600/30'">
+                        class="btn-touch flex-[2] active:scale-98 text-white font-bold text-base shadow-sm disabled:opacity-40 transition-all flex items-center justify-center gap-2 rounded-lg"
+                        :class="chargeToDebt ? 'bg-amber-600 hover:bg-amber-700' : 'bg-emerald-700 hover:bg-emerald-800'">
                     <span x-show="!isProcessing && !chargeToDebt">CONFIRMAR VENTA</span>
-                    <span x-show="!isProcessing && chargeToDebt">📝 CARGAR A CUENTA</span>
+                    <span x-show="!isProcessing && chargeToDebt">CARGAR A CUENTA</span>
                     <span x-show="isProcessing">REGISTRANDO...</span>
                 </button>
             </div>

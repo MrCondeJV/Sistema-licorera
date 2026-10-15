@@ -10,14 +10,14 @@
                     ← Volver al Panel Superadmin
                 </a>
             </div>
-            <h2 class="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2 mt-1">
-                <span>📦 Planes y Precios de Suscripción SaaS</span>
-                <span class="px-2.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-700 text-xs font-bold">SUPERADMIN</span>
+            <h2 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2 mt-1">
+                <span>Planes y Precios de Suscripción SaaS</span>
+                <span class="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-xs font-semibold">SUPERADMIN</span>
             </h2>
             <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Crea, edita y ajusta los límites, precios y características de los planes comercializables</p>
         </div>
         <div class="flex items-center gap-2">
-            <button type="button" @click="openCreateModal()" class="btn-touch bg-purple-600 hover:bg-purple-500 text-white px-4 py-2.5 text-xs font-black shadow-lg shadow-purple-600/30 rounded-2xl flex items-center gap-2">
+            <button type="button" @click="openCreateModal()" class="btn-touch bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 px-4 py-2 text-xs font-semibold shadow-xs rounded-xl flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                 <span>Nuevo Plan SaaS</span>
             </button>
@@ -27,23 +27,24 @@
     <!-- Plans Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         @forelse($plans as $plan)
-            <div class="card-night p-6 flex flex-col justify-between border-2 {{ $plan->is_active ? 'border-purple-500/30 hover:border-purple-500' : 'border-slate-300 dark:border-slate-700 opacity-60' }} rounded-3xl relative transition-all">
+            <div class="card-night p-6 flex flex-col justify-between border {{ $plan->is_active ? 'border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600' : 'border-slate-200 dark:border-slate-800 opacity-60' }} rounded-2xl relative transition-all shadow-xs">
                 <div class="space-y-4">
                     <div class="flex items-start justify-between">
                         <div>
-                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider {{ $plan->is_active ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20' }}">
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider {{ $plan->is_active ? 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700' : 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-400 border border-rose-200 dark:border-rose-900' }}">
                                 {{ $plan->is_active ? 'Activo' : 'Inactivo' }}
                             </span>
-                            <h3 class="text-lg font-black text-slate-900 dark:text-white mt-2">{{ $plan->name }}</h3>
+                            <h3 class="text-base font-bold text-slate-900 dark:text-white mt-2">{{ $plan->name }}</h3>
                             <p class="text-xs font-mono text-slate-400">Slug: {{ $plan->slug }}</p>
                         </div>
-                        <span class="text-xs font-bold text-slate-500 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-xl">
-                            🏢 {{ $plan->tenants_count }} {{ Str::plural('licorera', $plan->tenants_count) }}
+                        <span class="text-xs font-semibold text-slate-500 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                            <span>{{ $plan->tenants_count }} {{ Str::plural('licorera', $plan->tenants_count) }}</span>
                         </span>
                     </div>
 
                     <div class="py-2 border-y border-slate-200 dark:border-slate-800">
-                        <span class="text-3xl font-black font-mono text-slate-900 dark:text-white">${{ number_format($plan->price_monthly, 0, ',', '.') }}</span>
+                        <span class="text-2xl font-bold font-mono text-slate-900 dark:text-white">${{ number_format($plan->price_monthly, 0, ',', '.') }}</span>
                         <span class="text-xs text-slate-400 font-semibold">/ mes COP</span>
                     </div>
 
@@ -70,7 +71,7 @@
                             <ul class="space-y-1 text-xs text-slate-600 dark:text-slate-300">
                                 @foreach((array) $plan->features as $feat)
                                     <li class="flex items-center gap-1.5">
-                                        <span class="text-purple-500 font-bold">✓</span>
+                                        <svg class="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
                                         <span>{{ $feat }}</span>
                                     </li>
                                 @endforeach
@@ -80,12 +81,13 @@
                 </div>
 
                 <div class="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center gap-2">
-                    <button type="button" @click="openEditModal({{ json_encode($plan) }})" class="flex-1 py-2 px-3 rounded-xl bg-purple-100 hover:bg-purple-200 dark:bg-purple-950/80 dark:hover:bg-purple-900/80 text-purple-800 dark:text-purple-200 border border-purple-300 dark:border-purple-700 font-bold text-xs transition-colors text-center shadow-sm">
-                        ✏️ Editar
+                    <button type="button" @click="openEditModal({{ json_encode($plan) }})" class="flex-1 py-2 px-3 rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 font-semibold text-xs transition-colors text-center shadow-xs flex items-center justify-center gap-1.5">
+                        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                        <span>Editar</span>
                     </button>
                     <form method="POST" action="{{ route('superadmin.plans.toggle', $plan) }}">
                         @csrf
-                        <button type="submit" class="py-2 px-3 rounded-xl {{ $plan->is_active ? 'bg-rose-100 hover:bg-rose-200 dark:bg-rose-950/80 text-rose-800 dark:text-rose-200 border border-rose-300 dark:border-rose-700' : 'bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700' }} font-bold text-xs transition-colors shadow-sm">
+                        <button type="submit" class="py-2 px-3 rounded-lg {{ $plan->is_active ? 'bg-slate-100 hover:bg-rose-50 text-rose-700 dark:bg-slate-800 dark:hover:bg-rose-950/60 dark:text-rose-400' : 'bg-slate-100 hover:bg-slate-200 text-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200' }} font-semibold text-xs transition-colors shadow-xs">
                             {{ $plan->is_active ? 'Desactivar' : 'Activar' }}
                         </button>
                     </form>

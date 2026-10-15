@@ -5,18 +5,20 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-            <div class="flex items-center gap-2">
-                <h2 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">Panel Operativo — {{ $currentTenant->name ?? 'Licorera' }}</h2>
-                <span class="px-2.5 py-0.5 rounded-full text-xs font-black uppercase tracking-wider bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25">
-                    🏪 {{ $currentBranch->name ?? 'Sede Principal' }}
+            <div class="flex flex-wrap items-center gap-2">
+                <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Panel Operativo — {{ $currentTenant->name ?? 'Licorera' }}</h2>
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                    <svg class="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                    {{ $currentBranch->name ?? 'Sede Principal' }}
                 </span>
             </div>
             <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Visión en tiempo real de ventas, inventario, mesas y caja de esta sucursal</p>
         </div>
 
         <div class="flex items-center gap-2">
-            <a href="{{ route('pos.index') }}" class="btn-touch py-2.5 px-5 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm shadow-lg shadow-emerald-600/30 rounded-2xl">
-                ⚡ VENDER AHORA (POS)
+            <a href="{{ route('pos.index') }}" class="btn-touch py-2.5 px-4 bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-semibold text-xs rounded-xl shadow-xs inline-flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                <span>NUEVA VENTA (POS)</span>
             </a>
         </div>
     </div>

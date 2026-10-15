@@ -55,7 +55,7 @@
     </div>
 
     <!-- Login Card Container -->
-    <div class="w-full max-w-sm sm:max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-slate-900/5 dark:shadow-black/50 relative transition-all duration-200"
+    <div class="w-full max-w-sm sm:max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl shadow-slate-900/5 dark:shadow-black/40 relative transition-all duration-200"
          x-data="{
              showPassword: false,
              email: '{{ old('email', '') }}',
@@ -64,17 +64,17 @@
 
         <!-- Logo & Branding Header -->
         <div class="text-center mb-6 sm:mb-7">
-            <div class="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-emerald-600 dark:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30 mb-3 mx-auto">
-                <svg class="w-7 h-7 sm:w-8 sm:h-8 text-white" width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shadow-sm mb-3 mx-auto">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                 </svg>
             </div>
-            <h1 class="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white">LICORERA POS</h1>
-            <p class="text-[11px] sm:text-xs text-slate-400 dark:text-slate-500 mt-1 uppercase tracking-wider font-bold">Sistema de Ventas e Inventario</p>
+            <h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">LICORERA POS</h1>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">Terminal Punto de Venta & Gestión</p>
         </div>
 
         @if($errors->any())
-            <div class="mb-4 p-3 sm:p-3.5 bg-rose-50 border border-rose-200 dark:bg-rose-950/80 dark:border-rose-500/30 rounded-2xl text-rose-700 dark:text-rose-300 text-xs font-semibold text-center flex items-center justify-center gap-2">
+            <div class="mb-4 p-3 sm:p-3.5 bg-rose-50 border border-rose-200 dark:bg-rose-950/80 dark:border-rose-500/30 rounded-xl text-rose-700 dark:text-rose-300 text-xs font-semibold text-center flex items-center justify-center gap-2">
                 <svg class="w-4 h-4 shrink-0 text-rose-500" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
@@ -83,19 +83,19 @@
         @endif
 
         @if(session('status'))
-            <div class="mb-4 p-3 sm:p-3.5 bg-emerald-50 border border-emerald-200 dark:bg-emerald-950/80 dark:border-emerald-500/30 rounded-2xl text-emerald-700 dark:text-emerald-300 text-xs font-semibold text-center">
+            <div class="mb-4 p-3 sm:p-3.5 bg-emerald-50 border border-emerald-200 dark:bg-emerald-950/80 dark:border-emerald-500/30 rounded-xl text-emerald-700 dark:text-emerald-300 text-xs font-semibold text-center">
                 {{ session('status') }}
             </div>
         @endif
 
         @if(auth()->check())
-            <div class="mb-4 p-3 bg-purple-50 border border-purple-200 dark:bg-purple-950/60 dark:border-purple-500/30 rounded-2xl text-purple-800 dark:text-purple-300 text-xs font-semibold flex items-center justify-between gap-2 shadow-xs">
+            <div class="mb-4 p-3 bg-slate-100 border border-slate-200 dark:bg-slate-800 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 text-xs font-medium flex items-center justify-between gap-2">
                 <div class="flex items-center gap-1.5 truncate">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
                     <span class="truncate">Sesión iniciada: <strong class="font-bold">{{ auth()->user()->name }}</strong></span>
                 </div>
                 <div class="flex items-center gap-2 shrink-0">
-                    <a href="{{ auth()->user()->is_superadmin && !session('superadmin_impersonating') ? route('superadmin.index') : route('pos.index') }}" class="px-2.5 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-[11px] font-bold transition-all shadow-xs">
+                    <a href="{{ auth()->user()->is_superadmin && !session('superadmin_impersonating') ? route('superadmin.index') : route('pos.index') }}" class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-[11px] font-semibold transition-colors">
                         Ir al Panel &rarr;
                     </a>
                 </div>
@@ -119,7 +119,7 @@
                         </span>
                         <input type="email" name="email" x-model="email" required autofocus autocomplete="email"
                                placeholder="ejemplo@licorerapos.com"
-                               class="w-full bg-slate-50 dark:bg-slate-950/70 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl pl-10 pr-4 py-2.5 sm:py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all">
+                               class="w-full bg-slate-50 dark:bg-slate-950/70 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white rounded-lg pl-10 pr-4 py-2.5 sm:py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-slate-400/20 focus:border-slate-500 transition-all">
                     </div>
                 </div>
 
@@ -136,7 +136,7 @@
                         </span>
                         <input :type="showPassword ? 'text' : 'password'" name="password" x-model="password" required autocomplete="current-password"
                                placeholder="••••••••••••"
-                               class="w-full bg-slate-50 dark:bg-slate-950/70 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl pl-10 pr-11 py-2.5 sm:py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all">
+                               class="w-full bg-slate-50 dark:bg-slate-950/70 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white rounded-lg pl-10 pr-11 py-2.5 sm:py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-slate-400/20 focus:border-slate-500 transition-all">
                         <button type="button" @click="showPassword = !showPassword"
                                 tabindex="-1"
                                 class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
@@ -154,17 +154,17 @@
                 <!-- Recordar sesión -->
                 <div class="flex items-center justify-between text-xs pt-0.5">
                     <label class="flex items-center gap-2 cursor-pointer text-slate-600 dark:text-slate-400">
-                        <input type="checkbox" name="remember" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 dark:border-slate-700">
+                        <input type="checkbox" name="remember" class="w-4 h-4 rounded text-slate-900 focus:ring-slate-500 border-slate-300 dark:border-slate-700">
                         <span class="text-xs">Recordar mi sesión</span>
                     </label>
                 </div>
 
                 <!-- Botón de Envío -->
                 <button type="submit"
-                        class="w-full py-3 sm:py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-bold text-sm shadow-md shadow-emerald-600/25 transition-all flex items-center justify-center gap-2 mt-1">
+                        class="w-full py-2.5 sm:py-3 px-4 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-semibold text-sm shadow-sm transition-colors flex items-center justify-center gap-2 mt-1">
                     <span>Iniciar Sesión</span>
                     <svg class="w-4 h-4" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                     </svg>
                 </button>
             </div>

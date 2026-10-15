@@ -53,24 +53,24 @@
 
 @layer components {
   .btn-touch {
-    @apply min-h-[48px] px-4 py-2 rounded-xl font-semibold flex items-center justify-center transition-all duration-150 active:scale-95 text-sm;
+    @apply min-h-[44px] px-4 py-2 rounded-lg font-semibold flex items-center justify-center transition-colors duration-150 text-sm;
   }
   
   .card-night {
-    @apply bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm transition-colors duration-200;
+    @apply bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs transition-colors duration-150;
   }
 
-  .badge-neon {
-    @apply px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider;
+  .badge-corporate {
+    @apply px-2.5 py-0.5 rounded-md text-xs font-semibold tracking-wide border;
   }
 
   .input-night {
-    @apply rounded-xl px-3.5 py-2.5 text-sm border bg-white dark:bg-slate-950 border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-150;
+    @apply rounded-lg px-3.5 py-2 text-sm border bg-white dark:bg-slate-950 border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500 transition-colors duration-150;
   }
 
   /* Utility classes for tables */
   .table-responsive-container {
-    @apply w-full overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm;
+    @apply w-full overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs;
   }
 }
 
@@ -81,25 +81,27 @@
 
 .swal2-popup {
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
-  border-radius: 1.5rem !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
 }
 
 .swal2-title {
-  font-weight: 800 !important;
-  font-size: 1.25rem !important;
-  letter-spacing: -0.02em !important;
+  font-weight: 700 !important;
+  font-size: 1.15rem !important;
+  letter-spacing: -0.01em !important;
 }
 
 .swal2-html-container {
-  font-size: 0.925rem !important;
+  font-size: 0.9rem !important;
   line-height: 1.5 !important;
 }
 
 .swal2-actions button {
   font-family: inherit !important;
+  border-radius: 0.5rem !important;
 }
 
 .swal2-toast {
-  border-radius: 1rem !important;
+  border-radius: 0.75rem !important;
 }
 

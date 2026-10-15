@@ -27,8 +27,9 @@
 
             <!-- Section 1: Business Details -->
             <div>
-                <h3 class="text-sm font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-wider mb-3 flex items-center gap-2">
-                    <span>🏢 Datos Comerciales de la Empresa</span>
+                <h3 class="text-sm font-bold uppercase text-slate-900 dark:text-white tracking-wider mb-3 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                    <span>Datos Comerciales de la Empresa</span>
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -69,8 +70,9 @@
 
             <!-- Section 2: Initial Admin Credentials -->
             <div>
-                <h3 class="text-sm font-black uppercase text-cyan-600 dark:text-cyan-400 tracking-wider mb-3 flex items-center gap-2">
-                    <span>👑 Administrador Inicial del Negocio</span>
+                <h3 class="text-sm font-bold uppercase text-slate-900 dark:text-white tracking-wider mb-3 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                    <span>Administrador Inicial del Negocio</span>
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -94,10 +96,10 @@
 
             <!-- Actions -->
             <div class="pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-3">
-                <a href="{{ route('superadmin.index') }}" class="btn-touch bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 px-5 text-xs font-bold rounded-xl shadow-sm transition-all">
+                <a href="{{ route('superadmin.index') }}" class="btn-touch bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 px-5 text-xs font-semibold rounded-xl shadow-xs transition-all">
                     Cancelar
                 </a>
-                <button type="submit" class="btn-touch bg-emerald-600 hover:bg-emerald-500 text-white px-6 text-xs font-black shadow-lg shadow-emerald-600/30 rounded-xl transition-all active:scale-95">
+                <button type="submit" class="btn-touch bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:hover:bg-slate-100 dark:text-slate-900 px-6 text-xs font-semibold shadow-xs rounded-xl transition-all active:scale-95">
                     Guardar y Crear Empresa
                 </button>
             </div>

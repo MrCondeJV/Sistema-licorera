@@ -16,8 +16,9 @@
             </p>
         </div>
         <div class="flex items-center gap-2">
-            <a href="{{ route('superadmin.index') }}" class="btn-touch py-2.5 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl border border-slate-300 dark:border-slate-700 flex items-center gap-2 shadow-sm transition-all">
-                <span>🏢 Ver Licoreras</span>
+            <a href="{{ route('superadmin.index') }}" class="btn-touch py-2.5 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-xl border border-slate-300 dark:border-slate-700 flex items-center gap-2 shadow-xs transition-all">
+                <svg class="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                <span>Ver Licoreras</span>
             </a>
         </div>
     </div>
@@ -65,12 +66,12 @@
             <!-- Filter: Status -->
             <div>
                 <label for="status" class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Estado del Pago:</label>
-                <select name="status" id="status" class="w-full text-xs font-bold py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+                <select name="status" id="status" class="w-full text-xs font-semibold py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-slate-900">
                     <option value="">-- Todos los Estados --</option>
-                    <option value="APPROVED" {{ request('status') === 'APPROVED' ? 'selected' : '' }}>✅ APROBADO</option>
-                    <option value="PENDING" {{ request('status') === 'PENDING' ? 'selected' : '' }}>⏳ PENDIENTE</option>
-                    <option value="DECLINED" {{ request('status') === 'DECLINED' ? 'selected' : '' }}>❌ DECLINADO</option>
-                    <option value="ERROR" {{ request('status') === 'ERROR' ? 'selected' : '' }}>⚠️ ERROR</option>
+                    <option value="APPROVED" {{ request('status') === 'APPROVED' ? 'selected' : '' }}>APROBADO</option>
+                    <option value="PENDING" {{ request('status') === 'PENDING' ? 'selected' : '' }}>PENDIENTE</option>
+                    <option value="DECLINED" {{ request('status') === 'DECLINED' ? 'selected' : '' }}>DECLINADO</option>
+                    <option value="ERROR" {{ request('status') === 'ERROR' ? 'selected' : '' }}>ERROR</option>
                 </select>
             </div>
 
@@ -150,16 +151,16 @@
                             </td>
                             <td class="py-3 px-3 text-right">
                                 @if($pay->status === 'APPROVED')
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700">
-                                        <span>✓</span> APROBADO
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700">
+                                        APROBADO
                                     </span>
                                 @elseif($pay->status === 'PENDING')
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
-                                        <span>⏳</span> PENDIENTE
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
+                                        PENDIENTE
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-700">
-                                        <span>✕</span> {{ $pay->status }}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 border border-rose-300 dark:border-rose-700">
+                                        {{ $pay->status }}
                                     </span>
                                 @endif
                             </td>

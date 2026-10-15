@@ -104,7 +104,10 @@
                         <img :src="imagePreview" class="w-full h-full object-cover">
                     </template>
                     <template x-if="!imagePreview">
-                        <span class="text-2xl">📸</span>
+                        <svg class="w-6 h-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
                     </template>
                 </div>
                 <div class="flex-1">
@@ -128,8 +131,8 @@
         </div>
 
         <div class="pt-4 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3">
-            <a href="{{ route('inventory.index') }}" class="btn-touch py-2.5 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl">Cancelar</a>
-            <button type="submit" class="btn-touch py-2.5 px-6 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black shadow-lg shadow-emerald-600/30 rounded-xl">
+            <a href="{{ route('inventory.index') }}" class="btn-touch py-2.5 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 text-xs font-semibold rounded-xl">Cancelar</a>
+            <button type="submit" class="btn-touch py-2.5 px-6 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:hover:bg-slate-100 dark:text-slate-900 text-xs font-semibold shadow-xs rounded-xl transition-colors">
                 ACTUALIZAR PRODUCTO
             </button>
         </div>

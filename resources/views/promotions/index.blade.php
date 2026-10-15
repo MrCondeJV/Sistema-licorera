@@ -5,10 +5,10 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-            <h2 class="text-xl font-black text-slate-900 dark:text-white">Promociones y Happy Hour</h2>
+            <h2 class="text-xl font-bold text-slate-900 dark:text-white">Promociones y Happy Hour</h2>
             <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Precios especiales por horario, cantidad y días de la semana</p>
         </div>
-        <button type="button" @click="showNewPromoModal = true" class="btn-touch py-2 px-4 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black shadow-lg shadow-emerald-600/30 rounded-xl">
+        <button type="button" @click="showNewPromoModal = true" class="btn-touch py-2 px-4 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:hover:bg-slate-100 dark:text-slate-900 text-xs font-semibold shadow-xs rounded-xl">
             + NUEVA PROMOCIÓN
         </button>
     </div>
@@ -16,29 +16,36 @@
     <!-- Promotions Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 flex-1 overflow-y-auto pb-4">
         @forelse($promotions as $promo)
-            <div class="card-night p-5 flex flex-col justify-between border-slate-200 dark:border-slate-800 {{ $promo->isCurrentlyActive() ? 'border-emerald-500/50 shadow-md shadow-emerald-500/10' : 'opacity-80' }}">
+            <div class="card-night p-5 flex flex-col justify-between border-slate-200 dark:border-slate-800 {{ $promo->isCurrentlyActive() ? 'border-slate-900 dark:border-white shadow-xs' : 'opacity-80' }}">
                 <div>
                     <div class="flex items-center justify-between mb-2">
-                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold {{ $promo->isCurrentlyActive() ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-600' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700' }}">
-                            {{ $promo->isCurrentlyActive() ? '🟢 ACTIVA AHORA' : ($promo->is_active ? 'PROGRAMADA' : 'INACTIVA') }}
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold inline-flex items-center gap-1.5 {{ $promo->isCurrentlyActive() ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-600' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700' }}">
+                            @if($promo->isCurrentlyActive())
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                ACTIVA AHORA
+                            @else
+                                {{ $promo->is_active ? 'PROGRAMADA' : 'INACTIVA' }}
+                            @endif
                         </span>
-                        <span class="text-xs font-mono font-bold text-cyan-600 dark:text-cyan-400">
+                        <span class="text-xs font-mono font-bold text-slate-900 dark:text-white">
                             {{ $promo->discount_percentage ? $promo->discount_percentage . '% OFF' : '$' . number_format($promo->fixed_price, 0, ',', '.') }}
                         </span>
                     </div>
 
-                    <h3 class="text-base font-black text-slate-900 dark:text-white mb-1">{{ $promo->name }}</h3>
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white mb-1">{{ $promo->name }}</h3>
 
-                    <div class="space-y-1 text-xs text-slate-500 dark:text-slate-400 mt-2 font-medium">
+                    <div class="space-y-1.5 text-xs text-slate-500 dark:text-slate-400 mt-2 font-medium">
                         @if($promo->start_time && $promo->end_time)
                             <p class="flex items-center gap-1.5">
-                                <span>⏰ Horario:</span>
+                                <svg class="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                <span>Horario:</span>
                                 <strong class="text-slate-800 dark:text-slate-200 font-mono">{{ $promo->start_time }} a {{ $promo->end_time }}</strong>
                             </p>
                         @endif
                         @if($promo->min_quantity > 1)
                             <p class="flex items-center gap-1.5">
-                                <span>📦 Cantidad mínima:</span>
+                                <svg class="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+                                <span>Cantidad mínima:</span>
                                 <strong class="text-slate-800 dark:text-slate-200 font-mono">{{ $promo->min_quantity }} unidades</strong>
                             </p>
                         @endif
@@ -49,7 +56,7 @@
                     <span class="text-[11px] text-slate-400">Estado:</span>
                     <form action="{{ route('promotions.toggle', $promo->id) }}" method="POST">
                         @csrf
-                        <button type="submit" class="px-3 py-1 rounded-xl text-xs font-bold transition-all {{ $promo->is_active ? 'bg-slate-100 hover:bg-rose-100 text-rose-600 dark:bg-slate-800 dark:hover:bg-rose-950 dark:text-rose-300' : 'bg-slate-100 hover:bg-emerald-100 text-emerald-600 dark:bg-slate-800 dark:hover:bg-emerald-950 dark:text-emerald-300' }}">
+                        <button type="submit" class="px-3 py-1 rounded-lg text-xs font-semibold transition-all {{ $promo->is_active ? 'bg-slate-100 hover:bg-rose-50 text-rose-700 dark:bg-slate-800 dark:hover:bg-rose-950/60 dark:text-rose-400' : 'bg-slate-100 hover:bg-slate-200 text-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200' }}">
                             {{ $promo->is_active ? 'Desactivar' : 'Activar' }}
                         </button>
                     </form>

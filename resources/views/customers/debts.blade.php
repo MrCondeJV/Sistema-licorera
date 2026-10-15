@@ -108,7 +108,7 @@
             </button>
             @if($customer->current_debt > 0)
                 <button type="button" @click="showPaymentModal = true" class="btn-touch px-3.5 py-2 bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 text-xs font-medium rounded-xl shadow-xs transition-colors flex items-center gap-1.5">
-                    <span>💵</span>
+                    <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
                     <span>REGISTRAR ABONO</span>
                 </button>
             @endif
@@ -116,10 +116,10 @@
     </div>
 
     <!-- Summary Balance Banner -->
-    <div class="card-night p-4 border-amber-500/30 bg-amber-50/50 dark:bg-amber-950/15 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <div class="card-night p-4 border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-            <span class="text-xs uppercase font-bold text-amber-800 dark:text-amber-300">Saldo Total Pendiente por Cobrar</span>
-            <p class="text-2xl sm:text-3xl font-black font-mono text-amber-600 dark:text-amber-400 mt-0.5">${{ number_format($customer->current_debt, 0, ',', '.') }} COP</p>
+            <span class="text-xs uppercase font-bold text-slate-600 dark:text-slate-400">Saldo Total Pendiente por Cobrar</span>
+            <p class="text-2xl sm:text-3xl font-black font-mono text-slate-900 dark:text-white mt-0.5">${{ number_format($customer->current_debt, 0, ',', '.') }} COP</p>
         </div>
         <div class="text-left sm:text-right text-xs text-slate-500 dark:text-slate-400">
             <p>Cupo disponible: <strong class="text-slate-900 dark:text-white">${{ number_format(max(0, $customer->credit_limit - $customer->current_debt), 0, ',', '.') }}</strong></p>
@@ -155,8 +155,9 @@
                                     <td class="py-2.5 px-2 text-slate-500 dark:text-slate-400 whitespace-nowrap">
                                         <div class="font-mono font-medium">{{ $d->created_at->format('d/m/Y') }}</div>
                                         <div class="text-[10px] text-slate-400 font-mono">{{ $d->created_at->format('h:i A') }}</div>
-                                        <div class="text-[10px] text-slate-400 font-sans truncate max-w-[110px]" title="{{ $d->user->name ?? 'Sistema' }}">
-                                            👤 {{ $d->user->name ?? 'Sistema' }}
+                                        <div class="text-[10px] text-slate-400 font-sans truncate max-w-[110px] flex items-center gap-1" title="{{ $d->user->name ?? 'Sistema' }}">
+                                            <svg class="w-3 h-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                                            <span>{{ $d->user->name ?? 'Sistema' }}</span>
                                         </div>
                                     </td>
                                     <td class="py-2.5 px-2 max-w-[240px]">
@@ -165,7 +166,10 @@
                                                 <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 font-mono">
                                                     Venta #{{ $d->sale->sale_number }}
                                                 </span>
-                                                <a href="{{ route('pos.receipt', $d->sale->id) }}" target="_blank" class="text-[11px] text-slate-500 hover:text-slate-900 dark:hover:text-white font-medium underline" title="Ver comprobante de venta">Ticket 🖨️</a>
+                                                <a href="{{ route('pos.receipt', $d->sale->id) }}" target="_blank" class="text-[11px] text-slate-500 hover:text-slate-900 dark:hover:text-white font-medium underline inline-flex items-center gap-1" title="Ver comprobante de venta">
+                                                    <span>Ticket</span>
+                                                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                                                </a>
                                             </div>
                                         @endif
 
@@ -214,9 +218,10 @@
                                                     'notes' => $d->notes,
                                                     'items' => $breakdown
                                                 ]) }})"
-                                                class="px-2.5 py-1.5 bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium transition-colors shadow-xs"
+                                                class="px-2.5 py-1.5 bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium transition-colors shadow-xs inline-flex items-center gap-1.5"
                                                 title="Ver detalle completo de lo vendido">
-                                            👁️ Ver Detalle
+                                            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                            <span>Ver Detalle</span>
                                         </button>
                                     </td>
                                 </tr>
@@ -379,7 +384,7 @@
                 <template x-if="selectedDebt?.receipt_url">
                     <a :href="selectedDebt.receipt_url" target="_blank"
                        class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:hover:bg-slate-100 dark:text-slate-900 border border-slate-800 dark:border-white rounded-xl text-xs font-semibold shadow-xs transition-colors flex items-center gap-1.5">
-                        <span>🖨️</span>
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
                         <span>Ver Ticket de Venta</span>
                     </a>
                 </template>
@@ -391,11 +396,11 @@
     </div>
 
     <!-- Modal: New Fiado con Selección de Productos -->
-    <div x-show="showNewDebtModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" style="display: none;" @keydown.escape.window="showNewDebtModal = false">
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 max-w-lg w-full shadow-2xl max-h-[90vh] overflow-y-auto">
+    <div x-show="showNewDebtModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" style="display: none;" @keydown.escape.window="showNewDebtModal = false">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-lg w-full shadow-xl max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-3">
                 <div>
-                    <h3 class="text-base font-black text-slate-900 dark:text-white">Registrar Nuevo Fiado</h3>
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white">Registrar Nuevo Fiado</h3>
                     <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Se agregará a la deuda pendiente de {{ $customer->name }}</p>
                 </div>
                 <button type="button" @click="showNewDebtModal = false" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800">
@@ -406,14 +411,16 @@
             <!-- Mode Switcher -->
             <div class="flex items-center gap-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl mb-4">
                 <button type="button" @click="debtMode = 'catalog'"
-                        class="flex-1 py-1.5 text-xs font-semibold rounded-lg transition-colors"
+                        class="flex-1 py-1.5 text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1.5"
                         :class="debtMode === 'catalog' ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'">
-                    📦 Con Productos del Catálogo
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+                    <span>Con Productos del Catálogo</span>
                 </button>
                 <button type="button" @click="debtMode = 'manual'"
-                        class="flex-1 py-1.5 text-xs font-semibold rounded-lg transition-colors"
+                        class="flex-1 py-1.5 text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1.5"
                         :class="debtMode === 'manual' ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'">
-                    ✏️ Monto / Concepto Manual
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                    <span>Monto / Concepto Manual</span>
                 </button>
             </div>
 
@@ -487,8 +494,8 @@
                                             <td class="py-2 px-2 font-mono" x-text="it.quantity + ' x ' + formatMoney(it.unit_price)"></td>
                                             <td class="py-2 px-2 font-mono font-bold text-right" x-text="formatMoney(it.subtotal)"></td>
                                             <td class="py-2 px-2 text-right">
-                                                <button type="button" @click="removeItem(idx)" class="text-rose-500 hover:text-rose-700 text-xs px-1.5 py-0.5 rounded">
-                                                    ✕
+                                                <button type="button" @click="removeItem(idx)" class="text-rose-500 hover:text-rose-700 p-1 rounded hover:bg-rose-50 dark:hover:bg-rose-950/30 inline-flex items-center" title="Eliminar ítem">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                                                 </button>
                                             </td>
                                         </tr>
