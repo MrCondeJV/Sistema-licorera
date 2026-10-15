@@ -56,8 +56,11 @@
 </head>
 <body>
     <div>
-        <div class="no-print">
-            <button class="btn-print" onclick="window.print()">IMPRIMIR COMPROBANTE</button>
+        <div class="no-print" style="display: flex; gap: 8px; justify-content: center; align-items: center; margin-bottom: 15px; flex-wrap: wrap;">
+            <button class="btn-print" onclick="window.print()">🖨️ IMPRIMIR COMPROBANTE</button>
+            <a href="{{ $sale->getWhatsappUrl() }}" target="_blank" style="background: #16a34a; color: #fff; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; text-decoration: none; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
+                📲 ENVIAR POR WHATSAPP
+            </a>
         </div>
 
         <div class="ticket">

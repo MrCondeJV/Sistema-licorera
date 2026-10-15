@@ -145,6 +145,9 @@ class PosController extends Controller
                 'message' => $msg,
                 'sale' => $sale->load(['items', 'payments.paymentMethod', 'customer']),
                 'receipt_url' => route('pos.receipt', $sale->id),
+                'whatsapp_url' => $sale->getWhatsappUrl(),
+                'whatsapp_message' => $sale->generateWhatsappMessage(),
+                'customer_phone' => $sale->customer?->phone ?? '',
             ]);
         } catch (Exception $e) {
             return response()->json([

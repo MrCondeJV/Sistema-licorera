@@ -850,13 +850,16 @@ function posApp() {
                     });
                 }
 
-                // Show alert with Entendido and optional Imprimir Ticket
+                // Show alert with Entendido, Imprimir Ticket y Enviar WhatsApp
                 if (window.AppAlert && window.AppAlert.saleSuccess) {
                     await window.AppAlert.saleSuccess({
                         title: '¡Venta Completada!',
                         message: data.message,
                         receiptUrl: data.receipt_url,
-                        changeAmount: changeAmount
+                        changeAmount: changeAmount,
+                        whatsappUrl: data.whatsapp_url,
+                        whatsappMessage: data.whatsapp_message,
+                        customerPhone: data.customer_phone || (this.selectedCustomer ? this.selectedCustomer.phone : '')
                     });
                 } else if (window.AppAlert) {
                     window.AppAlert.success('¡Venta Completada!', data.message);

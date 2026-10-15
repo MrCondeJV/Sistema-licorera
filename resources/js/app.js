@@ -132,7 +132,10 @@ window.AppAlert = {
         message = '',
         html = null,
         receiptUrl = null,
-        changeAmount = 0
+        changeAmount = 0,
+        whatsappUrl = null,
+        whatsappMessage = null,
+        customerPhone = ''
     } = {}) {
         if (window.PosSound) window.PosSound.beep('success');
         const colors = this.getThemeColors();
@@ -149,10 +152,38 @@ window.AppAlert = {
                     </div>
                 `;
             }
+
+            let waBoxHtml = '';
+            if (whatsappMessage || whatsappUrl) {
+                const inputBg = colors.background;
+                const inputColor = colors.color;
+                waBoxHtml = `
+                    <div style="margin-top: 16px; padding: 12px 14px; background: rgba(22, 163, 74, 0.08); border: 1px solid rgba(22, 163, 74, 0.28); border-radius: 16px; text-align: left;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                            <label style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: #16a34a;">
+                                📲 Enviar Ticket por WhatsApp:
+                            </label>
+                            <span style="font-size: 0.68rem; font-weight: 700; background: rgba(22, 163, 74, 0.15); color: #15803d; padding: 1px 7px; border-radius: 9999px;">
+                                100% Gratis
+                            </span>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="tel" id="swal-wa-phone" placeholder="Número WhatsApp (ej: 3001234567)" value="${customerPhone || ''}"
+                                   style="flex: 1; padding: 9px 12px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 0.88rem; background: ${inputBg}; color: ${inputColor}; outline: none; font-family: monospace; font-weight: 700;">
+                            <button type="button" id="swal-wa-btn"
+                                    style="background: #16a34a; color: white; border: none; border-radius: 10px; padding: 9px 14px; font-weight: 800; font-size: 0.82rem; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; box-shadow: 0 4px 6px -1px rgba(22, 163, 74, 0.3);">
+                                Enviar
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
             contentHtml = `
                 <div style="font-size: 0.95rem; line-height: 1.5;">
                     <p style="margin: 0; opacity: 0.9;">${message}</p>
                     ${changeHtml}
+                    ${waBoxHtml}
                 </div>
             `;
         }
@@ -183,6 +214,29 @@ window.AppAlert = {
                 popup: 'rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl',
                 confirmButton: 'rounded-xl font-bold px-6 py-2.5 text-sm shadow-md cursor-pointer',
                 denyButton: 'rounded-xl font-bold px-6 py-2.5 text-sm shadow-md cursor-pointer'
+            },
+            didOpen: (popup) => {
+                const waBtn = popup.querySelector('#swal-wa-btn');
+                const waPhone = popup.querySelector('#swal-wa-phone');
+                if (waBtn && waPhone) {
+                    const sendWa = () => {
+                        let phone = waPhone.value.replace(/[^0-9]/g, '');
+                        if (phone.length === 10 && phone.startsWith('3')) {
+                            phone = '57' + phone;
+                        }
+                        const encodedMsg = encodeURIComponent(whatsappMessage || 'Comprobante de venta Licorera POS');
+                        const url = phone ? `https://wa.me/${phone}?text=${encodedMsg}` : `https://api.whatsapp.com/send?text=${encodedMsg}`;
+                        window.open(url, '_blank');
+                    };
+
+                    waBtn.addEventListener('click', sendWa);
+                    waPhone.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            sendWa();
+                        }
+                    });
+                }
             },
             preDeny: () => {
                 openReceipt();

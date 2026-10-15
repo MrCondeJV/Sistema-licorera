@@ -77,12 +77,17 @@ class PosSaleReceiptTest extends TestCase
         $data = $response->json();
         $this->assertArrayHasKey('receipt_url', $data);
         $this->assertNotEmpty($data['receipt_url']);
+        $this->assertArrayHasKey('whatsapp_url', $data);
+        $this->assertStringContainsString('whatsapp', $data['whatsapp_url']);
+        $this->assertArrayHasKey('whatsapp_message', $data);
+        $this->assertStringContainsString('Cerveza Club Colombia', $data['whatsapp_message']);
 
-        // Check that receipt page loads correctly
+        // Check that receipt page loads correctly with WhatsApp button
         $receiptResponse = $this->actingAs($user)->get($data['receipt_url']);
         $receiptResponse->assertStatus(200);
         $receiptResponse->assertSee('COMPROBANTE');
         $receiptResponse->assertSee('Cerveza Club Colombia');
         $receiptResponse->assertSee('autoprint');
+        $receiptResponse->assertSee('ENVIAR POR WHATSAPP');
     }
 }
