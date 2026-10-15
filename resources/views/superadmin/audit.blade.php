@@ -13,13 +13,13 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
             <div class="flex items-center gap-2">
-                <span class="p-2 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800">
+                <span class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                 </span>
                 <div>
                     <div class="flex items-center gap-2">
                         <h2 class="text-xl font-black text-slate-900 dark:text-white">Auditoría Global de Plataforma SaaS</h2>
-                        <span class="px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-700 text-[10px] font-bold">SUPERADMIN</span>
+                        <span class="px-2 py-0.5 rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 border border-slate-900 dark:border-white text-[10px] font-bold">SUPERADMIN</span>
                     </div>
                     <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Visión maestra de creación de empresas, cambios de suscripción, accesos de superadmin y eventos de todas las licoreras</p>
                 </div>
@@ -38,27 +38,27 @@
 
     <!-- KPI Stats -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div class="card-night p-4 border-l-4 border-l-purple-500">
+        <div class="card-night p-4 border-l-4 border-l-slate-700 dark:border-l-slate-400">
             <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total Auditorías SaaS</span>
             <p class="text-2xl font-black font-mono text-slate-900 dark:text-white mt-1">{{ number_format($totalLogs) }}</p>
             <span class="text-[10px] text-slate-400">En toda la base de datos</span>
         </div>
 
-        <div class="card-night p-4 border-l-4 border-l-fuchsia-500">
+        <div class="card-night p-4 border-l-4 border-l-slate-800 dark:border-l-slate-300">
             <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Acciones Superadmin</span>
-            <p class="text-2xl font-black font-mono text-fuchsia-600 dark:text-fuchsia-400 mt-1">{{ number_format($superadminLogsCount) }}</p>
+            <p class="text-2xl font-black font-mono text-slate-900 dark:text-white mt-1">{{ number_format($superadminLogsCount) }}</p>
             <span class="text-[10px] text-slate-400">Creaciones, planes, accesos</span>
         </div>
 
-        <div class="card-night p-4 border-l-4 border-l-emerald-500">
+        <div class="card-night p-4 border-l-4 border-l-emerald-600">
             <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Empresas en Monitoreo</span>
-            <p class="text-2xl font-black font-mono text-emerald-600 dark:text-emerald-400 mt-1">{{ $tenants->count() }}</p>
+            <p class="text-2xl font-black font-mono text-emerald-700 dark:text-emerald-400 mt-1">{{ $tenants->count() }}</p>
             <span class="text-[10px] text-slate-400">Tenants activos y suspendidos</span>
         </div>
 
-        <div class="card-night p-4 border-l-4 border-l-cyan-500">
+        <div class="card-night p-4 border-l-4 border-l-slate-500">
             <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Registros Filtrados</span>
-            <p class="text-2xl font-black font-mono text-cyan-600 dark:text-cyan-400 mt-1">{{ number_format($logs->total()) }}</p>
+            <p class="text-2xl font-black font-mono text-slate-900 dark:text-white mt-1">{{ number_format($logs->total()) }}</p>
             <span class="text-[10px] text-slate-400">Mostrados actualmente</span>
         </div>
     </div>
@@ -104,7 +104,7 @@
             <!-- Options & Submit -->
             <div class="sm:col-span-2 lg:col-span-5 flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
                 <label class="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" name="only_superadmin" value="1" {{ request('only_superadmin') ? 'checked' : '' }} class="w-4 h-4 rounded text-purple-600 focus:ring-0">
+                    <input type="checkbox" name="only_superadmin" value="1" {{ request('only_superadmin') ? 'checked' : '' }} class="w-4 h-4 rounded text-emerald-700 focus:ring-0">
                     <span class="text-xs font-bold text-slate-700 dark:text-slate-300">Ver exclusivamente operaciones de Superadmin</span>
                 </label>
                 <div class="flex items-center gap-2">
@@ -113,7 +113,7 @@
                             Limpiar Filtros
                         </a>
                     @endif
-                    <button type="submit" class="btn-touch py-1.5 px-4 bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs rounded-xl shadow-md shadow-purple-600/20">
+                    <button type="submit" class="btn-touch py-1.5 px-4 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:hover:bg-slate-100 dark:text-slate-900 font-bold text-xs rounded-xl shadow-sm transition-colors">
                         Aplicar Filtros
                     </button>
                 </div>
@@ -143,11 +143,11 @@
                                 $changes = $log->formatted_changes;
                                 $isSuperAction = str_starts_with($log->action, 'superadmin_') || ($log->user && $log->user->is_superadmin);
                             @endphp
-                            <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-850/80 transition-colors {{ $isSuperAction ? 'bg-purple-50/30 dark:bg-purple-950/20' : '' }}">
+                            <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-850/80 transition-colors {{ $isSuperAction ? 'bg-slate-50/80 dark:bg-slate-850/80 font-medium' : '' }}">
                                 <!-- Date -->
                                 <td class="py-3 px-3 whitespace-nowrap">
-                                    <div class="font-mono text-slate-800 dark:text-slate-200 font-semibold">{{ $log->created_at->format('d/m/Y h:i:s A') }}</div>
-                                    <div class="text-[10px] text-slate-400 mt-0.5">{{ $log->created_at->diffForHumans() }}</div>
+                                     <div class="font-mono text-slate-800 dark:text-slate-200 font-semibold">{{ $log->created_at->format('d/m/Y h:i:s A') }}</div>
+                                     <div class="text-[10px] text-slate-400 mt-0.5">{{ $log->created_at->diffForHumans() }}</div>
                                 </td>
 
                                 <!-- Tenant -->
@@ -171,7 +171,7 @@
                                         <div class="flex items-center gap-1.5">
                                             <span class="font-bold text-slate-900 dark:text-white">{{ $log->user->name }}</span>
                                             @if($log->user->is_superadmin)
-                                                <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300">Superadmin</span>
+                                                <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-slate-900 text-white dark:bg-white dark:text-slate-900">Superadmin</span>
                                             @endif
                                         </div>
                                         <div class="text-[10px] text-slate-400">{{ $log->user->email }}</div>
@@ -206,7 +206,7 @@
                                                     'reason' => $log->reason,
                                                     'changes' => $changes,
                                                 ]) }})"
-                                                class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 text-[11px] font-bold transition-all inline-flex items-center gap-1">
+                                                class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 text-[11px] font-semibold transition-all shadow-xs inline-flex items-center gap-1">
                                             <span>Ver Cambios ({{ count($changes) }})</span>
                                         </button>
                                     @else
@@ -259,7 +259,7 @@
             <div class="flex items-start justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
                 <div>
                     <div class="flex items-center gap-2">
-                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300"
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700"
                               x-text="selectedLog?.tenant"></span>
                         <h3 class="text-base font-black text-slate-900 dark:text-white" x-text="selectedLog?.action"></h3>
                     </div>

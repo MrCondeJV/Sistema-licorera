@@ -76,9 +76,9 @@
             <span class="text-[10px] uppercase font-black text-emerald-700 dark:text-emerald-400">Utilidad Bruta</span>
             <p class="text-lg font-black font-mono text-emerald-700 dark:text-emerald-400 mt-1">${{ number_format($report['gross_profit'], 0, ',', '.') }}</p>
         </div>
-        <div class="card-night p-3.5 border-cyan-500/30 bg-cyan-50/50 dark:bg-cyan-950/15">
-            <span class="text-[10px] uppercase font-black text-cyan-700 dark:text-cyan-400">Margen Bruto (%)</span>
-            <p class="text-lg font-black font-mono text-cyan-700 dark:text-cyan-400 mt-1">{{ $report['profit_margin'] }}%</p>
+        <div class="card-night p-3.5">
+            <span class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">Margen Bruto (%)</span>
+            <p class="text-lg font-black font-mono text-slate-900 dark:text-white mt-1">{{ $report['profit_margin'] }}%</p>
         </div>
         <div class="card-night p-3.5">
             <span class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">Transacciones</span>
@@ -129,7 +129,7 @@
                             <td class="py-3 px-2 text-right text-rose-600 dark:text-rose-400">${{ number_format($cost, 0, ',', '.') }}</td>
                             <td class="py-3 px-2 text-right font-bold text-emerald-600 dark:text-emerald-400">+${{ number_format($profit, 0, ',', '.') }}</td>
                             <td class="py-3 px-2 text-right font-sans">
-                                <a href="{{ route('pos.receipt', $sale->id) }}" target="_blank" class="text-cyan-600 dark:text-cyan-400 hover:underline font-bold text-[11px]">
+                                <a href="{{ route('pos.receipt', $sale->id) }}" target="_blank" class="text-emerald-700 dark:text-emerald-400 hover:underline font-bold text-[11px]">
                                     Imprimir
                                 </a>
                             </td>

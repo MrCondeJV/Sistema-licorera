@@ -10,7 +10,7 @@
         <div>
             @if(auth()->user()->is_superadmin && !session('superadmin_impersonating'))
                 <div class="flex items-center gap-2 mb-1">
-                    <a href="{{ route('superadmin.index') }}" class="text-xs text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1">
+                    <a href="{{ route('superadmin.index') }}" class="text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-semibold hover:underline flex items-center gap-1">
                         &larr; Volver al Panel Superadmin
                     </a>
                 </div>
@@ -69,7 +69,7 @@
                         Estado del Servicio:
                     </label>
                     <label class="flex items-center gap-2.5 p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 cursor-pointer">
-                        <input type="checkbox" name="enabled" value="1" {{ ($scheduleConfig['enabled'] ?? true) ? 'checked' : '' }} class="rounded text-purple-600 focus:ring-purple-500 w-4 h-4">
+                        <input type="checkbox" name="enabled" value="1" {{ ($scheduleConfig['enabled'] ?? true) ? 'checked' : '' }} class="rounded text-emerald-700 focus:ring-emerald-600 w-4 h-4">
                         <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Habilitar Cron Automático</span>
                     </label>
                 </div>
@@ -79,7 +79,7 @@
                     <label for="frequency" class="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300 block mb-1.5">
                         Frecuencia de Respaldo:
                     </label>
-                    <select name="frequency" id="frequency" class="w-full text-xs font-bold py-2.5 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <select name="frequency" id="frequency" class="w-full text-xs font-bold py-2.5 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500">
                         <option value="daily" {{ ($scheduleConfig['frequency'] ?? 'daily') === 'daily' ? 'selected' : '' }}>Diario (1 vez al día - Recomendado)</option>
                         <option value="twice_daily" {{ ($scheduleConfig['frequency'] ?? '') === 'twice_daily' ? 'selected' : '' }}>Cada 12 Horas (Doble turno)</option>
                         <option value="weekly" {{ ($scheduleConfig['frequency'] ?? '') === 'weekly' ? 'selected' : '' }}>Semanal (Todos los domingos)</option>
@@ -92,7 +92,7 @@
                         Hora de Ejecución:
                     </label>
                     <input type="time" name="time" id="time" value="{{ $scheduleConfig['time'] ?? '02:00' }}"
-                           class="w-full text-xs font-bold py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+                           class="w-full text-xs font-bold py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500">
                     <span class="text-[10px] text-slate-400 mt-1 block">Hora del servidor (Recomendado madrugada)</span>
                 </div>
 
@@ -101,7 +101,7 @@
                     <label for="retention_days" class="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300 block mb-1.5">
                         Retención de Archivos:
                     </label>
-                    <select name="retention_days" id="retention_days" class="w-full text-xs font-bold py-2.5 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <select name="retention_days" id="retention_days" class="w-full text-xs font-bold py-2.5 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500">
                         <option value="7" {{ ($scheduleConfig['retention_days'] ?? 30) == 7 ? 'selected' : '' }}>Conservar últimos 7 días</option>
                         <option value="15" {{ ($scheduleConfig['retention_days'] ?? 30) == 15 ? 'selected' : '' }}>Conservar últimos 15 días</option>
                         <option value="30" {{ ($scheduleConfig['retention_days'] ?? 30) == 30 ? 'selected' : '' }}>Conservar últimos 30 días (1 mes)</option>

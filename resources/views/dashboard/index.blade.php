@@ -39,7 +39,7 @@
 
         <div class="card-night p-4 border-slate-200 dark:border-slate-800">
             <span class="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400">Ticket Promedio</span>
-            <p class="text-xl sm:text-2xl font-black font-mono text-cyan-600 dark:text-cyan-400 mt-1">${{ number_format($metrics['average_ticket'], 0, ',', '.') }}</p>
+            <p class="text-xl sm:text-2xl font-black font-mono text-slate-900 dark:text-white mt-1">${{ number_format($metrics['average_ticket'], 0, ',', '.') }}</p>
             <span class="text-[10px] text-slate-400">Por transacción</span>
         </div>
 
@@ -82,7 +82,7 @@
                         @forelse($metrics['top_products'] as $top)
                             <tr>
                                 <td class="py-2.5 font-bold text-slate-800 dark:text-slate-200">{{ $top->product_name_snapshot }}</td>
-                                <td class="py-2.5 text-center font-mono font-bold text-cyan-600 dark:text-cyan-400">{{ rtrim(rtrim($top->total_qty, '0'), '.') }}</td>
+                                <td class="py-2.5 text-center font-mono font-bold text-slate-700 dark:text-slate-300">{{ rtrim(rtrim($top->total_qty, '0'), '.') }}</td>
                                 <td class="py-2.5 text-right font-mono font-bold text-slate-900 dark:text-white">${{ number_format($top->total_revenue, 0, ',', '.') }}</td>
                             </tr>
                         @empty

@@ -6,7 +6,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
             <div class="flex items-center gap-2">
-                <a href="{{ route('superadmin.index') }}" class="text-xs text-purple-600 dark:text-purple-400 font-bold hover:underline">
+                <a href="{{ route('superadmin.index') }}" class="text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-semibold hover:underline">
                     ← Volver al Panel Superadmin
                 </a>
             </div>
@@ -151,15 +151,15 @@
                 </div>
 
                 <div class="flex items-center gap-2 pt-1">
-                    <input type="checkbox" name="is_active" id="modal_is_active" value="1" x-model="form.is_active" class="rounded text-purple-600 focus:ring-purple-500 w-4 h-4">
+                    <input type="checkbox" name="is_active" id="modal_is_active" value="1" x-model="form.is_active" class="rounded text-emerald-700 focus:ring-emerald-600 w-4 h-4">
                     <label for="modal_is_active" class="text-xs font-bold text-slate-700 dark:text-slate-300">Plan activo para nuevas licoreras</label>
                 </div>
 
                 <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2">
-                    <button type="button" @click="showModal = false" class="btn-touch py-2.5 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 text-xs font-bold rounded-xl shadow-sm transition-all">
+                    <button type="button" @click="showModal = false" class="btn-touch py-2 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 text-xs font-bold rounded-xl shadow-xs transition-colors">
                         Cancelar
                     </button>
-                    <button type="submit" class="btn-touch py-2.5 px-5 bg-purple-600 hover:bg-purple-500 text-white text-xs font-black rounded-xl shadow-lg shadow-purple-600/30">
+                    <button type="submit" class="btn-touch py-2 px-5 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:hover:bg-slate-100 dark:text-slate-900 text-xs font-semibold rounded-xl shadow-xs transition-colors">
                         Guardar Plan
                     </button>
                 </div>

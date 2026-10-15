@@ -13,7 +13,7 @@
             <div>
                 <h2 class="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
                     <span>Crear Nueva Empresa / Licorera</span>
-                    <span class="px-2.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-700 text-xs font-bold">SUPERADMIN</span>
+                    <span class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 text-[10px] font-semibold uppercase tracking-wider">SUPERADMIN</span>
                 </h2>
                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Aprovisionamiento integral de inquilino, sede principal, catálogo inicial y credenciales</p>
             </div>

@@ -34,7 +34,7 @@
                             <td class="py-3 px-2 font-mono text-slate-600 dark:text-slate-300">{{ $exp->expense_date->format('d/m/Y') }}</td>
                             <td class="py-3 px-2 font-bold text-slate-900 dark:text-white max-w-xs truncate">{{ $exp->description }}</td>
                             <td class="py-3 px-2">
-                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold {{ $exp->payment_method === 'cash' ? 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-700' : 'bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-700' }}">
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold {{ $exp->payment_method === 'cash' ? 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-700' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700' }}">
                                     {{ $exp->payment_method === 'cash' ? 'Caja / Efectivo' : 'Banco / Transferencia' }}
                                 </span>
                             </td>

@@ -42,23 +42,23 @@
             </div>
         </div>
 
-        <div class="card-night p-4 flex items-center gap-3 border-l-4 border-l-cyan-500">
-            <div class="w-10 h-10 rounded-xl bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shrink-0">
+        <div class="card-night p-4 flex items-center gap-3 border-l-4 border-l-slate-700 dark:border-l-slate-400">
+            <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center shrink-0">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
             </div>
             <div>
                 <p class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Por Cajeros Hoy</p>
-                <p class="text-xl font-black text-cyan-600 dark:text-cyan-400 font-mono">{{ number_format($metrics['cashierActionsToday']) }}</p>
+                <p class="text-xl font-black text-slate-900 dark:text-white font-mono">{{ number_format($metrics['cashierActionsToday']) }}</p>
             </div>
         </div>
 
-        <div class="card-night p-4 flex items-center gap-3 border-l-4 border-l-purple-500">
-            <div class="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+        <div class="card-night p-4 flex items-center gap-3 border-l-4 border-l-emerald-600">
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 flex items-center justify-center shrink-0">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
             </div>
             <div>
                 <p class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Inventario y Precios</p>
-                <p class="text-xl font-black text-purple-600 dark:text-purple-400 font-mono">{{ number_format($metrics['inventoryActions']) }}</p>
+                <p class="text-xl font-black text-emerald-700 dark:text-emerald-400 font-mono">{{ number_format($metrics['inventoryActions']) }}</p>
             </div>
         </div>
 
@@ -179,10 +179,10 @@
                             @php
                                 $role = $log->user ? ($log->user->getRoleInTenant($currentTenantId) ?? ($log->user->is_superadmin ? 'superadmin' : 'usuario')) : null;
                                 $roleBadge = match($role) {
-                                    'admin' => 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300',
-                                    'cashier' => 'bg-cyan-100 text-cyan-800 dark:bg-cyan-950/80 dark:text-cyan-300',
-                                    'waiter' => 'bg-purple-100 text-purple-800 dark:bg-purple-950/80 dark:text-purple-300',
-                                    'superadmin' => 'bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-950/80 dark:text-fuchsia-300',
+                                    'admin' => 'bg-slate-900 text-white dark:bg-white dark:text-slate-900',
+                                    'cashier' => 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300',
+                                    'waiter' => 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+                                    'superadmin' => 'bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300',
                                     default => 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
                                 };
                                 $roleName = match($role) {
@@ -260,7 +260,7 @@
                                                     'reason' => $log->reason,
                                                     'changes' => $changes,
                                                 ]) }})"
-                                                class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 text-[11px] font-bold transition-all shadow-xs inline-flex items-center gap-1">
+                                                class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 text-[11px] font-semibold transition-all shadow-xs inline-flex items-center gap-1">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                                             <span>Ver Cambios ({{ count($changes) }})</span>
                                         </button>

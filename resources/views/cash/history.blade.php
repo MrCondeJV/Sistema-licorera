@@ -42,7 +42,7 @@
                             <td class="py-3 px-2 text-right font-mono text-slate-700 dark:text-slate-300">${{ number_format($s->opening_amount, 0, ',', '.') }}</td>
                             <td class="py-3 px-2 text-right font-mono text-slate-700 dark:text-slate-300">${{ number_format($s->expected_cash, 0, ',', '.') }}</td>
                             <td class="py-3 px-2 text-right font-mono font-bold text-slate-900 dark:text-white">${{ number_format($s->counted_cash, 0, ',', '.') }}</td>
-                            <td class="py-3 px-2 text-right font-mono font-black {{ $s->difference == 0 ? 'text-emerald-600 dark:text-emerald-400' : ($s->difference > 0 ? 'text-cyan-600 dark:text-cyan-400' : 'text-rose-600 dark:text-rose-400') }}">
+                            <td class="py-3 px-2 text-right font-mono font-black {{ $s->difference == 0 ? 'text-slate-600 dark:text-slate-400' : ($s->difference > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400') }}">
                                 {{ $s->difference > 0 ? '+' : '' }}${{ number_format($s->difference, 0, ',', '.') }}
                             </td>
                             <td class="py-3 px-2 text-slate-600 dark:text-slate-300 max-w-xs truncate">{{ $s->closing_notes ?? 'Sin observaciones' }}</td>

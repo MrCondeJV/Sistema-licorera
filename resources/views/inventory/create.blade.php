@@ -148,7 +148,7 @@
 
         <!-- Commercial Liquor / Beer Rules Checkboxes -->
         <div class="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-3">
-            <h4 class="text-xs font-bold uppercase tracking-wider text-cyan-600 dark:text-cyan-400">Reglas Comerciales de Licorera (Opcional)</h4>
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">Reglas Comerciales de Licorera (Opcional)</h4>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <label class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800 rounded-xl cursor-pointer hover:border-emerald-500 transition-colors">
                     <input type="checkbox" name="is_beer" value="1" x-model="isBeer" class="w-4 h-4 rounded text-emerald-600 focus:ring-0">

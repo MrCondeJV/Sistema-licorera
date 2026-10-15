@@ -7,7 +7,7 @@
         <div>
             <div class="flex items-center gap-2">
                 <h2 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">Historial de Pagos SaaS</h2>
-                <span class="px-2.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-[10px] font-black uppercase tracking-wider">
+                <span class="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-[10px] font-bold uppercase tracking-wider">
                     Todas las Licoreras
                 </span>
             </div>
@@ -53,7 +53,7 @@
             <!-- Filter: Tenant -->
             <div>
                 <label for="tenant_id" class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Licorera / Tenant:</label>
-                <select name="tenant_id" id="tenant_id" class="w-full text-xs font-bold py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+                <select name="tenant_id" id="tenant_id" class="w-full text-xs font-bold py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500">
                     <option value="">-- Todas las Licoreras --</option>
                     @foreach($tenants as $t)
                         <option value="{{ $t->id }}" {{ request('tenant_id') == $t->id ? 'selected' : '' }}>
@@ -66,7 +66,7 @@
             <!-- Filter: Status -->
             <div>
                 <label for="status" class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Estado del Pago:</label>
-                <select name="status" id="status" class="w-full text-xs font-semibold py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-slate-900">
+                <select name="status" id="status" class="w-full text-xs font-semibold py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500">
                     <option value="">-- Todos los Estados --</option>
                     <option value="APPROVED" {{ request('status') === 'APPROVED' ? 'selected' : '' }}>APROBADO</option>
                     <option value="PENDING" {{ request('status') === 'PENDING' ? 'selected' : '' }}>PENDIENTE</option>
@@ -78,7 +78,7 @@
             <!-- Filter: Plan -->
             <div>
                 <label for="plan_id" class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Plan SaaS:</label>
-                <select name="plan_id" id="plan_id" class="w-full text-xs font-bold py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+                <select name="plan_id" id="plan_id" class="w-full text-xs font-bold py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500">
                     <option value="">-- Todos los Planes --</option>
                     @foreach($plans as $p)
                         <option value="{{ $p->id }}" {{ request('plan_id') == $p->id ? 'selected' : '' }}>
@@ -93,12 +93,12 @@
                 <label for="search" class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Buscar:</label>
                 <input type="text" name="search" id="search" value="{{ request('search') }}"
                        placeholder="Referencia, ID Wompi o empresa..."
-                       class="w-full text-xs font-medium py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+                       class="w-full text-xs font-medium py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500">
             </div>
 
             <!-- Action Buttons -->
             <div class="flex items-end gap-2">
-                <button type="submit" class="flex-1 py-2 px-3 bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs rounded-xl shadow-md transition-all">
+                <button type="submit" class="flex-1 py-2 px-3 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:hover:bg-slate-100 dark:text-slate-900 font-bold text-xs rounded-xl shadow-xs transition-colors">
                     Filtrar
                 </button>
                 <a href="{{ route('superadmin.payments') }}" class="py-2 px-3 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-650 text-slate-700 dark:text-slate-200 font-bold text-xs rounded-xl transition-all" title="Restablecer">

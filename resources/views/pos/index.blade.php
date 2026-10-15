@@ -177,7 +177,7 @@
             <div class="p-2.5 bg-slate-50 dark:bg-slate-950/80 rounded-2xl border border-slate-200 dark:border-slate-800 flex items-center justify-between">
                 <div class="flex items-center gap-2.5 min-w-0 pr-2">
                     <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
-                         :class="selectedCustomer ? 'bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400' : 'bg-slate-200 dark:bg-slate-800 text-slate-500'">
+                         :class="selectedCustomer ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                         </svg>
@@ -195,7 +195,7 @@
 
                 <div class="flex items-center gap-1.5 shrink-0">
                     <button type="button" @click="openCustomerModal()"
-                            class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 rounded-xl text-xs font-bold transition-colors">
+                            class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold transition-colors">
                         <span x-text="selectedCustomer ? 'Cambiar' : '+ Asignar Cliente'"></span>
                     </button>
                     <template x-if="selectedCustomer">
@@ -406,7 +406,7 @@
                 <template x-for="c in filteredCustomers" :key="c.id">
                     <button type="button" @click="selectCustomer(c)"
                             class="w-full py-2.5 px-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-left flex items-center justify-between"
-                            :class="selectedCustomer && selectedCustomer.id === c.id ? 'bg-indigo-50 dark:bg-indigo-950/60 font-bold border border-indigo-200 dark:border-indigo-800' : ''">
+                            :class="selectedCustomer && selectedCustomer.id === c.id ? 'bg-emerald-50 dark:bg-emerald-950/60 font-bold border border-emerald-200 dark:border-emerald-800' : ''">
                         <div>
                             <p class="text-xs font-bold text-slate-900 dark:text-white" x-text="c.name"></p>
                             <p class="text-[11px] text-slate-400 font-mono">
@@ -446,7 +446,7 @@
             <!-- Customer Summary in Modal -->
             <div class="py-2.5 px-3.5 my-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs">
                 <div class="flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full" :class="selectedCustomer ? 'bg-indigo-500' : 'bg-slate-400'"></span>
+                    <span class="w-2 h-2 rounded-full" :class="selectedCustomer ? 'bg-emerald-600' : 'bg-slate-400'"></span>
                     <span class="text-slate-500 font-medium">Cliente:</span>
                     <strong class="text-slate-900 dark:text-white" x-text="selectedCustomer ? selectedCustomer.name : 'Consumidor Final (General)'"></strong>
                 </div>
