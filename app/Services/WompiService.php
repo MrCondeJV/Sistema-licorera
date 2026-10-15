@@ -73,8 +73,8 @@ class WompiService
             'reference' => $reference,
             'signature' => $signature,
             'redirect_url' => route('billing.wompi-callback'),
-            'customer_email' => $tenant->email ?? ($tenant->users()->first()?->email ?? ''),
-            'customer_name' => $tenant->name,
+            'customer_email' => auth()->user()?->email ?? $tenant->email ?? ($tenant->users()->first()?->email ?? ''),
+            'customer_name' => auth()->user()?->name ?? $tenant->name,
             'plan_name' => $plan->name,
             'formatted_amount' => '$' . number_format($plan->price_monthly, 0, ',', '.') . ' COP',
         ];

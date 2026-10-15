@@ -193,20 +193,31 @@ function billingManager() {
                     }
 
                     // Open Wompi Official Checkout Widget
-                    const checkout = new WidgetCheckout({
-                        currency: d.currency,
-                        amountInCents: d.amount_in_cents,
+                    const widgetConfig = {
+                        currency: d.currency || 'COP',
+                        amountInCents: parseInt(d.amount_in_cents),
                         reference: d.reference,
                         publicKey: d.public_key,
-                        signature: {
+                        redirectUrl: d.redirect_url
+                    };
+
+                    // Include integrity signature if present
+                    if (d.signature) {
+                        widgetConfig.signature = {
                             integrity: d.signature
-                        },
-                        redirectUrl: d.redirect_url,
-                        customerData: {
+                        };
+                    }
+
+                    // Include customer data only if a valid email is provided
+                    if (d.customer_email && d.customer_email.includes('@')) {
+                        widgetConfig.customerData = {
                             email: d.customer_email,
-                            fullName: d.customer_name
-                        }
-                    });
+                            fullName: d.customer_name || 'Cliente'
+                        };
+                    }
+
+                    console.log('Iniciando WidgetCheckout con opciones:', widgetConfig);
+                    const checkout = new WidgetCheckout(widgetConfig);
 
                     checkout.open(function (result) {
                         const transaction = result.transaction;
