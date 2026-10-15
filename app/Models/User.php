@@ -44,7 +44,12 @@ class User extends Authenticatable
 
     public function checkPin(string $pin): bool
     {
-        return Hash::check($pin, $this->pin_hash);
+        return !empty($this->pin_hash) && Hash::check($pin, $this->pin_hash);
+    }
+
+    public function verifyPin(string $pin): bool
+    {
+        return $this->checkPin($pin);
     }
 
     public function tenants(): BelongsToMany

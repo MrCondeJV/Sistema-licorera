@@ -8,7 +8,7 @@
             <h2 class="text-xl font-black text-slate-900 dark:text-white">Usuarios y Permisos de Empleados</h2>
             <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Gestión de administradores, cajeros y meseros de la licorera</p>
         </div>
-        <button type="button" @click="showNewUserModal = true" class="btn-touch py-2 px-4 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black shadow-lg shadow-emerald-600/30 rounded-xl">
+        <button type="button" @click="showNewUserModal = true" class="btn-touch py-2 px-4 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:hover:bg-slate-100 dark:text-slate-900 border border-slate-800 dark:border-white text-xs font-semibold rounded-xl shadow-xs transition-colors">
             + NUEVO EMPLEADO
         </button>
     </div>
@@ -61,7 +61,7 @@
                             <td class="py-3 px-3 text-right sticky right-0 bg-white dark:bg-slate-900 z-10 border-l border-slate-100 dark:border-slate-800 shadow-[-6px_0_10px_-2px_rgba(0,0,0,0.06)]">
                                 <div class="flex items-center justify-end gap-1.5">
                                     <button type="button" @click="resetUserId = {{ $m->user->id }}; resetUserName = '{{ $m->user->name }}'; showPasswordModal = true"
-                                            class="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 rounded-lg text-xs font-bold transition-all shadow-sm">
+                                            class="px-2.5 py-1.5 bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium transition-colors shadow-xs">
                                         Cambiar Clave
                                     </button>
 
@@ -72,7 +72,7 @@
                                               data-confirm-btn="Sí, {{ $m->is_active ? 'desactivar' : 'activar' }}"
                                               data-confirm-danger="{{ $m->is_active ? 'true' : 'false' }}">
                                             @csrf
-                                            <button type="submit" class="px-2.5 py-1.5 {{ $m->is_active ? 'bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border-rose-300 dark:border-rose-800' : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-700' }} border rounded-lg text-xs font-bold transition-all shadow-sm">
+                                            <button type="submit" class="px-2.5 py-1.5 text-xs font-medium rounded-lg transition-colors border {{ $m->is_active ? 'border-slate-200 dark:border-slate-700 text-slate-500 hover:text-rose-600 hover:bg-rose-50/50 dark:text-slate-400 dark:hover:text-rose-300 dark:hover:bg-rose-950/20 shadow-xs' : 'bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:hover:bg-white dark:text-slate-900 border border-slate-800 dark:border-white shadow-xs' }}">
                                                 {{ $m->is_active ? 'Desactivar' : 'Activar' }}
                                             </button>
                                         </form>

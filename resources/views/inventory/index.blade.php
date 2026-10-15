@@ -17,7 +17,7 @@
                 📋 Conteo Físico
             </a>
             @if(auth()->user()->is_superadmin || auth()->user()->hasRoleInTenant($currentTenant->id ?? 0, 'admin'))
-                <a href="{{ route('inventory.create') }}" class="btn-touch py-2 px-4 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black shadow-lg shadow-emerald-600/30 rounded-xl">
+                <a href="{{ route('inventory.create') }}" class="btn-touch py-2 px-4 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:hover:bg-slate-100 dark:text-slate-900 border border-slate-800 dark:border-white text-xs font-semibold rounded-xl shadow-xs transition-colors">
                     + NUEVO PRODUCTO
                 </a>
             @endif
@@ -114,14 +114,14 @@
                                     <!-- Quick Adjust Modal trigger -->
                                     <button type="button"
                                             @click="adjustProduct = {{ json_encode($prod) }}; newStock = {{ $prod->stock }}; showAdjustModal = true"
-                                            class="px-2.5 py-1.5 bg-cyan-50 hover:bg-cyan-100 dark:bg-cyan-950/60 dark:hover:bg-cyan-900/60 text-cyan-700 dark:text-cyan-300 rounded-lg text-xs font-bold border border-cyan-300 dark:border-cyan-700 transition-colors shadow-sm"
+                                            class="px-2.5 py-1.5 bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-200 rounded-lg text-xs font-semibold border border-slate-200 dark:border-slate-700 transition-colors shadow-xs"
                                             title="Ajuste rápido de stock">
                                         +/- Stock
                                     </button>
 
                                     @if(auth()->user()->is_superadmin || auth()->user()->hasRoleInTenant($currentTenant->id ?? 0, 'admin'))
                                         <a href="{{ route('inventory.edit', $prod->id) }}"
-                                           class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-xs font-bold border border-slate-300 dark:border-slate-700 transition-colors shadow-sm">
+                                           class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200/80 dark:bg-slate-800/80 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-medium border border-slate-200/60 dark:border-slate-700/60 transition-colors shadow-xs">
                                             Editar
                                         </a>
                                     @endif
@@ -164,8 +164,8 @@
                 </div>
 
                 <div class="flex gap-2">
-                    <button type="button" @click="showAdjustModal = false" class="btn-touch flex-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl">Cancelar</button>
-                    <button type="submit" class="btn-touch flex-1 bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-black shadow-lg shadow-cyan-600/30 rounded-xl">GUARDAR AJUSTE</button>
+                    <button type="button" @click="showAdjustModal = false" class="btn-touch flex-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 text-xs font-semibold rounded-xl">Cancelar</button>
+                    <button type="submit" class="btn-touch flex-1 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:hover:bg-slate-100 dark:text-slate-900 border border-slate-800 dark:border-white text-xs font-semibold rounded-xl shadow-xs transition-colors">GUARDAR AJUSTE</button>
                 </div>
             </form>
         </div>

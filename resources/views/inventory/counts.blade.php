@@ -13,7 +13,7 @@
             <a href="{{ route('inventory.index') }}" class="btn-touch py-2 px-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl">
                 &larr; Volver
             </a>
-            <button type="button" @click="showNewCountModal = true" class="btn-touch py-2 px-4 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black shadow-lg shadow-emerald-600/30 rounded-xl">
+            <button type="button" @click="showNewCountModal = true" class="btn-touch py-2 px-4 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:hover:bg-slate-100 dark:text-slate-900 border border-slate-800 dark:border-white text-xs font-semibold rounded-xl shadow-xs transition-colors">
                 + NUEVO CONTEO FÍSICO
             </button>
         </div>
@@ -55,7 +55,7 @@
                                           data-confirm-danger="false"
                                           data-confirm-icon="question">
                                         @csrf
-                                        <button type="submit" class="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs rounded-xl shadow-md transition-all active:scale-95">
+                                        <button type="submit" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:hover:bg-slate-100 dark:text-slate-900 border border-slate-800 dark:border-white font-semibold text-xs rounded-lg shadow-xs transition-colors">
                                             Aplicar Ajustes
                                         </button>
                                     </form>

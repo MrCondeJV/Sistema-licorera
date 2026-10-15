@@ -41,7 +41,7 @@
                 <span>Ver Compras</span>
             </a>
             <button type="button" @click="showNewModal = true"
-                    class="btn-touch py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black shadow-lg shadow-emerald-600/30 rounded-xl flex items-center gap-2">
+                    class="btn-touch py-2.5 px-4 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:hover:bg-slate-100 dark:text-slate-900 border border-slate-800 dark:border-white text-xs font-semibold rounded-xl flex items-center gap-2 shadow-xs transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
                 <span>+ NUEVO PROVEEDOR</span>
             </button>
@@ -162,14 +162,14 @@
                                     <div class="flex items-center justify-end gap-1.5">
                                         <button type="button"
                                                 @click="openEdit({{ json_encode($supplier) }})"
-                                                class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-800 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-bold transition-all shadow-sm">
+                                                class="px-2.5 py-1.5 bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium transition-colors shadow-xs">
                                             Editar
                                         </button>
 
                                         <form action="{{ route('suppliers.toggle', $supplier->id) }}" method="POST">
                                             @csrf
                                             <button type="submit"
-                                                    class="px-2.5 py-1.5 {{ $supplier->is_active ? 'bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border-rose-300 dark:border-rose-800' : 'bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800' }} border rounded-lg text-xs font-bold transition-all shadow-sm">
+                                                    class="px-2.5 py-1.5 text-xs font-medium rounded-lg transition-colors border {{ $supplier->is_active ? 'border-slate-200 dark:border-slate-700 text-slate-500 hover:text-rose-600 hover:bg-rose-50/50 dark:text-slate-400 dark:hover:text-rose-300 dark:hover:bg-rose-950/20 shadow-xs' : 'bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:hover:bg-slate-100 dark:text-slate-900 border border-slate-800 dark:border-white shadow-xs' }}">
                                                 {{ $supplier->is_active ? 'Desactivar' : 'Activar' }}
                                             </button>
                                         </form>

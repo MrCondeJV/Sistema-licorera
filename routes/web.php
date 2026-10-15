@@ -183,6 +183,9 @@ Route::middleware(['pin.auth', 'superadmin'])->prefix('superadmin')->name('super
     Route::post('/tenants', [SuperadminController::class, 'store'])->name('tenants.store');
     Route::get('/tenants/{tenant}/edit', [SuperadminController::class, 'edit'])->name('tenants.edit');
     Route::put('/tenants/{tenant}', [SuperadminController::class, 'update'])->name('tenants.update');
+    Route::get('/tenants/{tenant}/users', [SuperadminController::class, 'tenantUsers'])->name('tenants.users');
+    Route::post('/tenants/{tenant}/users', [SuperadminController::class, 'storeTenantUser'])->name('tenants.users.store');
+    Route::put('/tenants/{tenant}/users/{user}', [SuperadminController::class, 'updateTenantUser'])->name('tenants.users.update');
     Route::post('/tenants/{tenant}/enter', [SuperadminController::class, 'enter'])->name('tenants.enter');
     Route::get('/leave', [SuperadminController::class, 'leave'])->name('leave');
     Route::get('/audit', [SuperadminController::class, 'audit'])->name('audit');

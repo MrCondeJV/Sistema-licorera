@@ -12,6 +12,7 @@ use App\Services\AuditService;
 use App\Services\TenantService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class SuperadminController extends Controller
 {
@@ -120,6 +121,180 @@ class SuperadminController extends Controller
         AuditService::log('superadmin_tenant_updated', 'Tenant', $tenant->id, $oldData, $tenant->toArray(), "Empresa editada por Superadministrador");
 
         return redirect()->route('superadmin.index')->with('success', "Empresa '{$tenant->name}' actualizada correctamente.");
+    }
+
+    /**
+     * List and manage users and credentials of a specific tenant.
+     */
+    public function tenantUsers(Tenant $tenant)
+    {
+        $tenant->load(['branches', 'users.branches']);
+        $branches = $tenant->branches;
+        $users = $tenant->users;
+
+        return view('superadmin.tenants.users', compact('tenant', 'branches', 'users'));
+    }
+
+    /**
+     * Register a new user for a specific tenant from Superadmin.
+     */
+    public function storeTenantUser(Request $request, Tenant $tenant)
+    {
+        $request->validate([
+            'name' => 'required|string|max:100',
+            'email' => 'required|email|max:150|unique:users,email',
+            'phone' => 'nullable|string|max:20',
+            'password' => 'required|string|min:6',
+            'pin' => 'nullable|string|min:4|max:6',
+            'role' => 'required|in:admin,cashier,waiter',
+            'branch_ids' => 'nullable|array',
+            'branch_ids.*' => 'exists:branches,id',
+            'is_active' => 'nullable',
+        ], [
+            'email.unique' => 'Ya existe un usuario con este correo electrónico.',
+            'password.min' => 'La contraseña debe tener al menos 6 caracteres.',
+            'pin.min' => 'El PIN debe tener al menos 4 dígitos.',
+        ]);
+
+        $pin = $request->input('pin') ?: '1234';
+        $isActive = $request->has('is_active') ? (bool) $request->input('is_active') : true;
+
+        $user = User::create([
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'phone' => $request->input('phone'),
+            'password' => Hash::make($request->input('password')),
+            'pin_hash' => Hash::make($pin),
+            'is_superadmin' => false,
+            'is_active' => $isActive,
+        ]);
+
+        // Attach tenant membership
+        $user->tenants()->attach($tenant->id, [
+            'role' => $request->input('role'),
+            'is_active' => $isActive,
+        ]);
+
+        // Attach branches
+        $branchIds = $request->input('branch_ids', []);
+        if (empty($branchIds)) {
+            $mainBranchId = $tenant->branches()->where('is_main', true)->value('id') ?: $tenant->branches()->value('id');
+            if ($mainBranchId) {
+                $branchIds = [$mainBranchId];
+            }
+        }
+        foreach ($branchIds as $bId) {
+            $user->branches()->attach($bId, ['tenant_id' => $tenant->id]);
+        }
+
+        AuditService::log(
+            'superadmin_user_created',
+            'User',
+            $user->id,
+            null,
+            ['tenant' => $tenant->name, 'email' => $user->email, 'role' => $request->input('role')],
+            "Superadministrador creó al usuario '{$user->name}' para la empresa '{$tenant->name}'"
+        );
+
+        return redirect()->route('superadmin.tenants.users', $tenant->id)
+            ->with('success', "Usuario '{$user->name}' registrado exitosamente para {$tenant->name}.");
+    }
+
+    /**
+     * Update user credentials (password, PIN, email, role, status) from Superadmin.
+     */
+    public function updateTenantUser(Request $request, Tenant $tenant, User $user)
+    {
+        // Ensure user belongs to this tenant
+        if (!$tenant->users()->where('users.id', $user->id)->exists()) {
+            abort(404, 'El usuario no pertenece a esta empresa.');
+        }
+
+        // Prevent modifying another superadmin through tenant users module
+        if ($user->is_superadmin) {
+            abort(403, 'No se puede modificar las credenciales de un superadministrador desde este módulo.');
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:100',
+            'email' => 'required|email|max:150|unique:users,email,' . $user->id,
+            'phone' => 'nullable|string|max:20',
+            'password' => 'nullable|string|min:6',
+            'pin' => 'nullable|string|min:4|max:6',
+            'role' => 'required|in:admin,cashier,waiter',
+            'branch_ids' => 'nullable|array',
+            'branch_ids.*' => 'exists:branches,id',
+            'is_active' => 'nullable',
+        ], [
+            'email.unique' => 'Ya existe un usuario con este correo electrónico.',
+            'password.min' => 'La contraseña debe tener al menos 6 caracteres.',
+            'pin.min' => 'El PIN debe tener al menos 4 dígitos.',
+        ]);
+
+        $oldData = [
+            'name' => $user->name,
+            'email' => $user->email,
+            'phone' => $user->phone,
+            'role' => $user->getRoleInTenant($tenant->id),
+            'is_active' => $user->is_active,
+        ];
+
+        $user->name = $request->input('name');
+        $user->email = $request->input('email');
+        $user->phone = $request->input('phone');
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->input('password'));
+        }
+
+        if ($request->filled('pin')) {
+            $user->setPin($request->input('pin'));
+        }
+
+        $isActive = $request->has('is_active') ? (bool) $request->input('is_active') : true;
+        $user->is_active = $isActive;
+        $user->save();
+
+        // Update tenant membership pivot
+        $user->tenants()->updateExistingPivot($tenant->id, [
+            'role' => $request->input('role'),
+            'is_active' => $isActive,
+        ]);
+
+        // Sync branches for this tenant
+        if ($request->has('branch_ids')) {
+            $tenantBranchIds = $tenant->branches()->pluck('id')->toArray();
+            $user->branches()->wherePivotIn('branch_id', $tenantBranchIds)->detach();
+
+            $syncData = [];
+            foreach ($request->input('branch_ids', []) as $bId) {
+                if (in_array((int)$bId, $tenantBranchIds, true)) {
+                    $syncData[$bId] = ['tenant_id' => $tenant->id];
+                }
+            }
+            if (!empty($syncData)) {
+                $user->branches()->attach($syncData);
+            }
+        }
+
+        AuditService::log(
+            'superadmin_user_credentials_updated',
+            'User',
+            $user->id,
+            $oldData,
+            [
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $request->input('role'),
+                'password_changed' => $request->filled('password'),
+                'pin_changed' => $request->filled('pin'),
+                'is_active' => $isActive,
+            ],
+            "Superadministrador modificó las credenciales y rol de '{$user->name}' en la empresa '{$tenant->name}'"
+        );
+
+        return redirect()->route('superadmin.tenants.users', $tenant->id)
+            ->with('success', "Credenciales de '{$user->name}' actualizadas correctamente.");
     }
 
     /**

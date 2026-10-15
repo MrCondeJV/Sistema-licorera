@@ -8,7 +8,7 @@
             <h2 class="text-xl font-black text-slate-900 dark:text-white">Clientes y Cartera (Fiados)</h2>
             <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Control de clientes registrados, límites de crédito y saldos pendientes</p>
         </div>
-        <button type="button" @click="showNewCustomerModal = true" class="btn-touch py-2 px-4 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black shadow-lg shadow-emerald-600/30 rounded-xl">
+        <button type="button" @click="showNewCustomerModal = true" class="btn-touch py-2 px-4 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:hover:bg-slate-100 dark:text-slate-900 border border-slate-800 dark:border-white text-xs font-semibold rounded-xl shadow-xs transition-colors">
             + NUEVO CLIENTE
         </button>
     </div>
@@ -40,7 +40,7 @@
                             </td>
                             <td class="py-3.5 px-3 text-right sticky right-0 bg-white dark:bg-slate-900 z-10 border-l border-slate-100 dark:border-slate-800 shadow-[-6px_0_10px_-2px_rgba(0,0,0,0.06)]">
                                 <a href="{{ route('customers.debts', $c->id) }}"
-                                   class="px-3 py-1.5 bg-cyan-50 hover:bg-cyan-100 dark:bg-cyan-950/60 dark:hover:bg-cyan-900 text-cyan-700 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-700 font-bold text-xs rounded-xl shadow-sm transition-all inline-block">
+                                   class="px-3 py-1.5 bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 font-medium text-xs rounded-lg shadow-xs transition-colors inline-block">
                                     Ver Fiados y Abonos &rarr;
                                 </a>
                             </td>
