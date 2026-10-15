@@ -35,8 +35,8 @@ Route::get('/', function () {
         }
         return redirect()->route('pos.index');
     }
-    return view('welcome');
-})->name('landing');
+    return redirect()->route('login');
+})->name('home');
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');

@@ -74,17 +74,16 @@ class WompiBillingAndSaaSTrialTest extends TestCase
         ]);
     }
 
-    public function test_landing_page_renders_for_unauthenticated_guests(): void
+    public function test_root_redirects_unauthenticated_guests_to_login(): void
     {
         $response = $this->get('/');
 
-        $response->assertStatus(200);
-        $response->assertSee('LICORERA POS');
-        $response->assertSee('PROBAR 14 DÍAS GRATIS');
-        $response->assertSee('Wompi');
-        $response->assertSee('Plan Básico');
-        $response->assertSee('Plan Pro');
-        $response->assertSee('Plan Enterprise');
+        $response->assertRedirect(route('login'));
+
+        $loginResponse = $this->get(route('login'));
+        $loginResponse->assertStatus(200);
+        $loginResponse->assertSee('LICORERA POS');
+        $loginResponse->assertSee('Iniciar Sesión');
     }
 
     public function test_business_auto_registration_creates_tenant_with_14_day_free_trial(): void

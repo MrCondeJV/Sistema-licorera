@@ -14,8 +14,8 @@ class ExampleTest extends TestCase
         $response = $this->get('/pos');
         $response->assertRedirect(route('login'));
 
-        $landingResponse = $this->get('/');
-        $landingResponse->assertStatus(200);
+        $rootResponse = $this->get('/');
+        $rootResponse->assertRedirect(route('login'));
 
         $loginResponse = $this->get(route('login'));
         $loginResponse->assertStatus(200);
