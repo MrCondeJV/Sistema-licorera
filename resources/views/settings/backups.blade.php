@@ -123,16 +123,16 @@
 
                 <!-- Save Action Button -->
                 <div class="sm:col-span-2 flex items-end">
-                    <button type="submit" class="w-full btn-touch py-2.5 px-5 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:hover:bg-slate-100 dark:text-slate-900 font-semibold text-xs rounded-xl shadow-xs transition-all active:scale-95 flex items-center justify-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                        <span>GUARDAR PROGRAMACIÓN DE AUTO-COPIAS</span>
+                    <button type="submit" class="w-full btn-touch py-2.5 px-4 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:hover:bg-slate-100 dark:text-slate-900 font-semibold text-xs rounded-xl shadow-xs transition-all active:scale-95 flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        <span>GUARDAR PROGRAMACIÓN</span>
                     </button>
                 </div>
             </div>
 
             <!-- Execution Status Banner -->
-            <div class="p-3 rounded-xl bg-white/70 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-                <div class="flex items-center gap-2">
+            <div class="p-3 rounded-xl bg-white/70 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-2.5 text-xs overflow-hidden">
+                <div class="flex flex-wrap items-center gap-2 shrink-0">
                     <span class="font-bold text-slate-700 dark:text-slate-300">Última ejecución:</span>
                     <span class="font-mono text-slate-800 dark:text-slate-200 font-bold">
                         {{ $scheduleConfig['last_run_at'] ?? 'Aún no ejecutado' }}
@@ -143,8 +143,8 @@
                         </span>
                     @endif
                 </div>
-                <div class="text-[11px] text-slate-500 dark:text-slate-400 font-mono">
-                    VPS Cron: <code class="bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-slate-800 dark:text-slate-200">* * * * * cd /var/www/sistema-licorera && php artisan schedule:run >> /dev/null 2>&1</code>
+                <div class="text-[11px] text-slate-500 dark:text-slate-400 font-mono w-full md:w-auto overflow-x-auto select-all">
+                    VPS Cron: <code class="bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-slate-800 dark:text-slate-200 text-[10px] whitespace-nowrap">* * * * * cd /var/www/sistema-licorera && php artisan schedule:run >> /dev/null 2>&1</code>
                 </div>
             </div>
         </form>
@@ -230,17 +230,73 @@
         </div>
     </div>
 
-    <!-- Backups History Table -->
-    <div class="card-night p-5 rounded-2xl flex-1 flex flex-col space-y-4">
-        <div class="flex items-center justify-between">
+    <!-- Backups History Section with Pagination -->
+    <div class="card-night p-4 sm:p-5 rounded-2xl flex-1 flex flex-col space-y-4 shadow-xs">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 pb-2 border-b border-slate-200 dark:border-slate-800">
             <h3 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
                 <span>Archivos de Respaldo Generados</span>
-                <span class="text-xs font-mono font-bold text-slate-400">({{ count($backups) }})</span>
+                <span class="text-xs font-mono font-bold text-slate-400">({{ $backups->total() }})</span>
             </h3>
-            <span class="text-[11px] text-slate-400 font-medium">Ubicación local en servidor: storage/app/backups</span>
+            <span class="text-[11px] text-slate-400 font-medium">Ubicación en servidor: storage/app/backups</span>
         </div>
 
-        <div class="overflow-x-auto flex-1">
+        <!-- 1. MOBILE CARDS VIEW (Only visible on screens < sm) -->
+        <div class="sm:hidden space-y-3">
+            @forelse($backups as $b)
+                <div class="p-3.5 bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-800 rounded-xl space-y-2.5">
+                    <!-- Top: Badge + Date -->
+                    <div class="flex items-center justify-between gap-2">
+                        @if($b['type'] === 'general')
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-xs">
+                                General (Todos)
+                            </span>
+                        @else
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-slate-200 dark:bg-slate-750 text-slate-800 dark:text-slate-200 truncate max-w-[190px]">
+                                {{ $b['target_label'] }}
+                            </span>
+                        @endif
+                        <span class="text-[11px] font-mono text-slate-500 dark:text-slate-400 font-medium shrink-0">
+                            {{ $b['created_at'] }}
+                        </span>
+                    </div>
+
+                    <!-- Filename + Size -->
+                    <div class="flex items-start justify-between gap-2 pt-0.5">
+                        <div class="flex items-start gap-1.5 min-w-0 flex-1">
+                            <svg class="w-4 h-4 text-slate-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+                            <span class="font-mono text-xs font-bold text-slate-900 dark:text-white break-all leading-snug">{{ $b['filename'] }}</span>
+                        </div>
+                        <span class="text-[11px] font-mono text-slate-600 dark:text-slate-300 font-semibold shrink-0 bg-white dark:bg-slate-800 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700">
+                            {{ $b['size'] }}
+                        </span>
+                    </div>
+
+                    <!-- Actions Bar -->
+                    <div class="pt-2 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2">
+                        <a href="{{ route('superadmin.backups.download', $b['filename']) }}"
+                           class="flex-1 py-1.5 px-3 rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-750 text-slate-800 dark:text-slate-200 font-semibold text-xs border border-slate-300 dark:border-slate-700 inline-flex items-center justify-center gap-1.5 shadow-xs transition-colors">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                            <span>Descargar</span>
+                        </a>
+                        <form action="{{ route('superadmin.backups.destroy', $b['filename']) }}" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar permanentemente esta copia de seguridad?')" class="shrink-0">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="py-1.5 px-3 rounded-lg text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 text-xs font-semibold inline-flex items-center gap-1 transition-colors" title="Eliminar">
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                <span>Eliminar</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            @empty
+                <div class="py-10 text-center text-slate-400 text-xs">
+                    No se ha generado ninguna copia de seguridad todavía.
+                </div>
+            @endforelse
+        </div>
+
+        <!-- 2. DESKTOP TABLE VIEW (Visible on screens >= sm) -->
+        <div class="hidden sm:block overflow-x-auto flex-1">
             <table class="w-full text-left text-xs min-w-[720px]">
                 <thead class="border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">
                     <tr>
@@ -300,6 +356,16 @@
                     @endforelse
                 </tbody>
             </table>
+        </div>
+
+        <!-- 3. PAGINATION CONTROLS FOOTER -->
+        <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+            <span class="text-slate-500 dark:text-slate-400 text-center sm:text-left">
+                Mostrando {{ $backups->firstItem() ?? 0 }} a {{ $backups->lastItem() ?? 0 }} de {{ $backups->total() }} respaldos
+            </span>
+            <div class="flex justify-center sm:justify-end">
+                {{ $backups->links() }}
+            </div>
         </div>
     </div>
 </div>

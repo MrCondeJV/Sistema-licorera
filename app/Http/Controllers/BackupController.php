@@ -22,6 +22,7 @@ use App\Services\BackupService;
 use App\Services\TenantContext;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Str;
@@ -107,10 +108,26 @@ class BackupController extends Controller
         // Sort latest first
         usort($backups, fn($a, $b) => $b['timestamp'] <=> $a['timestamp']);
 
+        // Paginate results (10 backups per page)
+        $perPage = 10;
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $offset = ($currentPage - 1) * $perPage;
+        $currentPageItems = array_slice($backups, $offset, $perPage);
+        $paginatedBackups = new LengthAwarePaginator(
+            $currentPageItems,
+            count($backups),
+            $perPage,
+            $currentPage,
+            [
+                'path' => LengthAwarePaginator::resolveCurrentPath(),
+                'query' => request()->query(),
+            ]
+        );
+
         $scheduleConfig = $this->backupService->getScheduleConfig();
 
         return view('settings.backups', [
-            'backups' => $backups,
+            'backups' => $paginatedBackups,
             'availableTenants' => $availableTenants,
             'defaultTenantId' => $defaultTenantId,
             'isSuperAdminView' => $isSuperAdminView,
