@@ -29,6 +29,11 @@ export default {
           cyan: '#06b6d4',
           rose: '#f43f5e',
           purple: '#8b5cf6',
+        },
+        slate: {
+          850: '#141d2e',
+          750: '#243044',
+          650: '#3d4d65',
         }
       },
       fontFamily: {

@@ -80,12 +80,12 @@
                 </div>
 
                 <div class="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center gap-2">
-                    <button type="button" @click="openEditModal({{ json_encode($plan) }})" class="flex-1 py-2 px-3 rounded-xl bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300 font-bold text-xs transition-colors text-center">
+                    <button type="button" @click="openEditModal({{ json_encode($plan) }})" class="flex-1 py-2 px-3 rounded-xl bg-purple-100 hover:bg-purple-200 dark:bg-purple-950/80 dark:hover:bg-purple-900/80 text-purple-800 dark:text-purple-200 border border-purple-300 dark:border-purple-700 font-bold text-xs transition-colors text-center shadow-sm">
                         ✏️ Editar
                     </button>
                     <form method="POST" action="{{ route('superadmin.plans.toggle', $plan) }}">
                         @csrf
-                        <button type="submit" class="py-2 px-3 rounded-xl {{ $plan->is_active ? 'bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400' : 'bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400' }} font-bold text-xs transition-colors">
+                        <button type="submit" class="py-2 px-3 rounded-xl {{ $plan->is_active ? 'bg-rose-100 hover:bg-rose-200 dark:bg-rose-950/80 text-rose-800 dark:text-rose-200 border border-rose-300 dark:border-rose-700' : 'bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700' }} font-bold text-xs transition-colors shadow-sm">
                             {{ $plan->is_active ? 'Desactivar' : 'Activar' }}
                         </button>
                     </form>
@@ -154,7 +154,7 @@
                 </div>
 
                 <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2">
-                    <button type="button" @click="showModal = false" class="btn-touch py-2.5 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl">
+                    <button type="button" @click="showModal = false" class="btn-touch py-2.5 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 text-xs font-bold rounded-xl shadow-sm transition-all">
                         Cancelar
                     </button>
                     <button type="submit" class="btn-touch py-2.5 px-5 bg-purple-600 hover:bg-purple-500 text-white text-xs font-black rounded-xl shadow-lg shadow-purple-600/30">

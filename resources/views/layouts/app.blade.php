@@ -292,7 +292,11 @@
                 </button>
                 <div>
                     <h1 class="text-sm font-black text-slate-900 dark:text-white leading-none">LICORERA POS</h1>
-                    @if(isset($accessibleBranches) && count($accessibleBranches) > 1)
+                    @if(auth()->user()?->is_superadmin && !session('superadmin_impersonating'))
+                        <p class="text-[10px] text-purple-600 dark:text-purple-400 font-black flex items-center gap-1 mt-0.5">
+                            ⚡ Panel Superadmin
+                        </p>
+                    @elseif(isset($accessibleBranches) && count($accessibleBranches) > 1)
                         <form method="POST" class="mt-0.5">
                             @csrf
                             <select onchange="if(this.value){ this.form.action='{{ url('/branch/switch') }}/' + this.value; this.form.submit(); }"
@@ -593,26 +597,30 @@
             <!-- Drawer Links -->
             <div class="flex-1 overflow-y-auto p-3.5 space-y-1.5 text-sm font-semibold">
                 @if(auth()->user()->is_superadmin && !session('superadmin_impersonating'))
-                    <div class="text-[11px] font-bold text-purple-600 uppercase tracking-wider px-3 pb-1">
-                        Superadministración SaaS
+                    <div class="px-3 pb-2 pt-1 flex items-center justify-between">
+                        <span class="text-[11px] font-black text-purple-600 dark:text-purple-400 uppercase tracking-wider">Superadmin SaaS</span>
+                        <a href="{{ route('superadmin.tenants.create') }}" class="px-2.5 py-1 rounded-lg bg-indigo-600 text-white text-[11px] font-black hover:bg-indigo-500 transition-colors flex items-center gap-1 shadow-sm">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                            <span>Nueva</span>
+                        </a>
                     </div>
-                    <a href="{{ route('superadmin.index') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 font-bold">
-                        <svg class="w-5 h-5 shrink-0 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                    <a href="{{ route('superadmin.index') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all {{ request()->routeIs('superadmin.index', 'superadmin.tenants.*') ? 'bg-purple-600 text-white font-bold shadow-md shadow-purple-600/30' : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300' }}">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
                         <span>Empresas & Licoreras</span>
                     </a>
-                    <a href="{{ route('superadmin.plans.index') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">
+                    <a href="{{ route('superadmin.plans.index') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all {{ request()->routeIs('superadmin.plans.*') ? 'bg-purple-600 text-white font-bold shadow-md shadow-purple-600/30' : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300' }}">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
                         <span>Planes y Precios SaaS</span>
                     </a>
-                    <a href="{{ route('superadmin.payments') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">
+                    <a href="{{ route('superadmin.payments') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all {{ request()->routeIs('superadmin.payments*') ? 'bg-purple-600 text-white font-bold shadow-md shadow-purple-600/30' : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300' }}">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
                         <span>Histórico de Pagos SaaS</span>
                     </a>
-                    <a href="{{ route('superadmin.backups') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">
+                    <a href="{{ route('superadmin.backups') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all {{ request()->routeIs('superadmin.backups*') ? 'bg-purple-600 text-white font-bold shadow-md shadow-purple-600/30' : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300' }}">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
                         <span>Copias de Seguridad</span>
                     </a>
-                    <a href="{{ route('superadmin.audit') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">
+                    <a href="{{ route('superadmin.audit') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all {{ request()->routeIs('superadmin.audit*') ? 'bg-purple-600 text-white font-bold shadow-md shadow-purple-600/30' : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300' }}">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                         <span>Auditoría Global SaaS</span>
                     </a>

@@ -16,7 +16,7 @@
             </p>
         </div>
         <div class="flex items-center gap-2">
-            <a href="{{ route('superadmin.index') }}" class="btn-touch py-2.5 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 flex items-center gap-2">
+            <a href="{{ route('superadmin.index') }}" class="btn-touch py-2.5 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl border border-slate-300 dark:border-slate-700 flex items-center gap-2 shadow-sm transition-all">
                 <span>🏢 Ver Licoreras</span>
             </a>
         </div>

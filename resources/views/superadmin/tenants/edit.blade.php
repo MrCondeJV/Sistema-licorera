@@ -5,7 +5,7 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div class="flex items-center gap-3">
-            <a href="{{ route('superadmin.index') }}" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-600 dark:text-slate-300 transition-all">
+            <a href="{{ route('superadmin.index') }}" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition-all flex items-center justify-center shadow-sm">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
@@ -94,10 +94,10 @@
 
             <!-- Actions -->
             <div class="pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-3">
-                <a href="{{ route('superadmin.index') }}" class="btn-touch bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 px-5 text-xs font-bold rounded-xl">
+                <a href="{{ route('superadmin.index') }}" class="btn-touch bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 px-5 text-xs font-bold rounded-xl shadow-sm transition-all">
                     Cancelar
                 </a>
-                <button type="submit" class="btn-touch bg-emerald-600 hover:bg-emerald-500 text-white px-6 text-xs font-black shadow-lg shadow-emerald-600/30 rounded-xl">
+                <button type="submit" class="btn-touch bg-emerald-600 hover:bg-emerald-500 text-white px-6 text-xs font-black shadow-lg shadow-emerald-600/30 rounded-xl transition-all active:scale-95">
                     Guardar Cambios
                 </button>
             </div>

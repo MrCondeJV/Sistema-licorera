@@ -26,10 +26,10 @@
             </div>
         </div>
         <div class="flex items-center gap-2">
-            <a href="{{ route('superadmin.index') }}" class="btn-touch py-2 px-3.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700">
+            <a href="{{ route('superadmin.index') }}" class="btn-touch py-2 px-3.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl border border-slate-300 dark:border-slate-700 shadow-sm transition-all">
                 &larr; Volver al Panel Superadmin
             </a>
-            <button type="button" onclick="window.print()" class="btn-touch py-2 px-3.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl flex items-center gap-1.5 border border-slate-200 dark:border-slate-700">
+            <button type="button" onclick="window.print()" class="btn-touch py-2 px-3.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl flex items-center gap-1.5 border border-slate-300 dark:border-slate-700 shadow-sm transition-all">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
                 <span>Imprimir</span>
             </button>
@@ -109,7 +109,7 @@
                 </label>
                 <div class="flex items-center gap-2">
                     @if(request()->anyFilled(['search', 'tenant_id', 'date_from', 'date_to', 'only_superadmin', 'action']))
-                        <a href="{{ route('superadmin.audit') }}" class="btn-touch py-1.5 px-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-600 dark:text-slate-400 text-xs font-bold rounded-xl">
+                        <a href="{{ route('superadmin.audit') }}" class="btn-touch py-1.5 px-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 text-xs font-bold rounded-xl shadow-sm transition-all">
                             Limpiar Filtros
                         </a>
                     @endif

@@ -8,6 +8,13 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
+            @if(auth()->user()->is_superadmin && !session('superadmin_impersonating'))
+                <div class="flex items-center gap-2 mb-1">
+                    <a href="{{ route('superadmin.index') }}" class="text-xs text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1">
+                        &larr; Volver al Panel Superadmin
+                    </a>
+                </div>
+            @endif
             <div class="flex items-center gap-2">
                 <h2 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">Copias de Seguridad (Backups)</h2>
                 <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
@@ -18,6 +25,13 @@
                 Genera respaldos completos de toda la plataforma o extrae la base de datos de un negocio en específico
             </p>
         </div>
+        @if(auth()->user()->is_superadmin && !session('superadmin_impersonating'))
+            <div class="flex items-center gap-2">
+                <a href="{{ route('superadmin.index') }}" class="btn-touch py-2 px-3.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl border border-slate-300 dark:border-slate-700 shadow-sm transition-all flex items-center gap-1.5">
+                    🏢 Ver Licoreras
+                </a>
+            </div>
+        @endif
     </div>
 
     <!-- Backup Generator Form Card -->
