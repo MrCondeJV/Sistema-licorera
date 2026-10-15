@@ -12,27 +12,25 @@ class ExpenseController extends Controller
 {
     public function index()
     {
-        $expenses = Expense::with(['category', 'user'])
+        $expenses = Expense::with(['user'])
             ->latest('expense_date')
+            ->latest('id')
             ->paginate(25);
-
-        $categories = ExpenseCategory::all();
 
         return view('expenses.index', [
             'expenses' => $expenses,
-            'categories' => $categories,
         ]);
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'expense_category_id' => 'required|exists:expense_categories,id',
             'amount' => 'required|numeric|min:1',
             'payment_method' => 'required|in:cash,bank,other',
             'description' => 'required|string|max:250',
             'receipt_number' => 'nullable|string|max:100',
             'expense_date' => 'required|date',
+            'expense_category_id' => 'nullable|exists:expense_categories,id',
         ]);
 
         $cashSessionId = null;
@@ -54,8 +52,6 @@ class ExpenseController extends Controller
             'expense_date' => $request->input('expense_date'),
         ]);
 
-        $category = ExpenseCategory::find($expense->expense_category_id);
-
         AuditService::log(
             'expense_created',
             'Expense',
@@ -63,12 +59,11 @@ class ExpenseController extends Controller
             null,
             [
                 'amount' => (float) $expense->amount,
-                'category' => $category?->name,
                 'payment_method' => $expense->payment_method,
                 'description' => $expense->description,
                 'receipt_number' => $expense->receipt_number,
             ],
-            "Gasto operativo registrado: $" . number_format($expense->amount, 0, ',', '.') . " COP ({$category?->name})"
+            "Gasto operativo registrado: $" . number_format($expense->amount, 0, ',', '.') . " COP - {$expense->description}"
         );
 
         return redirect()->route('expenses.index')->with('success', 'Gasto operativo registrado exitosamente.');

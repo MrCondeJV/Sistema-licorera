@@ -21,7 +21,6 @@
                 <thead class="border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">
                     <tr>
                         <th class="py-3 px-2">Fecha</th>
-                        <th class="py-3 px-2">Categoría</th>
                         <th class="py-3 px-2">Descripción</th>
                         <th class="py-3 px-2">Medio de Pago</th>
                         <th class="py-3 px-2">Comprobante</th>
@@ -33,8 +32,7 @@
                     @forelse($expenses as $exp)
                         <tr>
                             <td class="py-3 px-2 font-mono text-slate-600 dark:text-slate-300">{{ $exp->expense_date->format('d/m/Y') }}</td>
-                            <td class="py-3 px-2 font-bold text-slate-900 dark:text-white">{{ $exp->category->name }}</td>
-                            <td class="py-3 px-2 text-slate-700 dark:text-slate-300 max-w-xs truncate">{{ $exp->description }}</td>
+                            <td class="py-3 px-2 font-bold text-slate-900 dark:text-white max-w-xs truncate">{{ $exp->description }}</td>
                             <td class="py-3 px-2">
                                 <span class="px-2 py-0.5 rounded-full text-[10px] font-bold {{ $exp->payment_method === 'cash' ? 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-700' : 'bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-700' }}">
                                     {{ $exp->payment_method === 'cash' ? 'Caja / Efectivo' : 'Banco / Transferencia' }}
@@ -46,7 +44,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="py-8 text-center text-slate-400 dark:text-slate-500">No hay gastos registrados.</td>
+                            <td colspan="6" class="py-8 text-center text-slate-400 dark:text-slate-500">No hay gastos registrados.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -68,18 +66,9 @@
             <form action="{{ route('expenses.store') }}" method="POST">
                 @csrf
                 <div class="mb-3">
-                    <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Categoría del Gasto *</label>
-                    <select name="expense_category_id" required class="input-night w-full text-xs">
-                        @foreach($categories as $ec)
-                            <option value="{{ $ec->id }}">{{ $ec->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="mb-3">
                     <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Monto ($ COP) *</label>
                     <input type="number" name="amount" min="1" step="any" required autofocus
-                           class="input-night w-full font-mono font-bold text-lg">
+                           class="input-night w-full font-mono font-bold text-lg" placeholder="0">
                 </div>
 
                 <div class="mb-3">
@@ -98,8 +87,8 @@
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Descripción / Proveedor *</label>
-                    <input type="text" name="description" required placeholder="Ej: Pago de recibo de luz EPM..."
+                    <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">Descripción / Detalle *</label>
+                    <input type="text" name="description" required placeholder="Ej: Pago recibo de luz, aseo, flete, hielo..."
                            class="input-night w-full text-xs">
                 </div>
 

@@ -196,7 +196,6 @@ class AuditTrailTest extends TestCase
         session(['active_tenant_id' => $tenant->id]);
 
         $response = $this->post(route('expenses.store'), [
-            'expense_category_id' => $cat->id,
             'amount' => 45000,
             'payment_method' => 'cash',
             'description' => 'Pago de factura de energía EPM',
@@ -204,6 +203,13 @@ class AuditTrailTest extends TestCase
         ]);
 
         $response->assertRedirect(route('expenses.index'));
+
+        $this->assertDatabaseHas('expenses', [
+            'tenant_id' => $tenant->id,
+            'description' => 'Pago de factura de energía EPM',
+            'amount' => 45000,
+            'expense_category_id' => null,
+        ]);
 
         $this->assertDatabaseHas('audit_logs', [
             'tenant_id' => $tenant->id,

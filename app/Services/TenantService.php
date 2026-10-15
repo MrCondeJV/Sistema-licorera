@@ -139,10 +139,13 @@ class TenantService
                 ]);
             }
 
-            // 8. Default Payment Methods (Efectivo y Transacción Bancaria)
+            // 8. Default Payment Methods (Efectivo, Nequi, Daviplata, Tarjeta, Transferencia)
             $paymentMethods = [
                 ['name' => 'Efectivo', 'code' => 'cash', 'is_cash' => true, 'sort_order' => 1],
-                ['name' => 'Transacción Bancaria', 'code' => 'transfer', 'is_cash' => false, 'sort_order' => 2],
+                ['name' => 'Nequi', 'code' => 'nequi', 'is_cash' => false, 'sort_order' => 2],
+                ['name' => 'Daviplata', 'code' => 'daviplata', 'is_cash' => false, 'sort_order' => 3],
+                ['name' => 'Tarjeta', 'code' => 'card', 'is_cash' => false, 'sort_order' => 4],
+                ['name' => 'Transacción Bancaria', 'code' => 'transfer', 'is_cash' => false, 'sort_order' => 5],
             ];
 
             foreach ($paymentMethods as $pm) {

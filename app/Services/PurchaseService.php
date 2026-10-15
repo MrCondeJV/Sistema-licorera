@@ -82,6 +82,7 @@ class PurchaseService
 
             if ($receiveImmediately) {
                 $this->receivePurchase($purchase, $user);
+                $purchase->refresh();
             }
 
             return $purchase;
