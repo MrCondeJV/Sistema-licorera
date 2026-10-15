@@ -48,11 +48,50 @@ class WompiService
     }
 
     /**
+     * Calculate Wompi fee surcharge:
+     * Fee = (Total * pct + fixed) * (1 + vat)
+     * For net amount received = baseAmount:
+     * Total = (baseAmount + (fixed * (1 + vat))) / (1 - (pct * (1 + vat)))
+     */
+    public function calculateAmounts(float $baseAmount): array
+    {
+        $applySurcharge = config('wompi.apply_surcharge', true);
+
+        if (!$applySurcharge) {
+            return [
+                'base_amount' => $baseAmount,
+                'surcharge' => 0.0,
+                'total_amount' => $baseAmount,
+                'amount_in_cents' => (int) round($baseAmount * 100),
+            ];
+        }
+
+        $pct = config('wompi.fee_percentage', 2.65) / 100.0;
+        $fixed = config('wompi.fee_fixed', 700);
+        $vat = config('wompi.fee_vat', 0.19);
+
+        $effectivePct = $pct * (1 + $vat);
+        $effectiveFixed = $fixed * (1 + $vat);
+
+        $totalAmount = ($baseAmount + $effectiveFixed) / (1 - $effectivePct);
+        $totalAmount = round($totalAmount);
+        $surcharge = $totalAmount - $baseAmount;
+
+        return [
+            'base_amount' => $baseAmount,
+            'surcharge' => $surcharge,
+            'total_amount' => $totalAmount,
+            'amount_in_cents' => (int) ($totalAmount * 100),
+        ];
+    }
+
+    /**
      * Build checkout payload for Wompi Widget.
      */
     public function getCheckoutData(Tenant $tenant, Plan $plan): array
     {
-        $amountInCents = (int) round($plan->price_monthly * 100);
+        $amounts = $this->calculateAmounts((float) $plan->price_monthly);
+        $amountInCents = $amounts['amount_in_cents'];
         $reference = $this->generateReference($tenant, $plan);
         $signature = $this->calculateIntegritySignature($reference, $amountInCents);
 
@@ -70,13 +109,19 @@ class WompiService
             'public_key' => $this->publicKey,
             'currency' => $this->currency,
             'amount_in_cents' => $amountInCents,
+            'base_amount' => $amounts['base_amount'],
+            'surcharge' => $amounts['surcharge'],
+            'total_amount' => $amounts['total_amount'],
+            'formatted_base' => '$' . number_format($amounts['base_amount'], 0, ',', '.') . ' COP',
+            'formatted_surcharge' => '$' . number_format($amounts['surcharge'], 0, ',', '.') . ' COP',
+            'formatted_total' => '$' . number_format($amounts['total_amount'], 0, ',', '.') . ' COP',
             'reference' => $reference,
             'signature' => $signature,
             'redirect_url' => route('billing.wompi-callback'),
             'customer_email' => auth()->user()?->email ?? $tenant->email ?? ($tenant->users()->first()?->email ?? ''),
             'customer_name' => auth()->user()?->name ?? $tenant->name,
             'plan_name' => $plan->name,
-            'formatted_amount' => '$' . number_format($plan->price_monthly, 0, ',', '.') . ' COP',
+            'formatted_amount' => '$' . number_format($amounts['total_amount'], 0, ',', '.') . ' COP',
         ];
     }
 

@@ -32,6 +32,10 @@ class BillingController extends Controller
 
         $tenant = Tenant::with(['plan', 'subscriptionPayments'])->findOrFail($tenantId);
         $plans = Plan::where('is_active', true)->orderBy('price_monthly')->get();
+        foreach ($plans as $p) {
+            $p->fee_breakdown = $this->wompiService->calculateAmounts((float) $p->price_monthly);
+        }
+
         $payments = SubscriptionPayment::where('tenant_id', $tenant->id)
             ->with('plan')
             ->latest('id')
@@ -45,6 +49,10 @@ class BillingController extends Controller
             'daysRemaining' => $tenant->daysRemaining(),
             'isOnTrial' => $tenant->isOnTrial(),
             'isExpired' => $tenant->isExpired(),
+            'isPastDue' => $tenant->isPastDue(),
+            'isGracePeriodExceeded' => $tenant->isGracePeriodExceeded(),
+            'graceDaysRemaining' => $tenant->graceDaysRemaining(),
+            'daysPastDue' => $tenant->daysPastDue(),
             'wompiPublicKey' => config('wompi.public_key'),
             'wompiSandbox' => config('wompi.sandbox'),
         ]);

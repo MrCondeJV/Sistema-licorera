@@ -29,6 +29,9 @@ use Illuminate\Support\Facades\Route;
 */
 Route::get('/', function () {
     if (auth()->check() && !session('screen_locked', false)) {
+        if (auth()->user()->is_superadmin && !session('superadmin_impersonating')) {
+            return redirect()->route('superadmin.index');
+        }
         return redirect()->route('pos.index');
     }
     return view('welcome');
@@ -54,12 +57,22 @@ Route::post('/wompi/webhook', [BillingController::class, 'webhook'])->name('womp
 |--------------------------------------------------------------------------
 */
 Route::middleware(['pin.auth'])->group(function () {
-    Route::get('/home', function () {
-        return redirect()->route('pos.index');
-    });
+    // Billing & Wompi Subscriptions (Always accessible to manage membership & pay)
+    Route::get('/billing', [BillingController::class, 'index'])->name('billing.index');
+    Route::post('/billing/checkout-data', [BillingController::class, 'getCheckoutData'])->name('billing.checkout-data');
+    Route::get('/billing/callback', [BillingController::class, 'wompiCallback'])->name('billing.wompi-callback');
 
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::post('/tenant/switch/{tenant}', [AuthController::class, 'switchTenant'])->name('tenant.switch');
+    // Operational routes protected by tenant subscription & 5-day grace period
+    Route::middleware(['tenant.subscription'])->group(function () {
+        Route::get('/home', function () {
+            if (auth()->user()?->is_superadmin && !session('superadmin_impersonating')) {
+                return redirect()->route('superadmin.index');
+            }
+            return redirect()->route('pos.index');
+        });
+
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::post('/tenant/switch/{tenant}', [AuthController::class, 'switchTenant'])->name('tenant.switch');
 
     // POS Sales screen (Counter quick sales)
     Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
@@ -147,16 +160,12 @@ Route::middleware(['pin.auth'])->group(function () {
         Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
         Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
 
-        // Billing & Wompi Subscriptions
-        Route::get('/billing', [BillingController::class, 'index'])->name('billing.index');
-        Route::post('/billing/checkout-data', [BillingController::class, 'getCheckoutData'])->name('billing.checkout-data');
-        Route::get('/billing/callback', [BillingController::class, 'wompiCallback'])->name('billing.wompi-callback');
-
         // Backups & Snapshots
         Route::get('/backups', [BackupController::class, 'index'])->name('backups.index');
         Route::post('/backups', [BackupController::class, 'create'])->name('backups.create');
         Route::get('/backups/download/{filename}', [BackupController::class, 'download'])->name('backups.download');
         Route::delete('/backups/{filename}', [BackupController::class, 'destroy'])->name('backups.destroy');
+    });
     });
 });
 
@@ -176,4 +185,16 @@ Route::middleware(['pin.auth', 'superadmin'])->prefix('superadmin')->name('super
     Route::get('/audit', [SuperadminController::class, 'audit'])->name('audit');
     Route::post('/tenants/{tenant}/toggle', [SuperadminController::class, 'toggleTenantStatus'])->name('tenants.toggle');
     Route::post('/tenants/{tenant}/plan', [SuperadminController::class, 'updatePlan'])->name('tenants.plan');
+
+    // SaaS Plans Management
+    Route::get('/plans', [SuperadminController::class, 'plans'])->name('plans.index');
+    Route::post('/plans', [SuperadminController::class, 'storePlan'])->name('plans.store');
+    Route::put('/plans/{plan}', [SuperadminController::class, 'updatePlanDetails'])->name('plans.update');
+    Route::post('/plans/{plan}/toggle', [SuperadminController::class, 'togglePlan'])->name('plans.toggle');
+
+    // SaaS Global Backups
+    Route::get('/backups', [BackupController::class, 'index'])->name('backups');
+    Route::post('/backups', [BackupController::class, 'create'])->name('backups.create');
+    Route::get('/backups/download/{filename}', [BackupController::class, 'download'])->name('backups.download');
+    Route::delete('/backups/{filename}', [BackupController::class, 'destroy'])->name('backups.destroy');
 });

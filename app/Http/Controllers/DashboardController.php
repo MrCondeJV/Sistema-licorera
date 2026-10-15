@@ -18,6 +18,10 @@ class DashboardController extends Controller
 
     public function index()
     {
+        if (auth()->user()?->is_superadmin && !session('superadmin_impersonating')) {
+            return redirect()->route('superadmin.index');
+        }
+
         $metrics = $this->reportService->getDashboardMetrics();
         $tables = Table::orderBy('sort_order')->get();
         $openCashSession = CashSession::getActiveSession();

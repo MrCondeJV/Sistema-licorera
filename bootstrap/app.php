@@ -3,6 +3,7 @@
 use App\Http\Middleware\CheckRole;
 use App\Http\Middleware\EnsurePinAuthenticated;
 use App\Http\Middleware\EnsureSuperAdmin;
+use App\Http\Middleware\EnsureTenantSubscriptionActive;
 use App\Http\Middleware\IdentifyTenant;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -28,6 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'pin.auth' => EnsurePinAuthenticated::class,
             'role' => CheckRole::class,
             'superadmin' => EnsureSuperAdmin::class,
+            'tenant.subscription' => EnsureTenantSubscriptionActive::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

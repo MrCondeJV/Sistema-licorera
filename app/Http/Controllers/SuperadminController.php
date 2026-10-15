@@ -239,4 +239,133 @@ class SuperadminController extends Controller
             'superadminLogsCount' => AuditLog::withoutGlobalScopes()->where('action', 'like', 'superadmin_%')->count(),
         ]);
     }
+
+    /**
+     * Display all SaaS Subscription Plans.
+     */
+    public function plans()
+    {
+        $plans = Plan::withCount('tenants')->orderBy('price_monthly')->get();
+
+        return view('superadmin.plans.index', [
+            'plans' => $plans,
+        ]);
+    }
+
+    /**
+     * Store a new SaaS Plan.
+     */
+    public function storePlan(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:100',
+            'slug' => 'nullable|string|max:100|unique:plans,slug',
+            'price_monthly' => 'required|numeric|min:0',
+            'max_users' => 'required|integer|min:1',
+            'max_branches' => 'required|integer|min:1',
+            'max_products' => 'required|integer|min:10',
+            'features' => 'nullable|string',
+            'is_active' => 'nullable|boolean',
+        ]);
+
+        if (empty($validated['slug'])) {
+            $validated['slug'] = \Illuminate\Support\Str::slug($validated['name']);
+        }
+
+        // Parse features from lines
+        $features = [];
+        if (!empty($validated['features'])) {
+            $features = array_values(array_filter(array_map('trim', explode("\n", $validated['features']))));
+        }
+
+        $plan = Plan::create([
+            'name' => $validated['name'],
+            'slug' => $validated['slug'],
+            'price_monthly' => $validated['price_monthly'],
+            'max_users' => $validated['max_users'],
+            'max_branches' => $validated['max_branches'],
+            'max_products' => $validated['max_products'],
+            'features' => $features,
+            'is_active' => $request->has('is_active') ? (bool) $request->input('is_active') : true,
+        ]);
+
+        AuditService::log(
+            'superadmin_create_plan',
+            'Plan',
+            $plan->id,
+            null,
+            $plan->toArray(),
+            "Superadmin creó el plan SaaS '{$plan->name}' con precio $" . number_format($plan->price_monthly) . " COP"
+        );
+
+        return redirect()->route('superadmin.plans.index')->with('success', "Plan '{$plan->name}' creado exitosamente.");
+    }
+
+    /**
+     * Update an existing SaaS Plan.
+     */
+    public function updatePlanDetails(Request $request, Plan $plan)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:100',
+            'slug' => 'required|string|max:100|unique:plans,slug,' . $plan->id,
+            'price_monthly' => 'required|numeric|min:0',
+            'max_users' => 'required|integer|min:1',
+            'max_branches' => 'required|integer|min:1',
+            'max_products' => 'required|integer|min:10',
+            'features' => 'nullable|string',
+            'is_active' => 'nullable|boolean',
+        ]);
+
+        $features = [];
+        if (!empty($validated['features'])) {
+            $features = array_values(array_filter(array_map('trim', explode("\n", $validated['features']))));
+        }
+
+        $oldValues = $plan->toArray();
+
+        $plan->update([
+            'name' => $validated['name'],
+            'slug' => $validated['slug'],
+            'price_monthly' => $validated['price_monthly'],
+            'max_users' => $validated['max_users'],
+            'max_branches' => $validated['max_branches'],
+            'max_products' => $validated['max_products'],
+            'features' => $features,
+            'is_active' => $request->has('is_active') ? (bool) $request->input('is_active') : true,
+        ]);
+
+        AuditService::log(
+            'superadmin_update_plan',
+            'Plan',
+            $plan->id,
+            $oldValues,
+            $plan->toArray(),
+            "Superadmin actualizó los parámetros del plan '{$plan->name}'"
+        );
+
+        return redirect()->route('superadmin.plans.index')->with('success', "Plan '{$plan->name}' actualizado exitosamente.");
+    }
+
+    /**
+     * Toggle Plan active/inactive status.
+     */
+    public function togglePlan(Plan $plan)
+    {
+        $plan->is_active = !$plan->is_active;
+        $plan->save();
+
+        $statusStr = $plan->is_active ? 'activado' : 'desactivado';
+
+        AuditService::log(
+            'superadmin_toggle_plan',
+            'Plan',
+            $plan->id,
+            null,
+            ['is_active' => $plan->is_active],
+            "Superadmin cambió el estado del plan '{$plan->name}' a {$statusStr}"
+        );
+
+        return redirect()->route('superadmin.plans.index')->with('success', "Plan '{$plan->name}' {$statusStr} exitosamente.");
+    }
 }

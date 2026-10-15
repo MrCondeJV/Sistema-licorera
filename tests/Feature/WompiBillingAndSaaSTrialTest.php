@@ -26,6 +26,9 @@ class WompiBillingAndSaaSTrialTest extends TestCase
             'name' => 'Plan Estándar Licorera',
             'slug' => 'estandar',
             'price_monthly' => 79000,
+            'max_users' => 3,
+            'max_branches' => 1,
+            'max_products' => 500,
             'is_active' => true,
             'features' => ['1 Sucursal', 'Venta Rápida', 'Inventario'],
         ]);
@@ -34,6 +37,9 @@ class WompiBillingAndSaaSTrialTest extends TestCase
             'name' => 'Plan Pro Bar & Licorera',
             'slug' => 'pro',
             'price_monthly' => 129000,
+            'max_users' => 10,
+            'max_branches' => 2,
+            'max_products' => 2000,
             'is_active' => true,
             'features' => ['Mesas Ilimitadas', 'Ticket WhatsApp', 'Wompi Integrado', 'Backups Automáticos'],
         ]);
@@ -53,6 +59,19 @@ class WompiBillingAndSaaSTrialTest extends TestCase
         $user->tenants()->attach($tenant->id, ['role' => 'admin', 'is_active' => true]);
 
         return $user;
+    }
+
+    protected function createSuperadmin(): User
+    {
+        return User::create([
+            'name' => 'Super Administrador Mambacode',
+            'email' => 'superadmin@mambacode.test',
+            'phone' => '3001112233',
+            'pin_hash' => Hash::make('9999'),
+            'password' => Hash::make('Admin1234*'),
+            'is_superadmin' => true,
+            'is_active' => true,
+        ]);
     }
 
     public function test_landing_page_renders_for_unauthenticated_guests(): void
@@ -134,10 +153,11 @@ class WompiBillingAndSaaSTrialTest extends TestCase
         $response->assertSee('PAGAR CON WOMPI');
     }
 
-    public function test_checkout_data_endpoint_generates_valid_integrity_signature_and_pending_payment(): void
+    public function test_checkout_data_endpoint_generates_valid_integrity_signature_and_fee_surcharge(): void
     {
         config(['wompi.integrity_secret' => 'test_integrity_secret_key_123']);
         config(['wompi.public_key' => 'pub_test_wompi_12345']);
+        config(['wompi.apply_surcharge' => true]);
 
         $plan = Plan::where('slug', 'pro')->first();
 
@@ -173,6 +193,9 @@ class WompiBillingAndSaaSTrialTest extends TestCase
                 'public_key',
                 'currency',
                 'amount_in_cents',
+                'base_amount',
+                'surcharge',
+                'total_amount',
                 'reference',
                 'signature',
                 'redirect_url',
@@ -182,18 +205,21 @@ class WompiBillingAndSaaSTrialTest extends TestCase
         ]);
 
         $data = $response->json('data');
-        $this->assertEquals(12900000, $data['amount_in_cents']); // 129,000 * 100
         $this->assertEquals('pub_test_wompi_12345', $data['public_key']);
+        $this->assertEquals(129000, $data['base_amount']);
+        $this->assertGreaterThan(0, $data['surcharge']); // Wompi fee surcharge
+        $this->assertGreaterThan(129000, $data['total_amount']);
+        $this->assertEquals($data['total_amount'] * 100, $data['amount_in_cents']);
 
-        // Verify SHA256 integrity signature
-        $expectedSignature = hash('sha256', $data['reference'] . '12900000COP' . 'test_integrity_secret_key_123');
+        // Verify SHA256 integrity signature matching total amount in cents
+        $expectedSignature = hash('sha256', $data['reference'] . $data['amount_in_cents'] . 'COP' . 'test_integrity_secret_key_123');
         $this->assertEquals($expectedSignature, $data['signature']);
 
-        // Verify pending payment recorded in DB
+        // Verify pending payment recorded in DB with full total in cents
         $payment = SubscriptionPayment::where('reference', $data['reference'])->first();
         $this->assertNotNull($payment);
         $this->assertEquals('PENDING', $payment->status);
-        $this->assertEquals(12900000, $payment->amount_in_cents);
+        $this->assertEquals($data['amount_in_cents'], $payment->amount_in_cents);
     }
 
     public function test_wompi_webhook_activates_subscription_for_approved_transaction(): void
@@ -214,7 +240,7 @@ class WompiBillingAndSaaSTrialTest extends TestCase
             'tenant_id' => $tenant->id,
             'plan_id' => $plan->id,
             'reference' => $reference,
-            'amount_in_cents' => 12900000,
+            'amount_in_cents' => 13406100,
             'currency' => 'COP',
             'status' => 'PENDING',
         ]);
@@ -226,7 +252,7 @@ class WompiBillingAndSaaSTrialTest extends TestCase
                     'id' => 'wompi_trx_789456',
                     'reference' => $reference,
                     'status' => 'APPROVED',
-                    'amount_in_cents' => 12900000,
+                    'amount_in_cents' => 13406100,
                     'currency' => 'COP',
                     'payment_method_type' => 'NEQUI',
                 ],
@@ -327,5 +353,188 @@ class WompiBillingAndSaaSTrialTest extends TestCase
 
         $deleteResponse->assertRedirect(route('backups.index'));
         $deleteResponse->assertSessionHas('success');
+    }
+
+    public function test_superadmin_has_exclusive_saas_menu_without_operational_links(): void
+    {
+        $superadmin = $this->createSuperadmin();
+
+        $response = $this->actingAs($superadmin)
+            ->withSession([
+                'screen_locked' => false,
+                'superadmin_impersonating' => false,
+            ])
+            ->get(route('superadmin.index'));
+
+        $response->assertStatus(200);
+
+        // Superadmin navigation options are present
+        $response->assertSee('Empresas');
+        $response->assertSee('Planes y Precios SaaS');
+        $response->assertSee('Copias de Seguridad');
+        $response->assertSee('Auditoría Global SaaS');
+
+        // Operational liquor store options are hidden
+        $response->assertDontSee('Venta Rápida (POS)');
+        $response->assertDontSee('Mesas y Cuentas');
+        $response->assertDontSee('Gastos Operativos');
+        $response->assertDontSee('Compras de Stock');
+    }
+
+    public function test_superadmin_can_manage_saas_plans(): void
+    {
+        $superadmin = $this->createSuperadmin();
+
+        // 1. Visit plans index
+        $indexResponse = $this->actingAs($superadmin)
+            ->withSession(['screen_locked' => false])
+            ->get(route('superadmin.plans.index'));
+
+        $indexResponse->assertStatus(200);
+        $indexResponse->assertSee('Planes y Precios de Suscripción SaaS');
+        $indexResponse->assertSee('Plan Pro Bar & Licorera');
+
+        // 2. Create new plan
+        $createResponse = $this->actingAs($superadmin)
+            ->withSession(['screen_locked' => false])
+            ->post(route('superadmin.plans.store'), [
+                'name' => 'Plan Mega Discoteca',
+                'slug' => 'mega-discoteca',
+                'price_monthly' => 249000,
+                'max_users' => 25,
+                'max_branches' => 5,
+                'max_products' => 10000,
+                'features' => "Soporte VIP\nMesas Ilimitadas\nBackups en la nube cada hora",
+                'is_active' => 1,
+            ]);
+
+        $createResponse->assertRedirect(route('superadmin.plans.index'));
+        $createResponse->assertSessionHas('success');
+
+        $createdPlan = Plan::where('slug', 'mega-discoteca')->first();
+        $this->assertNotNull($createdPlan);
+        $this->assertEquals(249000, $createdPlan->price_monthly);
+        $this->assertEquals(25, $createdPlan->max_users);
+        $this->assertTrue($createdPlan->is_active);
+
+        // 3. Edit plan
+        $updateResponse = $this->actingAs($superadmin)
+            ->withSession(['screen_locked' => false])
+            ->put(route('superadmin.plans.update', $createdPlan), [
+                'name' => 'Plan Mega Discoteca VIP',
+                'slug' => 'mega-discoteca',
+                'price_monthly' => 289000,
+                'max_users' => 30,
+                'max_branches' => 6,
+                'max_products' => 15000,
+                'features' => "Soporte VIP 24/7\nMesas Ilimitadas",
+                'is_active' => 1,
+            ]);
+
+        $updateResponse->assertRedirect(route('superadmin.plans.index'));
+        $createdPlan->refresh();
+        $this->assertEquals('Plan Mega Discoteca VIP', $createdPlan->name);
+        $this->assertEquals(289000, $createdPlan->price_monthly);
+
+        // 4. Toggle plan active status
+        $toggleResponse = $this->actingAs($superadmin)
+            ->withSession(['screen_locked' => false])
+            ->post(route('superadmin.plans.toggle', $createdPlan));
+
+        $toggleResponse->assertRedirect(route('superadmin.plans.index'));
+        $createdPlan->refresh();
+        $this->assertFalse($createdPlan->is_active);
+    }
+
+    public function test_expired_tenant_within_5_day_grace_period_can_still_operate_with_warning(): void
+    {
+        $tenant = Tenant::create([
+            'name' => 'Licorera Los Pinos',
+            'slug' => 'licorera-los-pinos',
+            'status' => 'active',
+            'subscription_status' => 'trial',
+            'trial_ends_at' => now()->subDays(2), // Expired 2 days ago (in 5-day grace period)
+        ]);
+
+        $branch = Branch::create([
+            'tenant_id' => $tenant->id,
+            'name' => 'Principal',
+        ]);
+
+        $user = $this->createAdminUser($tenant, 'pinos@licorera.test');
+
+        $this->assertTrue($tenant->isPastDue());
+        $this->assertFalse($tenant->isGracePeriodExceeded());
+        $this->assertEquals(3, $tenant->graceDaysRemaining()); // 5 - 2 = 3 days remaining
+
+        // Can access POS during grace period
+        $response = $this->actingAs($user)
+            ->withSession([
+                'active_tenant_id' => $tenant->id,
+                'active_branch_id' => $branch->id,
+                'screen_locked' => false,
+            ])
+            ->get(route('pos.index'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Período de Gracia');
+        $response->assertSee('3 días de gracia');
+    }
+
+    public function test_expired_tenant_beyond_5_day_grace_period_is_strictly_blocked_from_operations(): void
+    {
+        $tenant = Tenant::create([
+            'name' => 'Licorera La Bloqueada',
+            'slug' => 'licorera-la-bloqueada',
+            'status' => 'active',
+            'subscription_status' => 'trial',
+            'trial_ends_at' => now()->subDays(6), // Expired 6 days ago (exceeded 5 days grace)
+        ]);
+
+        $branch = Branch::create([
+            'tenant_id' => $tenant->id,
+            'name' => 'Principal',
+        ]);
+
+        $user = $this->createAdminUser($tenant, 'bloqueada@licorera.test');
+
+        $this->assertTrue($tenant->isPastDue());
+        $this->assertTrue($tenant->isGracePeriodExceeded());
+        $this->assertEquals(0, $tenant->graceDaysRemaining());
+
+        // Attempting to access POS must be intercepted and redirected to billing
+        $posResponse = $this->actingAs($user)
+            ->withSession([
+                'active_tenant_id' => $tenant->id,
+                'active_branch_id' => $branch->id,
+                'screen_locked' => false,
+            ])
+            ->get(route('pos.index'));
+
+        $posResponse->assertRedirect(route('billing.index'));
+        $posResponse->assertSessionHas('error');
+
+        // Attempting to access Tables must also be redirected to billing
+        $tablesResponse = $this->actingAs($user)
+            ->withSession([
+                'active_tenant_id' => $tenant->id,
+                'active_branch_id' => $branch->id,
+                'screen_locked' => false,
+            ])
+            ->get(route('tables.index'));
+
+        $tablesResponse->assertRedirect(route('billing.index'));
+
+        // But accessing billing to pay is allowed!
+        $billingResponse = $this->actingAs($user)
+            ->withSession([
+                'active_tenant_id' => $tenant->id,
+                'active_branch_id' => $branch->id,
+                'screen_locked' => false,
+            ])
+            ->get(route('billing.index'));
+
+        $billingResponse->assertStatus(200);
+        $billingResponse->assertSee('SERVICIO SUSPENDIDO POR FALTA DE PAGO');
     }
 }

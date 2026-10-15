@@ -11,4 +11,10 @@ return [
         ? 'https://sandbox.wompi.co/v1' 
         : 'https://production.wompi.co/v1',
     'widget_url' => 'https://checkout.wompi.co/p/',
+
+    // Wompi Fee / Surcharge configuration (2.65% + $700 COP + 19% IVA on fee)
+    'apply_surcharge' => env('WOMPI_APPLY_SURCHARGE', true),
+    'fee_percentage' => (float) env('WOMPI_FEE_PERCENTAGE', 2.65),
+    'fee_fixed' => (int) env('WOMPI_FEE_FIXED', 700),
+    'fee_vat' => (float) env('WOMPI_FEE_VAT', 0.19),
 ];

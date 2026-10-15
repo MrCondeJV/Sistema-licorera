@@ -128,14 +128,53 @@ class Tenant extends Model
             && ($this->subscription_ends_at === null || $this->subscription_ends_at->isFuture());
     }
 
+    public function getExpirationDate(): ?\Carbon\Carbon
+    {
+        if ($this->subscription_status === 'active' && $this->subscription_ends_at) {
+            return $this->subscription_ends_at;
+        }
+        return $this->trial_ends_at;
+    }
+
+    public function isPastDue(): bool
+    {
+        $expiration = $this->getExpirationDate();
+        return $expiration ? now()->greaterThan($expiration) : false;
+    }
+
+    public function daysPastDue(): int
+    {
+        $expiration = $this->getExpirationDate();
+        if (!$expiration || now()->lessThanOrEqualTo($expiration)) {
+            return 0;
+        }
+        return (int) $expiration->diffInDays(now());
+    }
+
+    public function graceDaysRemaining(): int
+    {
+        if (!$this->isPastDue()) {
+            return 5;
+        }
+        return max(0, 5 - $this->daysPastDue());
+    }
+
+    public function isGracePeriodExceeded(): bool
+    {
+        if (!$this->isPastDue()) {
+            return false;
+        }
+        return $this->daysPastDue() > 5;
+    }
+
     public function hasAccess(): bool
     {
-        return $this->isActive() && ($this->isOnTrial() || $this->hasActiveSubscription());
+        return $this->isActive() && !$this->isGracePeriodExceeded();
     }
 
     public function isExpired(): bool
     {
-        return !$this->hasAccess();
+        return $this->isPastDue();
     }
 
     public function daysRemaining(): int
