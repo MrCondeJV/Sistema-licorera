@@ -25,7 +25,7 @@
                         <th class="py-3.5 px-3">Identificación</th>
                         <th class="py-3.5 px-3 text-right">Cupo de Crédito</th>
                         <th class="py-3.5 px-3 text-right">Deuda Actual</th>
-                        <th class="py-3.5 px-3 text-right">Acciones</th>
+                        <th class="py-3.5 px-3 text-right sticky right-0 bg-white dark:bg-slate-900 z-10 border-l border-slate-100 dark:border-slate-800 shadow-[-6px_0_10px_-2px_rgba(0,0,0,0.06)]">Acciones</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
@@ -38,9 +38,9 @@
                             <td class="py-3.5 px-3 text-right font-mono font-black {{ $c->current_debt > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400' }}">
                                 ${{ number_format($c->current_debt, 0, ',', '.') }}
                             </td>
-                            <td class="py-3.5 px-3 text-right">
+                            <td class="py-3.5 px-3 text-right sticky right-0 bg-white dark:bg-slate-900 z-10 border-l border-slate-100 dark:border-slate-800 shadow-[-6px_0_10px_-2px_rgba(0,0,0,0.06)]">
                                 <a href="{{ route('customers.debts', $c->id) }}"
-                                   class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-cyan-600 dark:text-cyan-400 border border-slate-200 dark:border-slate-700 font-bold text-xs rounded-xl shadow-sm transition-colors inline-block">
+                                   class="px-3 py-1.5 bg-cyan-50 hover:bg-cyan-100 dark:bg-cyan-950/60 dark:hover:bg-cyan-900 text-cyan-700 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-700 font-bold text-xs rounded-xl shadow-sm transition-all inline-block">
                                     Ver Fiados y Abonos &rarr;
                                 </a>
                             </td>

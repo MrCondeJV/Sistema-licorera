@@ -19,11 +19,6 @@
             </div>
             <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Administra tu membresía mensual, métodos de pago y renovaciones automáticas con Wompi Bancolombia</p>
         </div>
-        <div class="flex items-center gap-2">
-            <a href="{{ route('backups.index') }}" class="btn-touch py-2.5 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 flex items-center gap-2">
-                <span>💾 Copias de Seguridad</span>
-            </a>
-        </div>
     </div>
 
     <!-- Subscription Status Banner -->

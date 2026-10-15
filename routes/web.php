@@ -168,12 +168,6 @@ Route::middleware(['pin.auth'])->group(function () {
         Route::put('/branches/{branch}', [BranchController::class, 'update'])->name('branches.update');
         Route::post('/branches/{branch}/toggle', [BranchController::class, 'toggle'])->name('branches.toggle');
         Route::post('/branches/transfer', [BranchController::class, 'transfer'])->name('branches.transfer');
-
-        // Backups & Snapshots
-        Route::get('/backups', [BackupController::class, 'index'])->name('backups.index');
-        Route::post('/backups', [BackupController::class, 'create'])->name('backups.create');
-        Route::get('/backups/download/{filename}', [BackupController::class, 'download'])->name('backups.download');
-        Route::delete('/backups/{filename}', [BackupController::class, 'destroy'])->name('backups.destroy');
     });
     });
 });
@@ -204,9 +198,11 @@ Route::middleware(['pin.auth', 'superadmin'])->prefix('superadmin')->name('super
     // SaaS Global Subscription Payments History
     Route::get('/payments', [SuperadminController::class, 'payments'])->name('payments');
 
-    // SaaS Global Backups
+    // SaaS Global Backups (Superadmin Exclusive)
     Route::get('/backups', [BackupController::class, 'index'])->name('backups');
     Route::post('/backups', [BackupController::class, 'create'])->name('backups.create');
+    Route::post('/backups/schedule', [BackupController::class, 'updateSchedule'])->name('backups.schedule');
+    Route::post('/backups/run-auto', [BackupController::class, 'runAutoBackup'])->name('backups.run-auto');
     Route::get('/backups/download/{filename}', [BackupController::class, 'download'])->name('backups.download');
     Route::delete('/backups/{filename}', [BackupController::class, 'destroy'])->name('backups.destroy');
 });

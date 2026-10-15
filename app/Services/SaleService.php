@@ -71,6 +71,15 @@ class SaleService
                 ?? $cashSession->branch_id 
                 ?? \App\Models\Branch::where('tenant_id', $tenantId)->first()?->id;
 
+            $accountToClose = null;
+            if ($accountId) {
+                /** @var Account $accountToClose */
+                $accountToClose = Account::where('id', $accountId)->lockForUpdate()->first();
+                if ($accountToClose && $accountToClose->status !== 'open') {
+                    throw new Exception("La cuenta de mesa seleccionada ya se encuentra cerrada o cobrada.");
+                }
+            }
+
             // 1. Generate unique sequential invoice number for tenant
             $lastSale = Sale::withoutGlobalScopes()
                 ->where('tenant_id', $tenantId)
@@ -262,21 +271,19 @@ class SaleService
             }
 
             // 7. If linked to an open Account, close it and free table
-            if ($accountId) {
-                $account = Account::find($accountId);
-                if ($account && $account->status === 'open') {
-                    $account->status = 'closed';
-                    $account->closed_by = $user->id;
-                    $account->closed_at = now();
-                    $account->paid_amount = $total;
-                    $account->save();
+            if ($accountToClose) {
+                $accountToClose->status = 'closed';
+                $accountToClose->closed_by = $user->id;
+                $accountToClose->closed_at = now();
+                $accountToClose->paid_amount = $total;
+                $accountToClose->save();
 
-                    if ($account->table_id) {
-                        $table = Table::find($account->table_id);
-                        if ($table) {
-                            $table->status = 'free';
-                            $table->save();
-                        }
+                if ($accountToClose->table_id) {
+                    /** @var Table $table */
+                    $table = Table::where('id', $accountToClose->table_id)->lockForUpdate()->first();
+                    if ($table) {
+                        $table->status = 'free';
+                        $table->save();
                     }
                 }
             }

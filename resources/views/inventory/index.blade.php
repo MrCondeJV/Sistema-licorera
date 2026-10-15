@@ -65,7 +65,7 @@
                         <th class="py-3.5 px-3 text-right">Precio Venta</th>
                         <th class="py-3.5 px-3 text-center">Stock Base</th>
                         <th class="py-3.5 px-3">Presentaciones</th>
-                        <th class="py-3.5 px-3 text-right">Acciones</th>
+                        <th class="py-3.5 px-3 text-right sticky right-0 bg-slate-50 dark:bg-slate-900 z-10 border-l border-slate-200 dark:border-slate-800 shadow-[-6px_0_10px_-2px_rgba(0,0,0,0.06)]">Acciones</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
@@ -108,19 +108,20 @@
                                     @endforelse
                                 </div>
                             </td>
-                            <td class="py-3 px-2 text-right">
-                                <div class="flex items-center justify-end gap-1.5">
+                            <!-- Sticky Actions Column -->
+                            <td class="py-3 px-2 text-right sticky right-0 bg-white dark:bg-slate-900 z-10 border-l border-slate-100 dark:border-slate-800 shadow-[-6px_0_10px_-2px_rgba(0,0,0,0.06)] dark:shadow-[-6px_0_10px_-2px_rgba(0,0,0,0.5)]">
+                                <div class="flex items-center justify-end gap-1.5 whitespace-nowrap">
                                     <!-- Quick Adjust Modal trigger -->
                                     <button type="button"
                                             @click="adjustProduct = {{ json_encode($prod) }}; newStock = {{ $prod->stock }}; showAdjustModal = true"
-                                            class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-cyan-600 dark:text-cyan-400 rounded-lg text-xs font-bold border border-slate-200 dark:border-slate-700 transition-colors"
+                                            class="px-2.5 py-1.5 bg-cyan-50 hover:bg-cyan-100 dark:bg-cyan-950/60 dark:hover:bg-cyan-900/60 text-cyan-700 dark:text-cyan-300 rounded-lg text-xs font-bold border border-cyan-300 dark:border-cyan-700 transition-colors shadow-sm"
                                             title="Ajuste rápido de stock">
                                         +/- Stock
                                     </button>
 
                                     @if(auth()->user()->is_superadmin || auth()->user()->hasRoleInTenant($currentTenant->id ?? 0, 'admin'))
                                         <a href="{{ route('inventory.edit', $prod->id) }}"
-                                           class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-bold border border-slate-200 dark:border-slate-700 transition-colors">
+                                           class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-xs font-bold border border-slate-300 dark:border-slate-700 transition-colors shadow-sm">
                                             Editar
                                         </a>
                                     @endif

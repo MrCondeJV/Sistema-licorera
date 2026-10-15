@@ -118,7 +118,7 @@
                             <th class="py-3 px-3">Dirección</th>
                             <th class="py-3 px-3 text-center">Compras</th>
                             <th class="py-3 px-3 text-center">Estado</th>
-                            <th class="py-3 px-3 text-right">Acciones</th>
+                            <th class="py-3 px-3 text-right sticky right-0 bg-white dark:bg-slate-900 z-10 border-l border-slate-100 dark:border-slate-800 shadow-[-6px_0_10px_-2px_rgba(0,0,0,0.06)]">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
@@ -158,18 +158,18 @@
                                         {{ $supplier->is_active ? 'Activo' : 'Inactivo' }}
                                     </span>
                                 </td>
-                                <td class="py-3 px-3 text-right">
+                                <td class="py-3 px-3 text-right sticky right-0 bg-white dark:bg-slate-900 z-10 border-l border-slate-100 dark:border-slate-800 shadow-[-6px_0_10px_-2px_rgba(0,0,0,0.06)]">
                                     <div class="flex items-center justify-end gap-1.5">
                                         <button type="button"
                                                 @click="openEdit({{ json_encode($supplier) }})"
-                                                class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-bold transition-colors">
+                                                class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-800 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-bold transition-all shadow-sm">
                                             Editar
                                         </button>
 
                                         <form action="{{ route('suppliers.toggle', $supplier->id) }}" method="POST">
                                             @csrf
                                             <button type="submit"
-                                                    class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 {{ $supplier->is_active ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400' }} border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-bold transition-colors">
+                                                    class="px-2.5 py-1.5 {{ $supplier->is_active ? 'bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border-rose-300 dark:border-rose-800' : 'bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800' }} border rounded-lg text-xs font-bold transition-all shadow-sm">
                                                 {{ $supplier->is_active ? 'Desactivar' : 'Activar' }}
                                             </button>
                                         </form>

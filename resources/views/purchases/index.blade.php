@@ -42,7 +42,7 @@
                         <th class="py-3.5 px-3">Fecha</th>
                         <th class="py-3.5 px-3">Estado</th>
                         <th class="py-3.5 px-3 text-right">Total</th>
-                        <th class="py-3.5 px-3 text-right">Acción</th>
+                        <th class="py-3.5 px-3 text-right sticky right-0 bg-white dark:bg-slate-900 z-10 border-l border-slate-100 dark:border-slate-800 shadow-[-6px_0_10px_-2px_rgba(0,0,0,0.06)]">Acción</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
@@ -58,7 +58,7 @@
                                 </span>
                             </td>
                             <td class="py-3.5 px-3 text-right font-mono font-bold text-slate-900 dark:text-white text-base">${{ number_format($p->total, 0, ',', '.') }}</td>
-                            <td class="py-3.5 px-3 text-right">
+                            <td class="py-3.5 px-3 text-right sticky right-0 bg-white dark:bg-slate-900 z-10 border-l border-slate-100 dark:border-slate-800 shadow-[-6px_0_10px_-2px_rgba(0,0,0,0.06)]">
                                 @if($p->status === 'draft')
                                     <form action="{{ route('purchases.receive', $p->id) }}" method="POST" 
                                           data-confirm="¿Confirmar recepción de mercancía y actualizar stock en el inventario?"

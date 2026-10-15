@@ -18,6 +18,7 @@ use App\Models\Supplier;
 use App\Models\Table;
 use App\Models\Tenant;
 use App\Services\AuditService;
+use App\Services\BackupService;
 use App\Services\TenantContext;
 use Exception;
 use Illuminate\Http\Request;
@@ -28,32 +29,39 @@ use Illuminate\Support\Str;
 class BackupController extends Controller
 {
     protected string $backupDir;
+    protected BackupService $backupService;
 
-    public function __construct()
+    public function __construct(BackupService $backupService)
     {
+        $this->backupService = $backupService;
         $this->backupDir = storage_path('app/backups');
         if (!File::isDirectory($this->backupDir)) {
             File::makeDirectory($this->backupDir, 0755, true);
         }
     }
 
+    /**
+     * Enforce strict Superadmin-only access for all backup operations.
+     */
+    protected function ensureSuperAdmin(): void
+    {
+        $user = auth()->user();
+        if (!$user || !$user->is_superadmin || session('superadmin_impersonating')) {
+            abort(403, 'Acceso denegado. Las copias de seguridad de la plataforma son exclusivas del Superadministrador.');
+        }
+    }
+
     public function index()
     {
+        $this->ensureSuperAdmin();
+
         $user = auth()->user();
         $files = File::files($this->backupDir);
         $backups = [];
 
-        // Determine accessible tenants for selection
-        if ($user->is_superadmin && !session('superadmin_impersonating')) {
-            $availableTenants = Tenant::orderBy('name')->get();
-            $defaultTenantId = null;
-            $isSuperAdminView = true;
-        } else {
-            $activeTenantId = session('active_tenant_id') ?? app(TenantContext::class)->getTenantId();
-            $availableTenants = Tenant::where('id', $activeTenantId)->get();
-            $defaultTenantId = $activeTenantId;
-            $isSuperAdminView = false;
-        }
+        $availableTenants = Tenant::orderBy('name')->get();
+        $defaultTenantId = null;
+        $isSuperAdminView = true;
 
         foreach ($files as $file) {
             $filename = $file->getFilename();
@@ -99,16 +107,21 @@ class BackupController extends Controller
         // Sort latest first
         usort($backups, fn($a, $b) => $b['timestamp'] <=> $a['timestamp']);
 
+        $scheduleConfig = $this->backupService->getScheduleConfig();
+
         return view('settings.backups', [
             'backups' => $backups,
             'availableTenants' => $availableTenants,
             'defaultTenantId' => $defaultTenantId,
             'isSuperAdminView' => $isSuperAdminView,
+            'scheduleConfig' => $scheduleConfig,
         ]);
     }
 
     public function create(Request $request)
     {
+        $this->ensureSuperAdmin();
+
         $user = auth()->user();
 
         $backupType = $request->input('backup_type', 'general');
@@ -125,14 +138,6 @@ class BackupController extends Controller
         }
 
         $tenantId = $request->input('tenant_id');
-
-        // Security check: non-superadmin can only backup their own tenant
-        if (!$user->is_superadmin || session('superadmin_impersonating')) {
-            $userTenantId = session('active_tenant_id') ?? app(TenantContext::class)->getTenantId();
-            if ($backupType === 'specific_tenant' && $tenantId != $userTenantId) {
-                $tenantId = $userTenantId;
-            }
-        }
 
         try {
             $timestamp = date('Y_m_d_His');
@@ -238,6 +243,8 @@ class BackupController extends Controller
 
     public function download(string $filename)
     {
+        $this->ensureSuperAdmin();
+
         $safeFilename = basename($filename);
         $filePath = $this->backupDir . '/' . $safeFilename;
 
@@ -250,19 +257,62 @@ class BackupController extends Controller
 
     public function destroy(string $filename)
     {
-        $user = auth()->user();
+        $this->ensureSuperAdmin();
+
         $safeFilename = basename($filename);
         $filePath = $this->backupDir . '/' . $safeFilename;
 
-        $redirectUrl = request()->routeIs('superadmin.*') || ($user && $user->is_superadmin && !session('superadmin_impersonating'))
-            ? route('superadmin.backups')
-            : route('backups.index');
-
         if (File::exists($filePath)) {
             File::delete($filePath);
-            return redirect($redirectUrl)->with('success', "Copia de seguridad '{$safeFilename}' eliminada exitosamente.");
+            return redirect()->route('superadmin.backups')
+                ->with('success', "Copia de seguridad '{$safeFilename}' eliminada exitosamente.");
         }
 
-        return redirect($redirectUrl)->with('error', 'El archivo no fue encontrado.');
+        return redirect()->route('superadmin.backups')
+            ->with('error', 'El archivo no fue encontrado.');
+    }
+
+    /**
+     * Save auto-backup schedule settings.
+     */
+    public function updateSchedule(Request $request)
+    {
+        $this->ensureSuperAdmin();
+
+        $request->validate([
+            'frequency' => 'required|in:daily,weekly,twice_daily',
+            'time' => 'required|string|max:10',
+            'retention_days' => 'required|integer|min:1|max:365',
+            'type' => 'required|in:all,general_only',
+        ]);
+
+        $this->backupService->saveScheduleConfig([
+            'enabled' => $request->has('enabled'),
+            'frequency' => $request->input('frequency'),
+            'time' => $request->input('time'),
+            'retention_days' => $request->input('retention_days'),
+            'type' => $request->input('type'),
+        ]);
+
+        return redirect()->route('superadmin.backups')
+            ->with('success', 'Configuración de auto-copias de seguridad programadas guardada exitosamente.');
+    }
+
+    /**
+     * Trigger immediate automated backup run from UI.
+     */
+    public function runAutoBackup(Request $request)
+    {
+        $this->ensureSuperAdmin();
+
+        $result = $this->backupService->runScheduledBackup();
+
+        if ($result['success']) {
+            return redirect()->route('superadmin.backups')
+                ->with('success', "✅ " . $result['message']);
+        }
+
+        return redirect()->route('superadmin.backups')
+            ->with('error', "❌ " . $result['message']);
     }
 }

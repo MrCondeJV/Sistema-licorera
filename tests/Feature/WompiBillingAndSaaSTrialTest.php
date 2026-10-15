@@ -298,30 +298,30 @@ class WompiBillingAndSaaSTrialTest extends TestCase
             'name' => 'Principal',
         ]);
 
-        $user = $this->createAdminUser($tenant, 'sauces@licorera.test');
+        $superadmin = $this->createSuperadmin();
 
-        // 1. Visit backup index
-        $response = $this->actingAs($user)
+        // 1. Visit backup index as superadmin
+        $response = $this->actingAs($superadmin)
             ->withSession([
-                'active_tenant_id' => $tenant->id,
-                'active_branch_id' => $branch->id,
                 'screen_locked' => false,
+                'pin_authenticated' => true,
             ])
-            ->get(route('backups.index'));
+            ->get(route('superadmin.backups'));
 
         $response->assertStatus(200);
         $response->assertSee('Copias de Seguridad');
 
         // 2. Create backup
-        $createResponse = $this->actingAs($user)
+        $createResponse = $this->actingAs($superadmin)
             ->withSession([
-                'active_tenant_id' => $tenant->id,
-                'active_branch_id' => $branch->id,
                 'screen_locked' => false,
+                'pin_authenticated' => true,
             ])
-            ->post(route('backups.create'));
+            ->post(route('superadmin.backups.create'), [
+                'backup_type' => 'general',
+            ]);
 
-        $createResponse->assertRedirect(route('backups.index'));
+        $createResponse->assertRedirect(route('superadmin.backups'));
         $createResponse->assertSessionHas('success');
 
         // Verify backup file exists in storage
@@ -332,26 +332,24 @@ class WompiBillingAndSaaSTrialTest extends TestCase
         $latestFile = $files[0]->getFilename();
 
         // 3. Download backup
-        $downloadResponse = $this->actingAs($user)
+        $downloadResponse = $this->actingAs($superadmin)
             ->withSession([
-                'active_tenant_id' => $tenant->id,
-                'active_branch_id' => $branch->id,
                 'screen_locked' => false,
+                'pin_authenticated' => true,
             ])
-            ->get(route('backups.download', ['filename' => $latestFile]));
+            ->get(route('superadmin.backups.download', ['filename' => $latestFile]));
 
         $downloadResponse->assertStatus(200);
 
         // 4. Delete backup
-        $deleteResponse = $this->actingAs($user)
+        $deleteResponse = $this->actingAs($superadmin)
             ->withSession([
-                'active_tenant_id' => $tenant->id,
-                'active_branch_id' => $branch->id,
                 'screen_locked' => false,
+                'pin_authenticated' => true,
             ])
-            ->delete(route('backups.destroy', ['filename' => $latestFile]));
+            ->delete(route('superadmin.backups.destroy', ['filename' => $latestFile]));
 
-        $deleteResponse->assertRedirect(route('backups.index'));
+        $deleteResponse->assertRedirect(route('superadmin.backups'));
         $deleteResponse->assertSessionHas('success');
     }
 

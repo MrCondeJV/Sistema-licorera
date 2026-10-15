@@ -97,83 +97,89 @@ class TableAccountService
         ?int $presentationId = null,
         float $quantity = 1
     ): AccountItem {
-        if ($account->status !== 'open') {
-            throw new Exception("No se pueden agregar productos a una cuenta cerrada.");
-        }
+        return DB::transaction(function () use ($account, $productId, $presentationId, $quantity) {
+            /** @var Account $lockedAccount */
+            $lockedAccount = Account::where('id', $account->id)->lockForUpdate()->firstOrFail();
 
-        if ($quantity <= 0) {
-            throw new Exception("La cantidad debe ser mayor a 0.");
-        }
+            if ($lockedAccount->status !== 'open') {
+                throw new Exception("No se pueden agregar productos a una cuenta cerrada.");
+            }
 
-        /** @var Product $product */
-        $product = Product::findOrFail($productId);
-        if (!$product->is_active) {
-            throw new Exception("El producto se encuentra inactivo.");
-        }
+            if ($quantity <= 0) {
+                throw new Exception("La cantidad debe ser mayor a 0.");
+            }
 
-        $conversionFactor = 1;
-        $unitPrice = (float) $product->price_sell;
-        $presentationName = 'Unidad';
+            /** @var Product $product */
+            $product = Product::findOrFail($productId);
+            if (!$product->is_active) {
+                throw new Exception("El producto se encuentra inactivo.");
+            }
 
-        if ($presentationId) {
-            $presentation = ProductPresentation::where('product_id', $product->id)
-                ->where('is_active', true)
-                ->findOrFail($presentationId);
+            $conversionFactor = 1;
+            $unitPrice = (float) $product->price_sell;
+            $presentationName = 'Unidad';
 
-            $conversionFactor = (int) $presentation->conversion_factor;
-            $unitPrice = (float) $presentation->sale_price;
-            $presentationName = $presentation->name;
-        }
+            if ($presentationId) {
+                $presentation = ProductPresentation::where('product_id', $product->id)
+                    ->where('is_active', true)
+                    ->findOrFail($presentationId);
 
-        // Enforce liquor rule: Licores se venden exclusivamente por botella completa
-        if ($product->is_liquor && $conversionFactor !== 1) {
-            throw new Exception("Los licores solo pueden agregarse por botella completa.");
-        }
+                $conversionFactor = (int) $presentation->conversion_factor;
+                $unitPrice = (float) $presentation->sale_price;
+                $presentationName = $presentation->name;
+            }
 
-        // Check if item already exists in account with exact same presentation
-        $existingItem = AccountItem::where('account_id', $account->id)
-            ->where('product_id', $product->id)
-            ->where('product_presentation_id', $presentationId)
-            ->first();
+            // Enforce liquor rule: Licores se venden exclusivamente por botella completa
+            if ($product->is_liquor && $conversionFactor !== 1) {
+                throw new Exception("Los licores solo pueden agregarse por botella completa.");
+            }
 
-        if ($existingItem) {
-            $existingItem->quantity += $quantity;
-            $existingItem->subtotal = $existingItem->quantity * $existingItem->unit_price;
-            $existingItem->save();
-            $item = $existingItem;
-        } else {
-            $item = AccountItem::create([
-                'tenant_id' => $account->tenant_id,
-                'account_id' => $account->id,
-                'product_id' => $product->id,
-                'product_presentation_id' => $presentationId,
-                'product_name_snapshot' => $product->name,
-                'presentation_name_snapshot' => $presentationName,
-                'quantity' => $quantity,
-                'conversion_factor_snapshot' => $conversionFactor,
-                'unit_price' => $unitPrice,
-                'subtotal' => $unitPrice * $quantity,
-            ]);
-        }
+            // Check if item already exists in account with exact same presentation
+            $existingItem = AccountItem::where('account_id', $lockedAccount->id)
+                ->where('product_id', $product->id)
+                ->where('product_presentation_id', $presentationId)
+                ->lockForUpdate()
+                ->first();
 
-        $account->recalculateTotals();
+            if ($existingItem) {
+                $existingItem->quantity += $quantity;
+                $existingItem->subtotal = $existingItem->quantity * $existingItem->unit_price;
+                $existingItem->save();
+                $item = $existingItem;
+            } else {
+                $item = AccountItem::create([
+                    'tenant_id' => $lockedAccount->tenant_id,
+                    'account_id' => $lockedAccount->id,
+                    'product_id' => $product->id,
+                    'product_presentation_id' => $presentationId,
+                    'product_name_snapshot' => $product->name,
+                    'presentation_name_snapshot' => $presentationName,
+                    'quantity' => $quantity,
+                    'conversion_factor_snapshot' => $conversionFactor,
+                    'unit_price' => $unitPrice,
+                    'subtotal' => $unitPrice * $quantity,
+                ]);
+            }
 
-        AuditService::log(
-            'table_item_added',
-            'Account',
-            $account->id,
-            null,
-            [
-                'product' => $product->name,
-                'presentation' => $presentationName,
-                'quantity' => (float) $quantity,
-                'unit_price' => (float) $unitPrice,
-                'table' => $account->table?->name ?? 'Mostrador',
-            ],
-            "Añadido {$quantity}x {$product->name} a Mesa " . ($account->table?->name ?? $account->client_name)
-        );
+            $lockedAccount->recalculateTotals();
 
-        return $item;
+            AuditService::log(
+                'table_item_added',
+                'Account',
+                $lockedAccount->id,
+                null,
+                [
+                    'product' => $product->name,
+                    'presentation' => $presentationName,
+                    'quantity' => (float) $quantity,
+                    'unit_price' => (float) $unitPrice,
+                    'table' => $lockedAccount->table?->name ?? 'Mostrador',
+                ],
+                "Añadido {$quantity}x {$product->name} a Mesa " . ($lockedAccount->table?->name ?? $lockedAccount->client_name)
+            );
+
+            return $item;
+        });
     }
 
     /**
@@ -181,36 +187,44 @@ class TableAccountService
      */
     public function removeItem(Account $account, int $itemId, ?float $qtyToRemove = null): void
     {
-        if ($account->status !== 'open') {
-            throw new Exception("No se pueden modificar productos de una cuenta cerrada.");
-        }
+        DB::transaction(function () use ($account, $itemId, $qtyToRemove) {
+            /** @var Account $lockedAccount */
+            $lockedAccount = Account::where('id', $account->id)->lockForUpdate()->firstOrFail();
 
-        $item = AccountItem::where('account_id', $account->id)->findOrFail($itemId);
-        $deletedQty = ($qtyToRemove === null || $qtyToRemove >= $item->quantity) ? (float) $item->quantity : (float) $qtyToRemove;
-        $productName = $item->product_name_snapshot;
+            if ($lockedAccount->status !== 'open') {
+                throw new Exception("No se pueden modificar productos de una cuenta cerrada.");
+            }
 
-        if ($qtyToRemove === null || $qtyToRemove >= $item->quantity) {
-            $item->delete();
-        } else {
-            $item->quantity -= $qtyToRemove;
-            $item->subtotal = $item->quantity * $item->unit_price;
-            $item->save();
-        }
+            $item = AccountItem::where('account_id', $lockedAccount->id)
+                ->lockForUpdate()
+                ->findOrFail($itemId);
 
-        $account->recalculateTotals();
+            $deletedQty = ($qtyToRemove === null || $qtyToRemove >= $item->quantity) ? (float) $item->quantity : (float) $qtyToRemove;
+            $productName = $item->product_name_snapshot;
 
-        AuditService::log(
-            'table_item_removed',
-            'Account',
-            $account->id,
-            null,
-            [
-                'product' => $productName,
-                'quantity_removed' => $deletedQty,
-                'table' => $account->table?->name ?? 'Mostrador',
-            ],
-            "Retirado {$deletedQty}x {$productName} de Mesa " . ($account->table?->name ?? $account->client_name)
-        );
+            if ($qtyToRemove === null || $qtyToRemove >= $item->quantity) {
+                $item->delete();
+            } else {
+                $item->quantity -= $qtyToRemove;
+                $item->subtotal = $item->quantity * $item->unit_price;
+                $item->save();
+            }
+
+            $lockedAccount->recalculateTotals();
+
+            AuditService::log(
+                'table_item_removed',
+                'Account',
+                $lockedAccount->id,
+                null,
+                [
+                    'product' => $productName,
+                    'quantity_removed' => $deletedQty,
+                    'table' => $lockedAccount->table?->name ?? 'Mostrador',
+                ],
+                "Retirado {$deletedQty}x {$productName} de Mesa " . ($lockedAccount->table?->name ?? $lockedAccount->client_name)
+            );
+        });
     }
 
     /**
