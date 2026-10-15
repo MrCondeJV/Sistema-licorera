@@ -30,6 +30,16 @@ class IdentifyTenant
 
         $tenantId = session('active_tenant_id');
 
+        if ($user->is_superadmin && !session('superadmin_impersonating')) {
+            // Superadmin is not impersonating: ensure no active tenant is lingering
+            if ($tenantId) {
+                session()->forget(['active_tenant_id', 'active_branch_id']);
+                $tenantId = null;
+            }
+            // Superadmin attempting to access tenant operational routes without impersonating
+            return redirect()->route('superadmin.index');
+        }
+
         if (!$tenantId) {
             // Find user's first active tenant
             $membership = $user->tenantUsers()->where('is_active', true)->with('tenant')->first();
@@ -37,12 +47,6 @@ class IdentifyTenant
             if ($membership && $membership->tenant) {
                 $tenantId = $membership->tenant_id;
                 session(['active_tenant_id' => $tenantId]);
-            } elseif ($user->is_superadmin) {
-                $firstTenant = Tenant::first();
-                if ($firstTenant) {
-                    $tenantId = $firstTenant->id;
-                    session(['active_tenant_id' => $tenantId]);
-                }
             }
         }
 

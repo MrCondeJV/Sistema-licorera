@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AuditLog;
 use App\Models\Plan;
 use App\Models\Sale;
+use App\Models\SubscriptionPayment;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Services\AuditService;
@@ -16,7 +17,7 @@ class SuperadminController extends Controller
 {
     public function index()
     {
-        $tenants = Tenant::with(['plan', 'branches', 'users'])->latest()->paginate(20);
+        $tenants = Tenant::with(['plan', 'branches', 'users', 'subscriptionPayments'])->latest()->paginate(20);
         $totalTenants = Tenant::count();
         $activeTenants = Tenant::where('status', 'active')->count();
         $suspendedTenants = Tenant::where('status', 'suspended')->count();
@@ -367,5 +368,84 @@ class SuperadminController extends Controller
         );
 
         return redirect()->route('superadmin.plans.index')->with('success', "Plan '{$plan->name}' {$statusStr} exitosamente.");
+    }
+
+    /**
+     * Display all SaaS Subscription Payments across all tenants with filters and KPIs.
+     */
+    public function payments(Request $request)
+    {
+        $tenants = Tenant::orderBy('name')->get();
+        $plans = Plan::all();
+
+        $query = SubscriptionPayment::withoutGlobalScopes()
+            ->with(['tenant', 'plan'])
+            ->latest('id');
+
+        // Filter: Tenant
+        if ($request->filled('tenant_id')) {
+            $query->where('tenant_id', $request->input('tenant_id'));
+        }
+
+        // Filter: Status
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
+
+        // Filter: Plan
+        if ($request->filled('plan_id')) {
+            $query->where('plan_id', $request->input('plan_id'));
+        }
+
+        // Filter: Date Range
+        if ($request->filled('date_from')) {
+            $query->where('created_at', '>=', Carbon::parse($request->input('date_from'))->startOfDay());
+        }
+        if ($request->filled('date_to')) {
+            $query->where('created_at', '<=', Carbon::parse($request->input('date_to'))->endOfDay());
+        }
+
+        // Filter: Search
+        if ($request->filled('search')) {
+            $search = trim($request->input('search'));
+            $query->where(function ($q) use ($search) {
+                $q->where('reference', 'like', "%{$search}%")
+                  ->orWhere('wompi_transaction_id', 'like', "%{$search}%")
+                  ->orWhereHas('tenant', function ($tq) use ($search) {
+                      $tq->where('name', 'like', "%{$search}%")
+                         ->orWhere('email', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // KPI metrics
+        $totalRevenueCents = SubscriptionPayment::withoutGlobalScopes()
+            ->where('status', 'APPROVED')
+            ->sum('amount_in_cents');
+        $totalRevenue = $totalRevenueCents / 100;
+
+        $approvedCount = SubscriptionPayment::withoutGlobalScopes()
+            ->where('status', 'APPROVED')
+            ->count();
+
+        $pendingCount = SubscriptionPayment::withoutGlobalScopes()
+            ->where('status', 'PENDING')
+            ->count();
+
+        $declinedCount = SubscriptionPayment::withoutGlobalScopes()
+            ->whereNotIn('status', ['APPROVED', 'PENDING'])
+            ->count();
+
+        $payments = $query->paginate(25)->withQueryString();
+
+        return view('superadmin.payments.index', [
+            'payments' => $payments,
+            'tenants' => $tenants,
+            'plans' => $plans,
+            'totalRevenue' => $totalRevenue,
+            'approvedCount' => $approvedCount,
+            'pendingCount' => $pendingCount,
+            'declinedCount' => $declinedCount,
+        ]);
     }
 }

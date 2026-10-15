@@ -221,10 +221,16 @@ class AuthController extends Controller
             abort(403, 'No tienes acceso a este negocio.');
         }
 
-        session([
+        $sessionData = [
             'active_tenant_id' => $tenant->id,
             'active_branch_id' => null,
-        ]);
+        ];
+
+        if ($user->is_superadmin) {
+            $sessionData['superadmin_impersonating'] = true;
+        }
+
+        session($sessionData);
 
         return back()->with('success', "Cambiado a {$tenant->name}");
     }

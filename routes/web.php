@@ -201,6 +201,9 @@ Route::middleware(['pin.auth', 'superadmin'])->prefix('superadmin')->name('super
     Route::put('/plans/{plan}', [SuperadminController::class, 'updatePlanDetails'])->name('plans.update');
     Route::post('/plans/{plan}/toggle', [SuperadminController::class, 'togglePlan'])->name('plans.toggle');
 
+    // SaaS Global Subscription Payments History
+    Route::get('/payments', [SuperadminController::class, 'payments'])->name('payments');
+
     // SaaS Global Backups
     Route::get('/backups', [BackupController::class, 'index'])->name('backups');
     Route::post('/backups', [BackupController::class, 'create'])->name('backups.create');

@@ -62,7 +62,7 @@
     <aside class="hidden lg:flex flex-col w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 h-screen sticky top-0 shrink-0 z-30">
         <!-- Brand Header -->
         <div class="h-16 px-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
-            <div class="flex items-center space-x-2.5">
+            <a href="{{ auth()->user()->is_superadmin && !session('superadmin_impersonating') ? route('superadmin.index') : route('dashboard') }}" class="flex items-center space-x-2.5 hover:opacity-90 transition-opacity">
                 <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center shadow-md shadow-emerald-500/20 text-white font-black">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
@@ -74,10 +74,10 @@
                         <span class="text-[9px] px-1 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 font-mono font-bold">POS</span>
                     </h1>
                     <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate max-w-[140px] mt-0.5">
-                        {{ $currentTenant->name ?? 'Licorera' }}
+                        {{ auth()->user()->is_superadmin && !session('superadmin_impersonating') ? 'Plataforma SaaS' : ($currentTenant->name ?? 'Licorera') }}
                     </p>
                 </div>
-            </div>
+            </a>
         </div>
 
         <!-- Navigation Links -->
@@ -98,8 +98,14 @@
                     <span>Planes y Precios SaaS</span>
                 </a>
 
+                <a href="{{ route('superadmin.payments') }}"
+                   class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all {{ request()->routeIs('superadmin.payments*') ? 'bg-purple-600 text-white font-bold shadow-md shadow-purple-600/30' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800' }}">
+                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                    <span>Histórico de Pagos SaaS</span>
+                </a>
+
                 <a href="{{ route('superadmin.backups') }}"
-                   class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all {{ request()->routeIs('superadmin.backups*') || request()->routeIs('backups.*') ? 'bg-purple-600 text-white font-bold shadow-md shadow-purple-600/30' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800' }}">
+                   class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all {{ request()->routeIs('superadmin.backups*') ? 'bg-purple-600 text-white font-bold shadow-md shadow-purple-600/30' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800' }}">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
                     <span>Copias de Seguridad</span>
                 </a>
@@ -111,6 +117,22 @@
                 </a>
             @else
                 {{-- MODO LICORERA / OPERATIVO (Tenants y Superadmin cuando impersona a una empresa) --}}
+                @if(session('superadmin_impersonating'))
+                    <div class="mb-3 p-3 rounded-2xl bg-gradient-to-br from-purple-700 to-indigo-800 text-white shadow-lg border border-purple-400/30">
+                        <div class="flex items-center justify-between gap-1 mb-1">
+                            <span class="text-[10px] font-black uppercase tracking-wider text-purple-200 flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                Modo Superadmin
+                            </span>
+                        </div>
+                        <p class="text-xs font-bold truncate text-white mb-2">{{ $currentTenant->name ?? 'Licorera' }}</p>
+                        <a href="{{ route('superadmin.leave') }}" class="w-full py-1.5 px-3 rounded-xl bg-white hover:bg-purple-50 text-purple-900 font-black text-xs flex items-center justify-center gap-1.5 shadow-md transition-all active:scale-95">
+                            <svg class="w-4 h-4 text-purple-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+                            <span>Regresar a Superadmin</span>
+                        </a>
+                    </div>
+                @endif
+
                 <div class="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-3 pt-1 pb-1">Operaciones</div>
                 
                 <a href="{{ route('dashboard') }}"
@@ -291,6 +313,11 @@
             </div>
 
             <div class="flex items-center space-x-2">
+                @if(session('superadmin_impersonating'))
+                    <a href="{{ route('superadmin.leave') }}" class="px-2.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs flex items-center gap-1 shadow-sm active:scale-95 transition-all">
+                        <span>⬅ Superadmin</span>
+                    </a>
+                @endif
                 <button type="button" @click="toggleTheme()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 min-w-[40px] min-h-[40px] flex items-center justify-center">
                     <template x-if="isDarkMode">
                         <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
@@ -309,8 +336,13 @@
         <header class="hidden lg:flex items-center justify-between h-16 px-6 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shrink-0">
             <div class="flex items-center gap-4">
                 <div>
-                    <h2 class="text-base font-bold text-slate-900 dark:text-white">{{ $title ?? 'Terminal POS' }}</h2>
-                    <p class="text-xs text-slate-400">Sucursal: <span class="font-semibold text-slate-600 dark:text-slate-300">{{ $currentBranch->name ?? 'Principal' }}</span></p>
+                    @if(auth()->user()->is_superadmin && !session('superadmin_impersonating'))
+                        <h2 class="text-base font-bold text-slate-900 dark:text-white">{{ $title ?? 'Plataforma SaaS Licorera POS' }}</h2>
+                        <p class="text-xs text-purple-600 dark:text-purple-400 font-bold">Panel Maestro de Superadministración</p>
+                    @else
+                        <h2 class="text-base font-bold text-slate-900 dark:text-white">{{ $title ?? 'Terminal POS' }}</h2>
+                        <p class="text-xs text-slate-400">Sucursal: <span class="font-semibold text-slate-600 dark:text-slate-300">{{ $currentBranch->name ?? 'Principal' }}</span></p>
+                    @endif
                 </div>
 
                 @if(isset($accessibleTenants) && count($accessibleTenants) > 1)
@@ -452,47 +484,80 @@
     <!-- 3. MOBILE BOTTOM NAVIGATION (ONLY < lg)    -->
     <!-- ========================================== -->
     <nav class="lg:hidden fixed bottom-0 inset-x-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 z-40 h-16 px-2 flex items-center justify-around shadow-lg">
-        <!-- 1. Inicio -->
-        <a href="{{ route('dashboard') }}" class="flex flex-col items-center justify-center flex-1 h-full py-1 text-[11px] font-semibold transition-all {{ request()->routeIs('dashboard') ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-slate-500 dark:text-slate-400' }}">
-            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-            </svg>
-            <span>Inicio</span>
-        </a>
-
-        <!-- 2. Mesas -->
-        <a href="{{ route('tables.index') }}" class="flex flex-col items-center justify-center flex-1 h-full py-1 text-[11px] font-semibold transition-all {{ request()->routeIs('tables.*') ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-slate-500 dark:text-slate-400' }}">
-            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 14a2 2 0 012-2h4a2 2 0 012 2v2a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2zM4 14a2 2 0 012-2h4a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2z"></path>
-            </svg>
-            <span>Mesas</span>
-        </a>
-
-        <!-- 3. Vender (Primary Big Action Button) -->
-        <a href="{{ route('pos.index') }}" class="flex flex-col items-center justify-center -mt-4">
-            <div class="w-13 h-13 p-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-600/30 active:scale-95 transition-all">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path>
+        @if(auth()->user()->is_superadmin && !session('superadmin_impersonating'))
+            <!-- Superadmin Mobile Nav -->
+            <a href="{{ route('superadmin.index') }}" class="flex flex-col items-center justify-center flex-1 h-full py-1 text-[10px] font-semibold transition-all {{ request()->routeIs('superadmin.index') || request()->routeIs('superadmin.tenants.*') ? 'text-purple-600 dark:text-purple-400 font-bold' : 'text-slate-500 dark:text-slate-400' }}">
+                <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                <span>Empresas</span>
+            </a>
+            <a href="{{ route('superadmin.plans.index') }}" class="flex flex-col items-center justify-center flex-1 h-full py-1 text-[10px] font-semibold transition-all {{ request()->routeIs('superadmin.plans.*') ? 'text-purple-600 dark:text-purple-400 font-bold' : 'text-slate-500 dark:text-slate-400' }}">
+                <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                <span>Planes</span>
+            </a>
+            <a href="{{ route('superadmin.payments') }}" class="flex flex-col items-center justify-center flex-1 h-full py-1 text-[10px] font-semibold transition-all {{ request()->routeIs('superadmin.payments*') ? 'text-purple-600 dark:text-purple-400 font-bold' : 'text-slate-500 dark:text-slate-400' }}">
+                <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                <span>Pagos</span>
+            </a>
+            <a href="{{ route('superadmin.backups') }}" class="flex flex-col items-center justify-center flex-1 h-full py-1 text-[10px] font-semibold transition-all {{ request()->routeIs('superadmin.backups*') ? 'text-purple-600 dark:text-purple-400 font-bold' : 'text-slate-500 dark:text-slate-400' }}">
+                <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+                <span>Backups</span>
+            </a>
+            <a href="{{ route('superadmin.audit') }}" class="flex flex-col items-center justify-center flex-1 h-full py-1 text-[10px] font-semibold transition-all {{ request()->routeIs('superadmin.audit') ? 'text-purple-600 dark:text-purple-400 font-bold' : 'text-slate-500 dark:text-slate-400' }}">
+                <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                <span>Auditoría</span>
+            </a>
+        @else
+            <!-- 1. Inicio -->
+            <a href="{{ route('dashboard') }}" class="flex flex-col items-center justify-center flex-1 h-full py-1 text-[11px] font-semibold transition-all {{ request()->routeIs('dashboard') ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-slate-500 dark:text-slate-400' }}">
+                <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                 </svg>
-            </div>
-            <span class="text-[10px] font-black tracking-wide text-emerald-600 dark:text-emerald-400 mt-0.5">VENDER</span>
-        </a>
+                <span>Inicio</span>
+            </a>
 
-        <!-- 4. Inventario -->
-        <a href="{{ route('inventory.index') }}" class="flex flex-col items-center justify-center flex-1 h-full py-1 text-[11px] font-semibold transition-all {{ request()->routeIs('inventory.*') ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-slate-500 dark:text-slate-400' }}">
-            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-            </svg>
-            <span>Inventario</span>
-        </a>
+            <!-- 2. Mesas -->
+            <a href="{{ route('tables.index') }}" class="flex flex-col items-center justify-center flex-1 h-full py-1 text-[11px] font-semibold transition-all {{ request()->routeIs('tables.*') ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-slate-500 dark:text-slate-400' }}">
+                <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 14a2 2 0 012-2h4a2 2 0 012 2v2a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2zM4 14a2 2 0 012-2h4a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2z"></path>
+                </svg>
+                <span>Mesas</span>
+            </a>
 
-        <!-- 5. Caja -->
-        <a href="{{ route('cash.index') }}" class="flex flex-col items-center justify-center flex-1 h-full py-1 text-[11px] font-semibold transition-all {{ request()->routeIs('cash.*') ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-slate-500 dark:text-slate-400' }}">
-            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
-            </svg>
-            <span>Caja</span>
-        </a>
+            <!-- 3. Vender (Primary Big Action Button) -->
+            <a href="{{ route('pos.index') }}" class="flex flex-col items-center justify-center -mt-4">
+                <div class="w-13 h-13 p-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-600/30 active:scale-95 transition-all">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                </div>
+                <span class="text-[10px] font-black tracking-wide text-emerald-600 dark:text-emerald-400 mt-0.5">VENDER</span>
+            </a>
+
+            <!-- 4. Inventario -->
+            <a href="{{ route('inventory.index') }}" class="flex flex-col items-center justify-center flex-1 h-full py-1 text-[11px] font-semibold transition-all {{ request()->routeIs('inventory.*') ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-slate-500 dark:text-slate-400' }}">
+                <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                </svg>
+                <span>Inventario</span>
+            </a>
+
+            <!-- 5. Caja o Volver Superadmin -->
+            @if(session('superadmin_impersonating'))
+                <a href="{{ route('superadmin.leave') }}" class="flex flex-col items-center justify-center flex-1 h-full py-1 text-[10px] font-bold text-purple-600 dark:text-purple-400 transition-all">
+                    <svg class="w-5 h-5 mb-0.5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                    </svg>
+                    <span>Superadmin</span>
+                </a>
+            @else
+                <a href="{{ route('cash.index') }}" class="flex flex-col items-center justify-center flex-1 h-full py-1 text-[11px] font-semibold transition-all {{ request()->routeIs('cash.*') ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-slate-500 dark:text-slate-400' }}">
+                    <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    <span>Caja</span>
+                </a>
+            @endif
+        @endif
     </nav>
 
     <!-- ========================================== -->
@@ -539,6 +604,10 @@
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
                         <span>Planes y Precios SaaS</span>
                     </a>
+                    <a href="{{ route('superadmin.payments') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                        <span>Histórico de Pagos SaaS</span>
+                    </a>
                     <a href="{{ route('superadmin.backups') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
                         <span>Copias de Seguridad</span>
@@ -548,6 +617,17 @@
                         <span>Auditoría Global SaaS</span>
                     </a>
                 @else
+                    @if(session('superadmin_impersonating'))
+                        <div class="mb-3 p-3 rounded-2xl bg-gradient-to-br from-purple-700 to-indigo-800 text-white shadow-lg border border-purple-400/30">
+                            <span class="text-[10px] font-black uppercase tracking-wider text-purple-200 block mb-0.5">
+                                Modo Superadmin Activo
+                            </span>
+                            <p class="text-xs font-bold truncate text-white mb-2">{{ $currentTenant->name ?? 'Licorera' }}</p>
+                            <a href="{{ route('superadmin.leave') }}" class="w-full py-1.5 px-3 rounded-xl bg-white text-purple-900 font-black text-xs flex items-center justify-center gap-1.5 shadow-md">
+                                <span>⬅ Regresar a Superadmin</span>
+                            </a>
+                        </div>
+                    @endif
                     <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                         <span>Dashboard General</span>

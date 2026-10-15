@@ -70,6 +70,58 @@
         </div>
     </div>
 
+    <!-- Membership Quick Overview KPIs -->
+    @php
+        $tenantExpDate = $tenant->getExpirationDate();
+    @endphp
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="card-night p-4 border-slate-200 dark:border-slate-800 rounded-2xl">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Vencimiento Membresía</span>
+            <p class="text-xl sm:text-2xl font-black font-mono text-slate-900 dark:text-white mt-1">
+                {{ $tenantExpDate ? $tenantExpDate->format('d/m/Y') : 'Sin fecha' }}
+            </p>
+            <span class="text-[10px] text-slate-400">Fecha de corte de servicio</span>
+        </div>
+
+        <div class="card-night p-4 {{ $isGracePeriodExceeded ? 'border-rose-500/40 bg-rose-50/40 dark:bg-rose-950/20' : ($isPastDue ? 'border-amber-500/40 bg-amber-50/40 dark:bg-amber-950/20' : 'border-emerald-500/30 bg-emerald-50/40 dark:bg-emerald-950/20') }} rounded-2xl">
+            <span class="text-[11px] font-black uppercase tracking-wider {{ $isGracePeriodExceeded ? 'text-rose-600 dark:text-rose-400' : ($isPastDue ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400') }}">
+                Tiempo Restante
+            </span>
+            <p class="text-xl sm:text-2xl font-black font-mono {{ $isGracePeriodExceeded ? 'text-rose-600 dark:text-rose-400' : ($isPastDue ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400') }} mt-1">
+                @if($isPastDue)
+                    Vencido ({{ $daysPastDue }}d)
+                @else
+                    {{ $daysRemaining }} {{ Str::plural('día', $daysRemaining) }}
+                @endif
+            </p>
+            <span class="text-[10px] text-slate-400">
+                @if($isGracePeriodExceeded)
+                    Servicio suspendido
+                @elseif($isPastDue)
+                    {{ $graceDaysRemaining }} días de gracia restantes
+                @else
+                    Vigencia activa
+                @endif
+            </span>
+        </div>
+
+        <div class="card-night p-4 border-slate-200 dark:border-slate-800 rounded-2xl">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Plan Actual</span>
+            <p class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-1">
+                {{ $currentPlan->name ?? 'Estándar' }}
+            </p>
+            <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">{{ $tenant->branches()->count() }} sedes &bull; {{ $tenant->users()->count() }} usuarios</span>
+        </div>
+
+        <div class="card-night p-4 border-slate-200 dark:border-slate-800 rounded-2xl">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Histórico de Pagos</span>
+            <p class="text-xl sm:text-2xl font-black font-mono text-purple-600 dark:text-purple-400 mt-1">
+                {{ $payments->total() }}
+            </p>
+            <span class="text-[10px] text-slate-400">Transacciones Wompi registradas</span>
+        </div>
+    </div>
+
     <!-- Plans Comparison -->
     <div>
         <div class="flex items-center justify-between mb-3">

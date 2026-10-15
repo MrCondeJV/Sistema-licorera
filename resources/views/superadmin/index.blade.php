@@ -12,11 +12,15 @@
             <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Control global de licoreras registradas, planes de suscripción y acceso maestro a empresas</p>
         </div>
         <div class="flex items-center gap-2">
+            <a href="{{ route('superadmin.payments') }}" class="btn-touch bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 text-xs font-black shadow-lg shadow-emerald-600/30 rounded-2xl flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                <span>Histórico de Pagos SaaS</span>
+            </a>
             <a href="{{ route('superadmin.audit') }}" class="btn-touch bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 text-xs font-black shadow-lg shadow-purple-600/30 rounded-2xl flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                <span>Auditoría Global SaaS</span>
+                <span>Auditoría Global</span>
             </a>
-            <a href="{{ route('superadmin.tenants.create') }}" class="btn-touch bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 text-xs font-black shadow-lg shadow-emerald-600/30 rounded-2xl flex items-center gap-2">
+            <a href="{{ route('superadmin.tenants.create') }}" class="btn-touch bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 text-xs font-black shadow-lg shadow-indigo-600/30 rounded-2xl flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>
@@ -54,20 +58,26 @@
         <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-2">Licoreras en la Plataforma</h3>
         <div class="flex-1 overflow-y-auto">
             <div class="overflow-x-auto min-w-full">
-                <table class="w-full text-left text-xs min-w-[760px]">
+                <table class="w-full text-left text-xs min-w-[880px]">
                 <thead class="border-b border-slate-200 dark:border-slate-800 text-slate-400 font-bold uppercase tracking-wider">
                     <tr>
                         <th class="py-3 px-2">Negocio / Tenant</th>
                         <th class="py-3 px-2">Contacto</th>
                         <th class="py-3 px-2">Plan</th>
+                        <th class="py-3 px-2">Membresía / Vencimiento</th>
                         <th class="py-3 px-2">Sucursales / Usuarios</th>
                         <th class="py-3 px-2">Estado</th>
-                        <th class="py-3 px-2">Fecha Registro</th>
                         <th class="py-3 px-2 text-right">Acciones</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                     @forelse($tenants as $t)
+                        @php
+                            $expDate = $t->getExpirationDate();
+                            $daysRemaining = $t->daysRemaining();
+                            $isPastDue = $t->isPastDue();
+                            $graceExceeded = $t->isGracePeriodExceeded();
+                        @endphp
                         <tr>
                             <td class="py-3 px-2">
                                 <span class="font-bold text-slate-900 dark:text-white text-sm block">{{ $t->name }}</span>
@@ -82,6 +92,51 @@
                                     {{ $t->plan->name ?? 'Plan Básico' }}
                                 </span>
                             </td>
+                            <td class="py-3 px-2">
+                                <div class="space-y-0.5">
+                                    @if($t->hasActiveSubscription())
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700 text-[10px] font-black">
+                                                ✅ ACTIVA
+                                            </span>
+                                            <span class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                                                Faltan {{ $daysRemaining }}d
+                                            </span>
+                                        </div>
+                                    @elseif($t->isOnTrial())
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="px-2 py-0.5 rounded-full bg-cyan-100 dark:bg-cyan-950 text-cyan-800 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-700 text-[10px] font-black">
+                                                🎁 PRUEBA 14D
+                                            </span>
+                                            <span class="text-[11px] font-bold text-cyan-600 dark:text-cyan-400">
+                                                Quedan {{ $daysRemaining }}d
+                                            </span>
+                                        </div>
+                                    @elseif($graceExceeded)
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-700 text-[10px] font-black">
+                                                🚨 SUSPENDIDA
+                                            </span>
+                                            <span class="text-[11px] font-bold text-rose-600 dark:text-rose-400">
+                                                Venció hace {{ $t->daysPastDue() }}d
+                                            </span>
+                                        </div>
+                                    @elseif($isPastDue)
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-700 text-[10px] font-black">
+                                                ⚠️ GRACIA ({{ $t->graceDaysRemaining() }}d)
+                                            </span>
+                                        </div>
+                                    @else
+                                        <span class="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[10px] font-bold">
+                                            SIN PLAN
+                                        </span>
+                                    @endif
+                                    <div class="text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                                        Vence: <strong>{{ $expDate ? $expDate->format('d/m/Y') : 'Sin fecha' }}</strong>
+                                    </div>
+                                </div>
+                            </td>
                             <td class="py-3 px-2 text-slate-600 dark:text-slate-300 font-mono">
                                 {{ $t->branches->count() }} sedes &bull; {{ $t->users->count() }} usuarios
                             </td>
@@ -90,9 +145,16 @@
                                     {{ strtoupper($t->status) }}
                                 </span>
                             </td>
-                            <td class="py-3 px-2 font-mono text-slate-400">{{ $t->created_at->format('d/m/Y') }}</td>
                             <td class="py-3 px-2 text-right">
                                 <div class="flex items-center justify-end gap-1.5">
+                                    <!-- SaaS Payments History for this tenant -->
+                                    <a href="{{ route('superadmin.payments', ['tenant_id' => $t->id]) }}"
+                                       class="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-700 transition-all flex items-center gap-1"
+                                       title="Ver historial de pagos de esta licorera">
+                                        <span>💳</span>
+                                        <span>Pagos ({{ $t->subscriptionPayments->count() }})</span>
+                                    </a>
+
                                     <!-- Enter / Impersonate Button -->
                                     <form action="{{ route('superadmin.tenants.enter', $t->id) }}" method="POST" class="inline">
                                         @csrf
